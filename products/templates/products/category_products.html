@@ -1,0 +1,237 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title }} | Manovastra</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/collection_style.css' %}">
+</head>
+<body>
+
+<!-- Header -->
+<header class="header-main">
+    <div class="container">
+        <div class="row align-items-center py-3">
+            <div class="col-lg-2 col-md-3 col-6">
+                <div class="logo">
+                    <a href="{% url 'home' %}">
+                        {% if site_settings and site_settings.logo %}
+                            <img src="{{ site_settings.logo.url }}" alt="{{ site_settings.site_name }}" class="logo-image">
+                        {% else %}
+                            <h1 class="brand-name mb-0">Manovastra</h1>
+                            <p class="brand-tagline mb-0">Elegance Redefined</p>
+                        {% endif %}
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-6 col-md-5 d-none d-md-block">
+                <form class="search-bar" method="GET" action="{% url 'search' %}">
+                    <input type="text" name="q" class="form-control search-input" placeholder="Search for Sarees, Kurtis, Lehengas...">
+                    <button type="submit" class="btn-search">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </form>
+            </div>
+
+            <div class="col-lg-4 col-md-4 col-6">
+                <div class="header-icons">
+                    {% if is_logged_in %}
+                        <div class="dropdown">
+                            <a href="#" class="icon-link dropdown-toggle" data-bs-toggle="dropdown">
+                                <i class="bi bi-person-circle"></i>
+                                <span class="d-none d-lg-inline">{{ user_name|truncatechars:15 }}</span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'my_orders' %}"><i class="bi bi-box"></i> My Orders</a></li>
+                                <li><a class="dropdown-item" href="{% url 'wishlist' %}"><i class="bi bi-heart"></i> Wishlist</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="icon-link">
+                            <i class="bi bi-person"></i>
+                            <span class="d-none d-lg-inline">Account</span>
+                        </a>
+                    {% endif %}
+
+                    <a href="{% url 'wishlist' %}" class="icon-link">
+                        <i class="bi bi-heart"></i>
+                    </a>
+
+                    <a href="{% url 'cart' %}" class="icon-link cart-link">
+                        <i class="bi bi-bag"></i>
+                        <span class="cart-badge" id="cartCount">0</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Navigation Bar -->
+<nav class="navbar-main">
+    <div class="container">
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="{% url 'home' %}" class="nav-link">
+                    <i class="bi bi-house-door"></i> Home
+                </a>
+            </li>
+
+            {% for category in site_settings.categories.all %}
+            <li class="nav-item">
+                <a href="{% url 'category_collection' category.slug %}" class="nav-link">
+                    {{ category.name }}
+                </a>
+            </li>
+            {% endfor %}
+
+            <li class="nav-item">
+                <a href="{% url 'new_arrivals' %}" class="nav-link {% if page_title == 'New Arrivals' %}active{% endif %}">
+                    <i class="bi bi-stars"></i> New Arrivals
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="{% url 'offers' %}" class="nav-link special {% if page_title == 'Special Offers' %}active{% endif %}">
+                    <i class="bi bi-tag-fill"></i> Offers
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="{% url 'all_products' %}" class="nav-link {% if page_title == 'All Products' %}active{% endif %}">
+                    All Products
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Collection Section -->
+<section class="collection-section py-5">
+    <div class="container">
+        
+        <!-- Collection Header -->
+        <div class="collection-header">
+            <div class="collection-header-left">
+                <h2 class="collection-title">{{ page_title }}</h2>
+                <p class="collection-subtitle">{{ total_products }} product{{ total_products|pluralize }}</p>
+            </div>
+
+            <!-- Sort Filter -->
+            <div class="collection-header-right">
+                <div class="sort-dropdown">
+                    <label for="sortSelect">Sort By:</label>
+                    <select id="sortSelect" class="form-select" onchange="location = this.value;">
+                        <option value="?sort=featured" {% if current_sort == 'featured' %}selected{% endif %}>Featured</option>
+                        <option value="?sort=new" {% if current_sort == 'new' %}selected{% endif %}>Newest</option>
+                        <option value="?sort=price-low" {% if current_sort == 'price-low' %}selected{% endif %}>Price: Low to High</option>
+                        <option value="?sort=price-high" {% if current_sort == 'price-high' %}selected{% endif %}>Price: High to Low</option>
+                        <option value="?sort=rating" {% if current_sort == 'rating' %}selected{% endif %}>Top Rated</option>
+                        <option value="?sort=discount" {% if current_sort == 'discount' %}selected{% endif %}>Discount</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        {% if products %}
+        <div class="row g-4">
+            {% for product in products %}
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="product-card">
+                    <div class="product-image-wrapper">
+                        {% if product.colors.first.images.first %}
+                            <img src="{{ product.colors.first.images.first.image.url }}" alt="{{ product.name }}" class="product-image">
+                        {% endif %}
+                        
+                        <span class="product-badge">{{ product.get_badge_text }}</span>
+                        
+                        <div class="product-overlay">
+                            <a href="{% url 'product_detail' product.slug %}" class="btn-quick-view">
+                                <i class="bi bi-eye"></i> View Details
+                            </a>
+                        </div>
+
+                        <button class="btn-wishlist" data-product-id="{{ product.id }}">
+                            <i class="bi bi-heart"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="product-info">
+                        <h3 class="product-name">
+                            <a href="{% url 'product_detail' product.slug %}">{{ product.name }}</a>
+                        </h3>
+                        
+                        <div class="product-rating">
+                            <i class="bi bi-star-fill"></i>
+                            <span>{{ product.rating }}</span>
+                            <span class="rating-count">({{ product.rating_count }})</span>
+                        </div>
+                        
+                        <div class="product-price-section">
+                            <span class="product-price">₹{{ product.current_price|floatformat:0 }}</span>
+                            <span class="product-original-price">₹{{ product.original_price|floatformat:0 }}</span>
+                        </div>
+
+                        <button class="btn-add-to-cart" data-product-id="{{ product.id }}">
+                            <i class="bi bi-bag-plus"></i> Add to Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if products.has_other_pages %}
+        <div class="pagination-section mt-5">
+            <nav>
+                <ul class="pagination justify-content-center">
+                    {% if products.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ products.previous_page_number }}{% if current_sort %}&sort={{ current_sort }}{% endif %}">Previous</a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for num in products.paginator.page_range %}
+                        {% if products.number == num %}
+                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                        {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
+                        <li class="page-item"><a class="page-link" href="?page={{ num }}{% if current_sort %}&sort={{ current_sort }}{% endif %}">{{ num }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if products.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ products.next_page_number }}{% if current_sort %}&sort={{ current_sort }}{% endif %}">Next</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-box-seam" style="font-size: 80px; color: #ccc;"></i>
+            <h3 class="mt-4">No products found</h3>
+            <a href="{% url 'home' %}" class="btn btn-primary mt-3">Back to Home</a>
+        </div>
+        {% endif %}
+
+    </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/collection_script.js' %}"></script>
+</body>
+</html>

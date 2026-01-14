@@ -1,0 +1,521 @@
+{% load static custom_filters %}
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ category.name }} | Manovastra</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/collection_style.css' %}">
+</head>
+<body>
+
+    <!-- Top Announcement Bar -->
+    <div class="announcement-bar">
+        <div class="container">
+            <p class="mb-0 text-center">🎉 New Year Sale - Flat 40% OFF on All Sarees | Free Shipping on Orders Above ₹999</p>
+        </div>
+    </div>
+
+    <!-- Header Section -->
+    <header class="header-main">
+        <div class="container">
+            <div class="row align-items-center py-3">
+                <!-- Logo -->
+                <div class="col-lg-2 col-md-3 col-6">
+                    <div class="logo">
+                        <a href="index.html">
+                            <h1 class="brand-name mb-0">Manovastra</h1>
+                            <p class="brand-tagline mb-0">Elegance Redefined</p>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="col-lg-6 col-md-5 d-none d-md-block">
+                    <div class="search-bar">
+                        <input type="text" class="form-control" placeholder="Search for Sarees, Kurtis, Lehengas...">
+                        <button class="btn-search">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Header Icons -->
+                <div class="col-lg-4 col-md-4 col-6">
+                    <div class="header-icons">
+                        <a href="#" class="icon-link">
+                            <i class="bi bi-person"></i>
+                            <span class="d-none d-lg-inline">Account</span>
+                        </a>
+                        <a href="#" class="icon-link">
+                            <i class="bi bi-heart"></i>
+                            <span class="d-none d-lg-inline">Wishlist</span>
+                        </a>
+                        <a href="#" class="icon-link cart-link">
+                            <i class="bi bi-bag"></i>
+                            <span class="cart-badge">0</span>
+                            <span class="d-none d-lg-inline">Cart</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile Search Bar -->
+            <div class="row d-md-none mb-3">
+                <div class="col-12">
+                    <div class="search-bar">
+                        <input type="text" class="form-control" placeholder="Search for Sarees, Kurtis...">
+                        <button class="btn-search">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar-main">
+        <div class="container">
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="#" class="nav-link active">Sarees</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">Kurtis</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">Lehengas</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">Dress Materials</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">New Arrivals</a></li>
+                <li class="nav-item"><a href="#" class="nav-link special">Offers</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb Navigation -->
+    <section class="breadcrumb-section">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Sarees Collection</li>
+                </ol>
+            </nav>
+        </div>
+    </section>
+
+    <!-- Collection Header -->
+    <section class="collection-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-12">
+                    <h1 class="collection-title">Sarees Collection</h1>
+                    <p class="collection-description">Explore our exquisite range of handcrafted sarees featuring traditional weaves and contemporary designs</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mobile Filter Toggle Button -->
+    <div class="mobile-filter-toggle d-lg-none">
+        <div class="container">
+            <button class="btn-filter-toggle">
+                <i class="bi bi-funnel"></i> Filters
+            </button>
+        </div>
+    </div>
+
+    <!-- Collection Content Section -->
+<section class="collection-content-section py-4">
+    <div class="container">
+        <div class="row g-4">
+            
+            <!-- Left Sidebar - Filters -->
+            <aside class="col-lg-3">
+                <div class="filters-sidebar">
+                    
+                    <div class="filter-header">
+                        <h3 class="filter-title">
+                            <i class="bi bi-funnel-fill"></i> Filters
+                        </h3>
+                        <a href="{% url 'category_collection' category.slug %}" class="clear-filters">Clear All</a>
+                    </div>
+
+                    <!-- Price Filter -->
+                    <div class="filter-group">
+                        <h4 class="filter-group-title">
+                            Price Range
+                            <i class="bi bi-chevron-down"></i>
+                        </h4>
+                        <div class="filter-group-content">
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="price" value="0-1000">
+                                <span class="checkbox-custom"></span>
+                                <span class="checkbox-label">Under ₹1,000</span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="price" value="1000-2500">
+                                <span class="checkbox-custom"></span>
+                                <span class="checkbox-label">₹1,000 - ₹2,500</span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="price" value="2500-5000">
+                                <span class="checkbox-custom"></span>
+                                <span class="checkbox-label">₹2,500 - ₹5,000</span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="price" value="5000-10000">
+                                <span class="checkbox-custom"></span>
+                                <span class="checkbox-label">₹5,000 - ₹10,000</span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="price" value="10000-999999">
+                                <span class="checkbox-custom"></span>
+                                <span class="checkbox-label">Above ₹10,000</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Fabric Filter -->
+                    <div class="filter-group">
+                        <h4 class="filter-group-title">
+                            Fabric Type
+                            <i class="bi bi-chevron-down"></i>
+                        </h4>
+                        <div class="filter-group-content">
+                            {% for fabric in all_fabrics %}
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="fabric" value="{{ fabric }}">
+                                <span class="checkbox-custom"></span>
+                                <span class="checkbox-label">{{ fabric }}</span>
+                                <span class="item-count">({{ fabric_counts|get_item:fabric }})</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Color Filter -->
+                    <div class="filter-group">
+                        <h4 class="filter-group-title">
+                            Color
+                            <i class="bi bi-chevron-down"></i>
+                        </h4>
+                        <div class="filter-group-content">
+                            <div class="color-filter-grid">
+                                {% for color in all_colors %}
+                                <label class="color-filter-item" title="{{ color }}" data-color="{{ color }}">
+                                    <input type="checkbox" name="color" value="{{ color }}">
+                                    <span class="color-swatch" style="background: {% if color == 'Red' %}linear-gradient(135deg, #C41E3A 0%, #8B0000 100%){% elif color == 'Gold' %}linear-gradient(135deg, #D4AF37 0%, #FFD700 100%){% elif color == 'Blue' %}linear-gradient(135deg, #00008B 0%, #4169E1 100%){% elif color == 'Green' %}linear-gradient(135deg, #2E8B57 0%, #3CB371 100%){% elif color == 'Purple' %}linear-gradient(135deg, #4B0082 0%, #8B008B 100%){% elif color == 'Pink' %}linear-gradient(135deg, #FF69B4 0%, #FFB6C1 100%){% elif color == 'Orange' %}linear-gradient(135deg, #FF8C00 0%, #FFA500 100%){% elif color == 'Black' %}linear-gradient(135deg, #000000 0%, #2C2C2C 100%){% elif color == 'White' %}linear-gradient(135deg, #FFFFFF 0%, #F5F5F5 100%); border: 1px solid #ddd;{% elif color == 'Maroon' %}linear-gradient(135deg, #800000 0%, #A0522D 100%){% endif %};"></span>
+                                    <span class="color-check"><i class="bi bi-check"></i></span>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Occasion Filter -->
+                    <div class="filter-group">
+                        <h4 class="filter-group-title">
+                            Occasion
+                            <i class="bi bi-chevron-down"></i>
+                        </h4>
+                        <div class="filter-group-content">
+                            {% for occasion in all_occasions %}
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="occasion" value="{{ occasion }}">
+                                <span class="checkbox-custom"></span>
+                                <span class="checkbox-label">{{ occasion }}</span>
+                                <span class="item-count">({{ occasion_counts|get_item:occasion }})</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Discount Filter -->
+                    <div class="filter-group">
+                        <h4 class="filter-group-title">
+                            Discount
+                            <i class="bi bi-chevron-down"></i>
+                        </h4>
+                        <div class="filter-group-content">
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="discount" value="10">
+                                <span class="checkbox-custom"></span>
+                                <span class="checkbox-label">10% or more</span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="discount" value="20">
+                                <span class="checkbox-custom"></span>
+                                <span class="checkbox-label">20% or more</span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="discount" value="30">
+                                <span class="checkbox-custom"></span>
+                                <span class="checkbox-label">30% or more</span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="discount" value="40">
+                                <span class="checkbox-custom"></span>
+                                <span class="checkbox-label">40% or more</span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="discount" value="50">
+                                <span class="checkbox-custom"></span>
+                                <span class="checkbox-label">50% or more</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Availability -->
+                    <div class="filter-group">
+                        <h4 class="filter-group-title">
+                            Availability
+                            <i class="bi bi-chevron-down"></i>
+                        </h4>
+                        <div class="filter-group-content">
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="in_stock" checked>
+                                <span class="checkbox-custom"></span>
+                                <span class="checkbox-label">In Stock Only</span>
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+            </aside>
+
+            <!-- Right Section - Products -->
+            <main class="col-lg-9">
+                
+                <!-- Results Bar -->
+                <div class="results-bar">
+                    <div class="results-info">
+                        <h2 class="results-count">{{ category.name }} - Showing {{ products|length }} of {{ total_products }} results</h2>
+                    </div>
+                    <div class="sorting-options">
+                        <label for="sort-select" class="sort-label">Sort by:</label>
+                        <select id="sort-select" class="form-select sort-select">
+                            <option value="featured" {% if current_sort == 'featured' %}selected{% endif %}>Featured</option>
+                            <option value="price-low" {% if current_sort == 'price-low' %}selected{% endif %}>Price: Low to High</option>
+                            <option value="price-high" {% if current_sort == 'price-high' %}selected{% endif %}>Price: High to Low</option>
+                            <option value="new" {% if current_sort == 'new' %}selected{% endif %}>New Arrivals</option>
+                            <option value="bestseller" {% if current_sort == 'bestseller' %}selected{% endif %}>Best Sellers</option>
+                            <option value="rating" {% if current_sort == 'rating' %}selected{% endif %}>Customer Rating</option>
+                            <option value="discount" {% if current_sort == 'discount' %}selected{% endif %}>Highest Discount</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Active Filters Display -->
+                <div class="active-filters" id="activeFilters"></div>
+
+                <!-- Product Grid -->
+                <div class="product-grid">
+                    <div class="row g-3" id="productGrid">
+                        
+                        {% for product in products %}
+                        <div class="col-xl-4 col-md-6 col-6 product-item" 
+                             data-fabric="{{ product.fabric }}"
+                             data-color="{{ product.primary_color }}"
+                             data-occasion="{{ product.occasion }}"
+                             data-price="{{ product.current_price }}"
+                             data-discount="{{ product.discount_percent }}"
+                             data-in-stock="{{ product.in_stock }}">
+                            <div class="collection-product-card">
+                                <div class="product-badge-collection">{{ product.get_badge_text }}</div>
+                                <div class="product-wishlist-btn">
+                                    <i class="bi bi-heart"></i>
+                                </div>
+                                <div class="product-image-collection">
+                                    <a href="{% url 'product_detail' product.slug %}">
+                                        {% if product.colors.first and product.colors.first.images.first %}
+                                            <img src="{{ product.colors.first.images.first.image.url }}" alt="{{ product.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                        {% else %}
+                                            <div class="product-img-placeholder" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                                        {% endif %}
+                                    </a>
+                                </div>
+                                <div class="product-info-collection">
+                                    <a href="{% url 'product_detail' product.slug %}" class="product-name-collection">{{ product.name }}</a>
+                                    <p class="product-description-collection">{{ product.fabric }}</p>
+                                    <div class="product-rating-collection">
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= product.rating|floatformat:0 %}
+                                                <i class="bi bi-star-fill"></i>
+                                            {% elif forloop.counter == product.rating|add:"0.5"|floatformat:0 %}
+                                                <i class="bi bi-star-half"></i>
+                                            {% else %}
+                                                <i class="bi bi-star"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                        <span class="rating-text">{{ product.rating }} ({{ product.rating_count }})</span>
+                                    </div>
+                                    <div class="product-price-collection">
+                                        <span class="price-current-collection">₹{{ product.current_price|floatformat:0 }}</span>
+                                        <span class="price-original-collection">₹{{ product.original_price|floatformat:0 }}</span>
+                                    </div>
+                                    <div class="product-actions-collection">
+                                        <a href="{% url 'product_detail' product.slug %}" class="btn-view-details">View Details</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-12">
+                            <p class="text-center">No products found in this category.</p>
+                        </div>
+                        {% endfor %}
+
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                {% if products.has_other_pages %}
+                <div class="pagination-section">
+                    <nav>
+                        <ul class="pagination-custom">
+                            {% if products.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ products.previous_page_number }}&sort={{ current_sort }}">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+                            
+                            {% for num in products.paginator.page_range %}
+                            <li class="page-item {% if products.number == num %}active{% endif %}">
+                                <a class="page-link" href="?page={{ num }}&sort={{ current_sort }}">{{ num }}</a>
+                            </li>
+                            {% endfor %}
+                            
+                            {% if products.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ products.next_page_number }}&sort={{ current_sort }}">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+                {% endif %}
+
+            </main>
+
+        </div>
+    </div>
+</section>
+
+    <!-- Footer Section -->
+    <footer class="footer-main">
+        <div class="container">
+            <!-- Footer Top -->
+            <div class="row py-5">
+                <!-- About Column -->
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="footer-widget">
+                        <h3 class="footer-brand">Manovastra</h3>
+                        <p class="footer-about">Your destination for premium Indian ethnic wear. Celebrating tradition with contemporary elegance.</p>
+                        <div class="social-icons">
+                            <a href="#" class="social-link"><i class="bi bi-facebook"></i></a>
+                            <a href="#" class="social-link"><i class="bi bi-instagram"></i></a>
+                            <a href="#" class="social-link"><i class="bi bi-pinterest"></i></a>
+                            <a href="#" class="social-link"><i class="bi bi-youtube"></i></a>
+                            <a href="#" class="social-link"><i class="bi bi-twitter"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Links Column -->
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <div class="footer-widget">
+                        <h4 class="footer-title">Quick Links</h4>
+                        <ul class="footer-links">
+                            <li><a href="#">About Us</a></li>
+                            <li><a href="#">Our Story</a></li>
+                            <li><a href="#">Blog</a></li>
+                            <li><a href="#">Careers</a></li>
+                            <li><a href="#">Press</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Categories Column -->
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <div class="footer-widget">
+                        <h4 class="footer-title">Categories</h4>
+                        <ul class="footer-links">
+                            <li><a href="#">Silk Sarees</a></li>
+                            <li><a href="#">Designer Kurtis</a></li>
+                            <li><a href="#">Bridal Lehengas</a></li>
+                            <li><a href="#">New Arrivals</a></li>
+                            <li><a href="#">Sale</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Customer Service Column -->
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <div class="footer-widget">
+                        <h4 class="footer-title">Customer Service</h4>
+                        <ul class="footer-links">
+                            <li><a href="#">Contact Us</a></li>
+                            <li><a href="#">Track Order</a></li>
+                            <li><a href="#">Returns & Exchange</a></li>
+                            <li><a href="#">Shipping Info</a></li>
+                            <li><a href="#">Size Guide</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Contact Column -->
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="footer-widget">
+                        <h4 class="footer-title">Get in Touch</h4>
+                        <ul class="footer-contact">
+                            <li>
+                                <i class="bi bi-geo-alt-fill"></i>
+                                <span>MG Road, Bangalore, Karnataka 560001</span>
+                            </li>
+                            <li>
+                                <i class="bi bi-telephone-fill"></i>
+                                <span>+91 98765 43210</span>
+                            </li>
+                            <li>
+                                <i class="bi bi-envelope-fill"></i>
+                                <span>support@manovastra.com</span>
+                            </li>
+                            <li>
+                                <i class="bi bi-clock-fill"></i>
+                                <span>Mon - Sat: 10:00 AM - 7:00 PM</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Bottom -->
+            <div class="row py-4 border-top" style="border-color: rgba(255, 255, 255, 0.1) !important;">
+                <div class="col-lg-6 text-center text-lg-start mb-3 mb-lg-0">
+                    <p class="footer-copyright mb-0">© 2026 Manovastra. All Rights Reserved.</p>
+                </div>
+                <div class="col-lg-6 text-center text-lg-end">
+                    <ul class="footer-legal">
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms & Conditions</a></li>
+                        <li><a href="#">Refund Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/collection_script.js' %}"></script>
+
+</body>
+</html>

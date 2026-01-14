@@ -1,0 +1,196 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | Manovastra</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/login_style.css' %}">
+</head>
+<body>
+
+<section class="login-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-5 col-md-7 col-sm-9">
+                
+                <!-- Register Card -->
+                <div class="login-card">
+                    
+                    <div class="login-card-header">
+                        <div class="login-icon">
+                            <i class="bi bi-person-plus-fill"></i>
+                        </div>
+                        <h2 class="login-title">Create Account</h2>
+                        <p class="login-subtitle">Join Manovastra - Premium Ethnic Wear</p>
+                    </div>
+
+                    <!-- Registration Form (Step 1) -->
+                    <form class="login-form" id="registrationForm">
+                        {% csrf_token %}
+                        
+                        <!-- Name Input -->
+                        <div class="form-group-login">
+                            <label for="name" class="form-label-login">
+                                <i class="bi bi-person"></i> Full Name
+                            </label>
+                            <input 
+                                type="text" 
+                                id="name" 
+                                name="name" 
+                                class="form-control-login" 
+                                placeholder="Enter your full name"
+                                required
+                            >
+                        </div>
+
+                        <!-- Email Input -->
+                        <div class="form-group-login">
+                            <label for="email" class="form-label-login">
+                                <i class="bi bi-envelope"></i> Email Address
+                            </label>
+                            <input 
+                                type="email" 
+                                id="email" 
+                                name="email" 
+                                class="form-control-login" 
+                                placeholder="Enter your email address"
+                                required
+                            >
+                        </div>
+
+                        <!-- Phone Input -->
+                        <div class="form-group-login">
+                            <label for="phone" class="form-label-login">
+                                <i class="bi bi-telephone"></i> Phone Number
+                            </label>
+                            <input 
+                                type="tel" 
+                                id="phone" 
+                                name="phone" 
+                                class="form-control-login" 
+                                placeholder="Enter your phone number"
+                                maxlength="10"
+                                required
+                            >
+                        </div>
+
+                        <!-- Password Input -->
+                        <div class="form-group-login">
+                            <label for="password" class="form-label-login">
+                                <i class="bi bi-lock"></i> Password
+                            </label>
+                            <div class="password-input-wrapper">
+                                <input 
+                                    type="password" 
+                                    id="password" 
+                                    name="password" 
+                                    class="form-control-login" 
+                                    placeholder="Create a password (min 6 characters)"
+                                    minlength="6"
+                                    required
+                                >
+                                <span class="password-toggle" id="passwordToggle">
+                                    <i class="bi bi-eye"></i>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Error Message -->
+                        <div class="error-message" id="registerError" style="display: none;">
+                            <i class="bi bi-exclamation-circle"></i>
+                            <span id="registerErrorText"></span>
+                        </div>
+
+                        <!-- Register Button -->
+                        <button type="submit" class="btn-login-primary" id="registerBtn">
+                            <span>Create Account</span>
+                            <i class="bi bi-arrow-right-circle"></i>
+                        </button>
+
+                    </form>
+
+                    <!-- OTP Verification Form (Step 2 - Hidden initially) -->
+                    <form class="login-form" id="otpVerificationForm" style="display: none;">
+                        {% csrf_token %}
+                        
+                        <div class="form-group-login">
+                            <label for="otp" class="form-label-login">
+                                <i class="bi bi-shield-check"></i> Enter OTP
+                            </label>
+                            <input 
+                                type="text" 
+                                id="otp" 
+                                name="otp" 
+                                class="form-control-login" 
+                                placeholder="Enter 6-digit OTP"
+                                maxlength="6"
+                                required
+                            >
+                            <div class="error-message" id="otpError" style="display: none;">
+                                <i class="bi bi-exclamation-circle"></i>
+                                <span id="otpErrorText"></span>
+                            </div>
+                            <p class="otp-timer" style="margin-top: 10px; color: #48bb78;">
+                                <i class="bi bi-info-circle"></i>
+                                OTP sent to your email. Valid for 5 minutes.
+                            </p>
+                        </div>
+
+                        <button type="submit" class="btn-login-primary" id="verifyOtpBtn">
+                            <span>Verify & Complete Registration</span>
+                            <i class="bi bi-check-circle"></i>
+                        </button>
+
+                        <button type="button" class="btn-resend-otp" id="resendOtpBtn" style="margin-top: 15px;">
+                            <i class="bi bi-arrow-clockwise"></i> Resend OTP
+                        </button>
+                    </form>
+
+                    <!-- Security Badge -->
+                    <div class="security-badge">
+                        <i class="bi bi-shield-lock-fill"></i>
+                        <span>Your information is encrypted and secure</span>
+                    </div>
+
+                </div>
+
+                <!-- Already Have Account Section -->
+                <div class="new-user-section">
+                    <p class="new-user-text">Already have an account?</p>
+                    <a href="{% url 'login' %}" class="btn-create-account">
+                        Login Here
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+
+                <!-- Trust Badges -->
+                <div class="trust-badges-login">
+                    <div class="trust-badge-login">
+                        <i class="bi bi-lock-fill"></i>
+                        <span>Secure Registration</span>
+                    </div>
+                    <div class="trust-badge-login">
+                        <i class="bi bi-shield-check"></i>
+                        <span>Email Verified</span>
+                    </div>
+                    <div class="trust-badge-login">
+                        <i class="bi bi-patch-check-fill"></i>
+                        <span>Trusted by 50k+</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/register_script.js' %}"></script>
+</body>
+</html>

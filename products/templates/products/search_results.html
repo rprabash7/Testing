@@ -1,0 +1,148 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results - {{ query }} | Manovastra</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/collection_style.css' %}">
+</head>
+<body>
+
+<!-- Header (same as home) -->
+<header class="header-main">
+    <div class="container">
+        <div class="row align-items-center py-3">
+            <div class="col-lg-2 col-md-3 col-6">
+                <div class="logo">
+                    <a href="{% url 'home' %}">
+                        {% if site_settings and site_settings.logo %}
+                            <img src="{{ site_settings.logo.url }}" alt="{{ site_settings.site_name }}" class="logo-image">
+                        {% else %}
+                            <h1 class="brand-name mb-0">Manovastra</h1>
+                        {% endif %}
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-5 d-none d-md-block">
+                <form class="search-bar" method="GET" action="{% url 'search' %}">
+                    <input type="text" name="q" class="form-control search-input" placeholder="Search..." value="{{ query }}">
+                    <button type="submit" class="btn-search">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </form>
+            </div>
+            <div class="col-lg-4 col-md-4 col-6">
+                <div class="header-icons">
+                    <a href="{% url 'login' %}" class="icon-link">
+                        <i class="bi bi-person"></i>
+                        <span class="d-none d-lg-inline">Account</span>
+                    </a>
+                    <a href="{% url 'wishlist' %}" class="icon-link">
+                        <i class="bi bi-heart"></i>
+                    </a>
+                    <a href="{% url 'cart' %}" class="icon-link">
+                        <i class="bi bi-bag"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Search Results Section -->
+<section class="collection-section py-5">
+    <div class="container">
+        
+        <div class="search-header mb-4">
+            <h2 class="collection-title">Search Results for "{{ query }}"</h2>
+            <p class="collection-subtitle">{{ total_products }} product{{ total_products|pluralize }} found</p>
+        </div>
+
+        {% if products %}
+        <div class="row g-4">
+            {% for product in products %}
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="product-card">
+                    <div class="product-image-wrapper">
+                        {% if product.colors.first.images.first %}
+                            <img src="{{ product.colors.first.images.first.image.url }}" alt="{{ product.name }}" class="product-image">
+                        {% endif %}
+                        
+                        <span class="product-badge">{{ product.get_badge_text }}</span>
+                        
+                        <div class="product-overlay">
+                            <a href="{% url 'product_detail' product.slug %}" class="btn-quick-view">
+                                <i class="bi bi-eye"></i> View
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="product-info">
+                        <h3 class="product-name">
+                            <a href="{% url 'product_detail' product.slug %}">{{ product.name }}</a>
+                        </h3>
+                        
+                        <div class="product-rating">
+                            <i class="bi bi-star-fill"></i>
+                            <span>{{ product.rating }}</span>
+                            <span class="rating-count">({{ product.rating_count }})</span>
+                        </div>
+                        
+                        <div class="product-price-section">
+                            <span class="product-price">₹{{ product.current_price|floatformat:0 }}</span>
+                            <span class="product-original-price">₹{{ product.original_price|floatformat:0 }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if products.has_other_pages %}
+        <div class="pagination-section mt-5">
+            <nav>
+                <ul class="pagination justify-content-center">
+                    {% if products.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?q={{ query }}&page={{ products.previous_page_number }}">Previous</a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for num in products.paginator.page_range %}
+                    <li class="page-item {% if products.number == num %}active{% endif %}">
+                        <a class="page-link" href="?q={{ query }}&page={{ num }}">{{ num }}</a>
+                    </li>
+                    {% endfor %}
+                    
+                    {% if products.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?q={{ query }}&page={{ products.next_page_number }}">Next</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-search" style="font-size: 80px; color: #ccc;"></i>
+            <h3 class="mt-4">No products found for "{{ query }}"</h3>
+            <p>Try different keywords or browse our categories</p>
+            <a href="{% url 'home' %}" class="btn btn-primary mt-3">Back to Home</a>
+        </div>
+        {% endif %}
+
+    </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

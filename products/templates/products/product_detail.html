@@ -1,0 +1,742 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.name }} | Manovastra - Premium Indian Ethnic Wear</title>
+    <meta name="description" content="Buy premium {{ product.name }}. {{ product.fabric }}. Free shipping. Cash on Delivery available.">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/product_detail_style.css' %}">
+</head>
+<body>
+
+    <!-- Top Announcement Bar -->
+    <div class="announcement-bar">
+        <div class="container">
+            <p class="mb-0 text-center">🎉 New Year Sale - Flat 40% OFF | Free Shipping on Orders Above ₹999</p>
+        </div>
+    </div>
+
+    <!-- Header Section -->
+    <header class="header-main">
+        <div class="container">
+            <div class="row align-items-center py-3">
+                <!-- Logo -->
+                <div class="col-lg-2 col-md-3 col-6">
+                    <div class="logo">
+                        <a href="index.html">
+                            <h1 class="brand-name mb-0">Manovastra</h1>
+                            <p class="brand-tagline mb-0">Elegance Redefined</p>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="col-lg-6 col-md-5 d-none d-md-block">
+                    <div class="search-bar">
+                        <input type="text" class="form-control" placeholder="Search for Sarees, Kurtis, Lehengas...">
+                        <button class="btn-search">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Header Icons -->
+                <div class="col-lg-4 col-md-4 col-6">
+                    <div class="header-icons">
+                        <a href="#" class="icon-link">
+                            <i class="bi bi-person"></i>
+                            <span class="d-none d-lg-inline">Account</span>
+                        </a>
+                        <a href="#" class="icon-link">
+                            <i class="bi bi-heart"></i>
+                            <span class="d-none d-lg-inline">Wishlist</span>
+                        </a>
+                        <a href="#" class="icon-link cart-link">
+                            <i class="bi bi-bag"></i>
+                            <span class="cart-badge">0</span>
+                            <span class="d-none d-lg-inline">Cart</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Breadcrumb Navigation -->
+    <section class="breadcrumb-section">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item"><a href="#">Sarees</a></li>
+                    <li class="breadcrumb-item"><a href="#">Silk Sarees</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Banarasi Silk Saree</li>
+                </ol>
+            </nav>
+        </div>
+    </section>
+
+    <!-- Product Detail Section -->
+    <section class="product-detail-section py-5">
+    <div class="container">
+        <div class="row g-4">
+            
+            <!-- Left Section - Product Images -->
+            <div class="col-lg-6">
+                <div class="product-images-wrapper">
+                    <!-- Main Product Image -->
+                    <div class="main-product-image">
+                        <span class="product-badge-detail">{{ product.get_badge_text }}</span>
+                        <div class="zoom-indicator">
+                            <i class="bi bi-zoom-in"></i> Hover to zoom
+                        </div>
+                        <div class="main-image-container" id="mainImageContainer">
+                            {% if selected_color and selected_color.images.first %}
+                                <img src="{{ selected_color.images.first.image.url }}" alt="{{ product.name }}" id="mainImage">
+                            {% else %}
+                                <div class="main-image-placeholder">No Image</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Thumbnail Gallery -->
+                    <div class="thumbnail-gallery" id="thumbnailGallery">
+                        {% if selected_color %}
+                            {% for img in selected_color.images.all %}
+                            <div class="thumbnail-item {% if forloop.first %}active{% endif %}" data-image="{{ img.image.url }}">
+                                <img src="{{ img.image.url }}" alt="Thumbnail {{ forloop.counter }}">
+                            </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <!-- Mobile Actions -->
+                    <div class="product-actions-mobile d-lg-none mt-4">
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-add-cart-mobile flex-grow-1">
+                                <i class="bi bi-bag-plus"></i> Add to Cart
+                            </button>
+                            <button class="btn btn-buy-now-mobile flex-grow-1">
+                                <i class="bi bi-lightning-fill"></i> Buy Now
+                            </button>
+                            <button class="btn btn-wishlist-mobile">
+                                <i class="bi bi-heart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Section - Product Details -->
+            <div class="col-lg-6">
+                <div class="product-info-wrapper">
+                    
+                    <div class="product-brand">
+                        <span class="brand-label">Brand:</span>
+                        <a href="#" class="brand-name-link">{{ product.brand }}</a>
+                    </div>
+
+                    <h1 class="product-title">{{ product.name }}</h1>
+
+                    <div class="product-rating-section">
+                        <div class="rating-stars">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= product.rating|floatformat:0 %}
+                                    <i class="bi bi-star-fill"></i>
+                                {% elif forloop.counter == product.rating|add:"0.5"|floatformat:0 %}
+                                    <i class="bi bi-star-half"></i>
+                                {% else %}
+                                    <i class="bi bi-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                            <span class="rating-number">{{ product.rating }}</span>
+                        </div>
+                        <div class="rating-divider">|</div>
+                        <a href="#reviews" class="rating-count">{{ product.rating_count }} Ratings & {{ product.review_count }} Reviews</a>
+                    </div>
+
+                    <div class="price-section">
+                        <div class="price-row">
+                            <span class="price-current">₹{{ product.current_price|floatformat:0 }}</span>
+                            <span class="price-original">₹{{ product.original_price|floatformat:0 }}</span>
+                            <span class="price-discount">{{ product.discount_percent }}% OFF</span>
+                        </div>
+                        <p class="tax-info">Inclusive of all taxes</p>
+                    </div>
+
+                    <div class="offers-section">
+                        <h3 class="section-label">
+                            <i class="bi bi-tag-fill"></i> Available Offers
+                        </h3>
+                        <div class="offer-list">
+                            <div class="offer-item">
+                                <i class="bi bi-percent"></i>
+                                <div class="offer-content">
+                                    <strong>Bank Offer:</strong> 10% Instant Discount on HDFC Bank Credit Cards
+                                    <a href="#" class="offer-link">T&C</a>
+                                </div>
+                            </div>
+                            <div class="offer-item">
+                                <i class="bi bi-percent"></i>
+                                <div class="offer-content">
+                                    <strong>Festival Special:</strong> Extra 5% OFF on prepaid orders above ₹2,999
+                                    <a href="#" class="offer-link">T&C</a>
+                                </div>
+                            </div>
+                            <div class="offer-item">
+                                <i class="bi bi-percent"></i>
+                                <div class="offer-content">
+                                    <strong>Partner Offer:</strong> Get flat 200 cashback on Paytm wallet
+                                    <a href="#" class="offer-link">T&C</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Color Options -->
+                    <div class="product-options">
+                        <h3 class="section-label">Color: <span class="selected-option" id="selectedColorName">{% if selected_color %}{{ selected_color.name }}{% endif %}</span></h3>
+                        <div class="color-swatches">
+                            {% for color in colors %}
+                            <label class="color-swatch {% if color.id == selected_color.id %}active{% endif %}" 
+                                   data-color-id="{{ color.id }}"
+                                   data-color-name="{{ color.name }}"
+                                   style="background: {{ color.gradient }};" 
+                                   title="{{ color.name }}">
+                                <input type="radio" name="color" {% if color.id == selected_color.id %}checked{% endif %}>
+                                <span class="swatch-check"><i class="bi bi-check"></i></span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="product-specifications">
+                        <h3 class="section-label">Product Details</h3>
+                        <table class="specs-table">
+                            <tbody>
+                                <tr>
+                                    <td class="spec-label">Fabric:</td>
+                                    <td class="spec-value">{{ product.fabric }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="spec-label">Saree Length:</td>
+                                    <td class="spec-value">{{ product.length }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="spec-label">Blouse Piece:</td>
+                                    <td class="spec-value">{{ product.blouse_piece }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="spec-label">Weave Type:</td>
+                                    <td class="spec-value">{{ product.weave_type }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="spec-label">Work:</td>
+                                    <td class="spec-value">{{ product.work_details }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="spec-label">Occasion:</td>
+                                    <td class="spec-value">{{ product.occasion }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="quantity-section">
+                        <h3 class="section-label">Quantity:</h3>
+                        <div class="quantity-selector">
+                            <button class="qty-btn qty-decrease">
+                                <i class="bi bi-dash"></i>
+                            </button>
+                            <input type="number" class="qty-input" value="1" min="1" max="10" readonly>
+                            <button class="qty-btn qty-increase">
+                                <i class="bi bi-plus"></i>
+                            </button>
+                        </div>
+                        <span class="stock-status">
+                            {% if product.in_stock %}
+                                <i class="bi bi-check-circle-fill"></i> In Stock
+                            {% else %}
+                                <i class="bi bi-x-circle-fill"></i> Out of Stock
+                            {% endif %}
+                        </span>
+                    </div>
+
+                    <form method="POST" action="{% url 'buy_now' product.slug %}" id="buyNowForm">
+    {% csrf_token %}
+    <input type="hidden" name="quantity" id="buyNowQuantity" value="1">
+    <input type="hidden" name="color" id="buyNowColor" value="{{ selected_color.name }}">
+    
+    <div class="product-actions d-none d-lg-block">
+        <div class="action-buttons-row">
+            <button type="button" class="btn btn-add-cart">
+                <i class="bi bi-bag-plus"></i> Add to Cart
+            </button>
+            <button type="submit" class="btn btn-buy-now">
+                <i class="bi bi-lightning-fill"></i> Buy Now
+            </button>
+        </div>
+        <button type="button" class="btn btn-wishlist-desktop">
+            <i class="bi bi-heart"></i> Add to Wishlist
+        </button>
+    </div>
+</form>
+
+                    <div class="trust-badges">
+                        <div class="trust-item">
+                            <i class="bi bi-shield-check"></i>
+                            <span>Secure Payment</span>
+                        </div>
+                        <div class="trust-item">
+                            <i class="bi bi-award"></i>
+                            <span>100% Authentic</span>
+                        </div>
+                        <div class="trust-item">
+                            <i class="bi bi-arrow-repeat"></i>
+                            <span>Easy Returns</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+    <!-- Delivery & Services Section -->
+    <section class="delivery-section py-4">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="delivery-box">
+                        <h3 class="delivery-title">
+                            <i class="bi bi-truck"></i> Delivery Options
+                        </h3>
+                        <!-- Update the pincode checker section -->
+<div class="pincode-checker">
+    <input type="text" class="form-control pincode-input" id="pincodeInput" placeholder="Enter Pincode" maxlength="6">
+    <button class="btn btn-check-pincode" id="checkPincodeBtn">Check</button>
+</div>
+<div id="pincodeResult" class="pincode-result" style="display: none;"></div>
+                        <div class="delivery-info-list">
+                            <div class="delivery-info-item">
+                                <i class="bi bi-box-seam"></i>
+                                <div>
+                                    <strong>Standard Delivery</strong>
+                                    <p>Delivery by 18 Jan, Thursday | Free</p>
+                                </div>
+                            </div>
+                            <div class="delivery-info-item">
+                                <i class="bi bi-lightning-charge"></i>
+                                <div>
+                                    <strong>Express Delivery</strong>
+                                    <p>Delivery by 15 Jan, Monday | ₹99</p>
+                                </div>
+                            </div>
+                            <div class="delivery-info-item">
+                                <i class="bi bi-cash-coin"></i>
+                                <div>
+                                    <strong>Cash on Delivery Available</strong>
+                                    <p>Pay when you receive the product</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="delivery-box">
+                        <h3 class="delivery-title">
+                            <i class="bi bi-info-circle"></i> Services
+                        </h3>
+                        <div class="services-list">
+                            <div class="service-item">
+                                <i class="bi bi-arrow-return-left"></i>
+                                <div>
+                                    <strong>7 Days Return & Exchange</strong>
+                                    <p>Return or exchange within 7 days of delivery</p>
+                                </div>
+                            </div>
+                            <div class="service-item">
+                                <i class="bi bi-credit-card"></i>
+                                <div>
+                                    <strong>Secure Payments</strong>
+                                    <p class="mb-1">100% Safe & Secure Transactions</p>
+                                    <div class="payment-icons">
+                                        <i class="bi bi-credit-card-2-front"></i>
+                                        <i class="bi bi-wallet2"></i>
+                                        <i class="bi bi-phone"></i>
+                                        <span>Visa • UPI • Paytm</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="service-item">
+                                <i class="bi bi-headset"></i>
+                                <div>
+                                    <strong>Customer Support</strong>
+                                    <p>Mon-Sat: 10 AM - 7 PM | +91 98765 43210</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Product Description Section -->
+    <section class="product-description-section py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    
+                    <!-- Description -->
+                    <div class="description-box mb-4">
+                        <h2 class="description-title">Product Description</h2>
+                        <div class="description-content">
+                            <p>Immerse yourself in the timeless elegance of our exquisite <strong>Banarasi Silk Saree in Royal Red</strong>. This masterpiece showcases the legendary craftsmanship of Varanasi weavers, featuring intricate golden zari work that creates mesmerizing patterns across the rich silk fabric.</p>
+                            
+                            <p>The saree's lustrous texture and stunning drape make it perfect for weddings, festivals, and special celebrations. The deep royal red color symbolizes prosperity and grace, while the traditional motifs woven with pure zari threads add a regal touch to your appearance.</p>
+                            
+                            <h4 class="mt-4 mb-3">Key Features:</h4>
+                            <ul class="feature-list">
+                                <li><i class="bi bi-check-circle-fill"></i> Handwoven by master artisans from Varanasi</li>
+                                <li><i class="bi bi-check-circle-fill"></i> Pure Banarasi silk fabric with natural sheen</li>
+                                <li><i class="bi bi-check-circle-fill"></i> Intricate golden zari work in traditional patterns</li>
+                                <li><i class="bi bi-check-circle-fill"></i> Rich pallu with elaborate designs</li>
+                                <li><i class="bi bi-check-circle-fill"></i> Comes with matching blouse piece</li>
+                                <li><i class="bi bi-check-circle-fill"></i> Perfect for weddings, festivals, and special occasions</li>
+                            </ul>
+
+                            <h4 class="mt-4 mb-3">Styling Suggestions:</h4>
+                            <p>Pair this magnificent saree with traditional gold jewelry, statement earrings, and an elegant clutch. For a contemporary look, style it with a designer blouse featuring modern cuts or embellishments. The versatile color complements both traditional and fusion styling.</p>
+                        </div>
+                    </div>
+
+                    <!-- Care Instructions -->
+                    <div class="description-box mb-4">
+                        <h2 class="description-title">Care Instructions</h2>
+                        <div class="care-instructions">
+                            <div class="care-item">
+                                <i class="bi bi-droplet-half"></i>
+                                <div>
+                                    <strong>Dry Clean Only</strong>
+                                    <p>Professional dry cleaning recommended to maintain fabric quality</p>
+                                </div>
+                            </div>
+                            <div class="care-item">
+                                <i class="bi bi-x-circle"></i>
+                                <div>
+                                    <strong>Do Not Bleach</strong>
+                                    <p>Avoid using bleach or harsh chemicals</p>
+                                </div>
+                            </div>
+                            <div class="care-item">
+                                <i class="bi bi-sun"></i>
+                                <div>
+                                    <strong>Avoid Direct Sunlight</strong>
+                                    <p>Store in a cool, dry place away from direct sunlight</p>
+                                </div>
+                            </div>
+                            <div class="care-item">
+                                <i class="bi bi-thermometer-half"></i>
+                                <div>
+                                    <strong>Iron on Low Heat</strong>
+                                    <p>Use low heat setting and iron from reverse side</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Information -->
+                    <div class="description-box">
+                        <h2 class="description-title">Additional Information</h2>
+                        <table class="info-table">
+                            <tbody>
+                                <tr>
+                                    <td class="info-label">SKU:</td>
+                                    <td class="info-value">MNV-BAR-RR-001</td>
+                                </tr>
+                                <tr>
+                                    <td class="info-label">Product Code:</td>
+                                    <td class="info-value">BANARASI-SILK-2026</td>
+                                </tr>
+                                <tr>
+                                    <td class="info-label">Country of Origin:</td>
+                                    <td class="info-value">India (Handcrafted in Varanasi)</td>
+                                </tr>
+                                <tr>
+                                    <td class="info-label">Manufacturer:</td>
+                                    <td class="info-value">Manovastra Ethnic Pvt. Ltd.</td>
+                                </tr>
+                                <tr>
+                                    <td class="info-label">Packer:</td>
+                                    <td class="info-value">Manovastra Ethnic Pvt. Ltd., Bangalore</td>
+                                </tr>
+                                <tr>
+                                    <td class="info-label">Sold By:</td>
+                                    <td class="info-value">Manovastra Official Store</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Related Products Section -->
+    <section class="related-products-section py-5">
+        <div class="container">
+            <div class="section-header text-center mb-5">
+                <h2 class="section-title">Similar Products You May Like</h2>
+                <p class="section-subtitle">Explore more stunning sarees from our collection</p>
+            </div>
+
+            <div class="row g-4">
+                <!-- Related Product 1 -->
+                <div class="col-lg-3 col-md-4 col-6">
+                    <div class="related-product-card">
+                        <div class="related-product-badge">35% OFF</div>
+                        <div class="related-product-image">
+                            <div class="related-placeholder related-1"></div>
+                            <div class="quick-view-overlay">
+                                <a href="#" class="btn-quick-view">Quick View</a>
+                            </div>
+                        </div>
+                        <div class="related-product-info">
+                            <h4 class="related-product-name">Kanjivaram Silk Saree</h4>
+                            <div class="related-rating">
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-half"></i>
+                                <span>4.5</span>
+                            </div>
+                            <div class="related-price">
+                                <span class="price-now">₹4,299</span>
+                                <span class="price-was">₹6,599</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Related Product 2 -->
+                <div class="col-lg-3 col-md-4 col-6">
+                    <div class="related-product-card">
+                        <div class="related-product-badge bestseller">Bestseller</div>
+                        <div class="related-product-image">
+                            <div class="related-placeholder related-2"></div>
+                            <div class="quick-view-overlay">
+                                <a href="#" class="btn-quick-view">Quick View</a>
+                            </div>
+                        </div>
+                        <div class="related-product-info">
+                            <h4 class="related-product-name">Chanderi Silk Saree</h4>
+                            <div class="related-rating">
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <span>4.8</span>
+                            </div>
+                            <div class="related-price">
+                                <span class="price-now">₹2,899</span>
+                                <span class="price-was">₹4,499</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Related Product 3 -->
+                <div class="col-lg-3 col-md-4 col-6">
+                    <div class="related-product-card">
+                        <div class="related-product-badge">40% OFF</div>
+                        <div class="related-product-image">
+                            <div class="related-placeholder related-3"></div>
+                            <div class="quick-view-overlay">
+                                <a href="#" class="btn-quick-view">Quick View</a>
+                            </div>
+                        </div>
+                        <div class="related-product-info">
+                            <h4 class="related-product-name">Patola Silk Saree</h4>
+                            <div class="related-rating">
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star"></i>
+                                <span>4.3</span>
+                            </div>
+                            <div class="related-price">
+                                <span class="price-now">₹3,899</span>
+                                <span class="price-was">₹6,499</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Related Product 4 -->
+                <div class="col-lg-3 col-md-4 col-6">
+                    <div class="related-product-card">
+                        <div class="related-product-badge">New</div>
+                        <div class="related-product-image">
+                            <div class="related-placeholder related-4"></div>
+                            <div class="quick-view-overlay">
+                                <a href="#" class="btn-quick-view">Quick View</a>
+                            </div>
+                        </div>
+                        <div class="related-product-info">
+                            <h4 class="related-product-name">Tussar Silk Saree</h4>
+                            <div class="related-rating">
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-half"></i>
+                                <span>4.6</span>
+                            </div>
+                            <div class="related-price">
+                                <span class="price-now">₹3,199</span>
+                                <span class="price-was">₹4,999</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer class="footer-main">
+        <div class="container">
+            <!-- Footer Top -->
+            <div class="row py-5">
+                <!-- About Column -->
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="footer-widget">
+                        <h3 class="footer-brand">Manovastra</h3>
+                        <p class="footer-about">Your destination for premium Indian ethnic wear. Celebrating tradition with contemporary elegance.</p>
+                        <div class="social-icons">
+                            <a href="#" class="social-link"><i class="bi bi-facebook"></i></a>
+                            <a href="#" class="social-link"><i class="bi bi-instagram"></i></a>
+                            <a href="#" class="social-link"><i class="bi bi-pinterest"></i></a>
+                            <a href="#" class="social-link"><i class="bi bi-youtube"></i></a>
+                            <a href="#" class="social-link"><i class="bi bi-twitter"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Links Column -->
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <div class="footer-widget">
+                        <h4 class="footer-title">Quick Links</h4>
+                        <ul class="footer-links">
+                            <li><a href="#">About Us</a></li>
+                            <li><a href="#">Our Story</a></li>
+                            <li><a href="#">Blog</a></li>
+                            <li><a href="#">Careers</a></li>
+                            <li><a href="#">Press</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Categories Column -->
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <div class="footer-widget">
+                        <h4 class="footer-title">Categories</h4>
+                        <ul class="footer-links">
+                            <li><a href="#">Silk Sarees</a></li>
+                            <li><a href="#">Designer Kurtis</a></li>
+                            <li><a href="#">Bridal Lehengas</a></li>
+                            <li><a href="#">New Arrivals</a></li>
+                            <li><a href="#">Sale</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Customer Service Column -->
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <div class="footer-widget">
+                        <h4 class="footer-title">Customer Service</h4>
+                        <ul class="footer-links">
+                            <li><a href="#">Contact Us</a></li>
+                            <li><a href="#">Track Order</a></li>
+                            <li><a href="#">Returns & Exchange</a></li>
+                            <li><a href="#">Shipping Info</a></li>
+                            <li><a href="#">Size Guide</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Contact Column -->
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="footer-widget">
+                        <h4 class="footer-title">Get in Touch</h4>
+                        <ul class="footer-contact">
+                            <li>
+                                <i class="bi bi-geo-alt-fill"></i>
+                                <span>MG Road, Bangalore, Karnataka 560001</span>
+                            </li>
+                            <li>
+                                <i class="bi bi-telephone-fill"></i>
+                                <span>+91 98765 43210</span>
+                            </li>
+                            <li>
+                                <i class="bi bi-envelope-fill"></i>
+                                <span>support@manovastra.com</span>
+                            </li>
+                            <li>
+                                <i class="bi bi-clock-fill"></i>
+                                <span>Mon - Sat: 10:00 AM - 7:00 PM</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Bottom -->
+            <div class="row py-4 border-top" style="border-color: rgba(255, 255, 255, 0.1) !important;">
+                <div class="col-lg-6 text-center text-lg-start mb-3 mb-lg-0">
+                    <p class="footer-copyright mb-0">© 2026 Manovastra. All Rights Reserved.</p>
+                </div>
+                <div class="col-lg-6 text-center text-lg-end">
+                    <ul class="footer-legal">
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms & Conditions</a></li>
+                        <li><a href="#">Refund Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Pass data to JavaScript -->
+<script>
+    const IMAGES_BY_COLOR = {{ images_by_color_json|safe }};
+    console.log('📦 Images data loaded:', IMAGES_BY_COLOR);
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/product_detail_script.js' %}"></script>
+
+</body>
+</html>

@@ -1,0 +1,592 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manovastra - Premium Indian Ethnic Wear for Women | Sarees, Kurtis & Lehengas</title>
+    <meta name="description" content="Shop premium Indian ethnic wear at Manovastra. Explore handloom sarees, designer kurtis, and elegant lehengas. Trusted by thousands of women across India.">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+</head>
+<body>
+
+    <!-- Top Announcement Bar -->
+    <div class="announcement-bar">
+        <div class="container">
+            <p class="mb-0 text-center">🎉 New Year Sale - Flat 40% OFF on All Sarees | Free Shipping on Orders Above ₹999</p>
+        </div>
+    </div>
+
+    <!-- Header Section -->
+<header class="header-main">
+    <div class="container">
+        <div class="row align-items-center py-3">
+            <!-- Logo -->
+            <div class="col-lg-2 col-md-3 col-6">
+                <div class="logo">
+                    <a href="{% url 'home' %}">
+                        {% if site_settings and site_settings.logo %}
+                            <img src="{{ site_settings.logo.url }}" alt="{{ site_settings.site_name }}" class="logo-image">
+                        {% else %}
+                            <h1 class="brand-name mb-0">Manovastra</h1>
+                            <p class="brand-tagline mb-0">Elegance Redefined</p>
+                        {% endif %}
+                    </a>
+                </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="col-lg-6 col-md-5 d-none d-md-block">
+                <form class="search-bar" method="GET" action="{% url 'search' %}">
+                    <input type="text" name="q" class="form-control search-input" placeholder="Search for Sarees, Kurtis, Lehengas..." value="{{ request.GET.q }}">
+                    <button type="submit" class="btn-search">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Header Icons -->
+<div class="col-lg-4 col-md-4 col-6">
+    <div class="header-icons">
+        {% if is_logged_in %}
+            <div class="dropdown">
+                <a href="#" class="icon-link dropdown-toggle" data-bs-toggle="dropdown">
+                    <i class="bi bi-person-circle"></i>
+                    <span class="d-none d-lg-inline">{{ user_name|truncatechars:15 }}</span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{% url 'my_orders' %}"><i class="bi bi-box"></i> My Orders</a></li>
+                    <li><a class="dropdown-item" href="{% url 'wishlist' %}"><i class="bi bi-heart"></i> Wishlist</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                </ul>
+            </div>
+        {% else %}
+            <a href="{% url 'login' %}" class="icon-link">
+                <i class="bi bi-person"></i>
+                <span class="d-none d-lg-inline">Account</span>
+            </a>
+        {% endif %}
+
+        <a href="{% url 'wishlist' %}" class="icon-link position-relative">
+            <i class="bi bi-heart"></i>
+            <span class="wishlist-badge" id="wishlistCount" style="display: none;">0</span>
+            <span class="d-none d-lg-inline">Wishlist</span>
+        </a>
+
+        <a href="{% url 'cart' %}" class="icon-link cart-link position-relative">
+            <i class="bi bi-bag"></i>
+            <span class="cart-badge" id="cartCount" style="display: none;">0</span>
+            <span class="d-none d-lg-inline">Cart</span>
+        </a>
+    </div>
+</div>
+
+        <!-- Mobile Search Bar -->
+        <div class="row d-md-none mb-3">
+            <div class="col-12">
+                <form class="search-bar" method="GET" action="{% url 'search' %}">
+                    <input type="text" name="q" class="form-control search-input" placeholder="Search for Sarees, Kurtis..." value="{{ request.GET.q }}">
+                    <button type="submit" class="btn-search">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+    <!-- Navigation Bar -->
+<nav class="navbar-main">
+    <div class="container">
+        <ul class="nav-menu">
+            <!-- Home -->
+            <li class="nav-item">
+                <a href="{% url 'home' %}" class="nav-link {% if request.path == '/' %}active{% endif %}">
+                    <i class="bi bi-house-door"></i> Home
+                </a>
+            </li>
+
+            <!-- Dynamic Categories from Database -->
+            {% for category in categories %}
+            <li class="nav-item">
+                <a href="{% url 'category_collection' category.slug %}" class="nav-link">
+                    {{ category.name }}
+                </a>
+            </li>
+            {% endfor %}
+
+            <!-- New Arrivals -->
+            <li class="nav-item">
+                <a href="{% url 'new_arrivals' %}" class="nav-link">
+                    <i class="bi bi-stars"></i> New Arrivals
+                </a>
+            </li>
+
+            <!-- Offers -->
+            <li class="nav-item">
+                <a href="{% url 'offers' %}" class="nav-link special">
+                    <i class="bi bi-tag-fill"></i> Offers
+                </a>
+            </li>
+
+            <!-- All Products -->
+            <li class="nav-item">
+                <a href="{% url 'all_products' %}" class="nav-link">
+                    All Products
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+
+    <!-- Hero Banner Section - Dynamic Carousel -->
+<section class="hero-banner">
+    <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000">
+        
+        <!-- Carousel Indicators -->
+        <div class="carousel-indicators">
+            {% for banner in banners %}
+            <button 
+                type="button" 
+                data-bs-target="#heroCarousel" 
+                data-bs-slide-to="{{ forloop.counter0 }}" 
+                class="{% if forloop.first %}active{% endif %}"
+                aria-label="Slide {{ forloop.counter }}">
+            </button>
+            {% endfor %}
+        </div>
+
+        <!-- Carousel Inner -->
+        <div class="carousel-inner">
+            {% for banner in banners %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                <div class="hero-content" style="background-image: url('{{ banner.image.url }}');">
+                    <div class="hero-overlay"></div>
+                    <div class="hero-text">
+                        <h2 class="hero-subtitle animate__animated animate__fadeInDown">{{ banner.subtitle }}</h2>
+                        <h1 class="hero-title animate__animated animate__fadeInUp">{{ banner.title|safe }}</h1>
+                        <p class="hero-description animate__animated animate__fadeIn animate__delay-1s">{{ banner.description }}</p>
+                        <div class="hero-buttons animate__animated animate__fadeInUp animate__delay-2s">
+                            {% if banner.button_text_1 and banner.button_link_1 %}
+                            <a href="{{ banner.button_link_1 }}" class="btn btn-primary-custom">
+                                <i class="bi bi-bag-heart"></i> {{ banner.button_text_1 }}
+                            </a>
+                            {% endif %}
+                            
+                            {% if banner.button_text_2 and banner.button_link_2 %}
+                            <a href="{{ banner.button_link_2 }}" class="btn btn-secondary-custom">
+                                <i class="bi bi-stars"></i> {{ banner.button_text_2 }}
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Carousel Controls -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+</section>
+
+
+    <!-- Featured Categories Section -->
+<section class="featured-categories py-5">
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <h2 class="section-title">Shop by Category</h2>
+            <p class="section-subtitle">Explore our curated collections for every occasion</p>
+        </div>
+
+        <div class="row g-4">
+            {% for category in categories %}
+            <!-- Category Card -->
+            <div class="col-lg-3 col-md-6 col-6">
+                <div class="category-card">
+                    <div class="category-image">
+                        {% if category.image %}
+                            <img src="{{ category.image.url }}" alt="{{ category.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                        {% else %}
+                            <div class="category-placeholder" style="background: {{ category.gradient }};"></div>
+                        {% endif %}
+                        <div class="category-overlay">
+                            <a href="{% url 'category_collection' category.slug %}" class="btn-category">Shop Now</a>
+                        </div>
+                    </div>
+                    <h3 class="category-title">{{ category.name }}</h3>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <p class="text-center">No categories available.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+    <!-- Best Selling Products Section -->
+<section class="best-sellers py-5">
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <h2 class="section-title">Best Sellers</h2>
+            <p class="section-subtitle">Our customers' favorite picks</p>
+        </div>
+
+        <div class="row g-4">
+            {% for product in bestsellers %}
+            <!-- Product Card -->
+            <div class="col-lg-3 col-md-4 col-6">
+                <div class="product-card">
+                    <div class="product-badge {% if product.is_bestseller %}bestseller{% endif %}">
+                        {{ product.get_badge_text }}
+                    </div>
+                    
+                    <!-- Wishlist Button -->
+                    <button class="product-wishlist btn-wishlist-toggle" data-product-id="{{ product.id }}">
+                        <i class="bi bi-heart"></i>
+                    </button>
+                    
+                    <a href="{% url 'product_detail' product.slug %}" class="text-decoration-none">
+                        <div class="product-image">
+                            {% if product.colors.first and product.colors.first.images.first %}
+                                <img src="{{ product.colors.first.images.first.image.url }}" alt="{{ product.name }}" class="img-fluid" style="width: 100%; height: 100%; object-fit: cover;">
+                            {% else %}
+                                <div class="product-placeholder product-{{ forloop.counter }}">{{ product.name }}</div>
+                            {% endif %}
+                        </div>
+                    </a>
+                    
+                    <div class="product-info">
+                        <a href="{% url 'product_detail' product.slug %}" class="text-decoration-none">
+                            <h4 class="product-name">{{ product.name }}</h4>
+                        </a>
+                        
+                        <div class="product-rating">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= product.rating|floatformat:0 %}
+                                    <i class="bi bi-star-fill"></i>
+                                {% elif forloop.counter == product.rating|add:"0.5"|floatformat:0 %}
+                                    <i class="bi bi-star-half"></i>
+                                {% else %}
+                                    <i class="bi bi-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                            <span class="rating-count">({{ product.rating_count }})</span>
+                        </div>
+                        
+                        <div class="product-price">
+                            <span class="price-current">₹{{ product.current_price|floatformat:0 }}</span>
+                            <span class="price-original">₹{{ product.original_price|floatformat:0 }}</span>
+                        </div>
+                        
+                        <!-- Add to Cart Button -->
+                        <button class="btn-add-cart btn-add-to-cart-quick" 
+                                data-product-id="{{ product.id }}" 
+                                data-product-name="{{ product.name }}"
+                                data-product-color="{{ product.colors.first.name|default:'Default' }}">
+                            <i class="bi bi-bag-plus"></i> Add to Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <p class="text-center">No products available. Please add products from admin panel.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="text-center mt-5">
+            <a href="{% url 'all_products' %}" class="btn btn-view-all">View All Products</a>
+        </div>
+    </div>
+</section>
+
+    <!-- Festival Offer Banner -->
+{% if festival_banner %}
+<section class="festival-banner py-5" style="background: linear-gradient(135deg, {{ festival_banner.bg_color_1 }} 0%, {{ festival_banner.bg_color_2 }} 100%);">
+    <div class="container">
+        <div class="row align-items-center festival-content">
+            <div class="col-lg-6 text-center text-lg-start mb-4 mb-lg-0">
+                <span class="festival-tag animate__animated animate__bounceIn">
+                    {{ festival_banner.festival_tag }}
+                </span>
+                <h2 class="festival-title animate__animated animate__fadeInLeft">
+                    {{ festival_banner.title }}
+                </h2>
+                <p class="festival-description animate__animated animate__fadeInLeft animate__delay-1s">
+                    {{ festival_banner.description }}
+                </p>
+                
+                <div class="festival-offer animate__animated animate__zoomIn animate__delay-2s">
+                    <span class="offer-text">{{ festival_banner.offer_text_1 }}</span>
+                    <span class="offer-percentage">{{ festival_banner.offer_percentage }}</span>
+                    <span class="offer-text">{{ festival_banner.offer_text_2 }}</span>
+                </div>
+                
+                <p class="festival-code animate__animated animate__fadeIn animate__delay-3s">
+                    Use Code: <strong class="coupon-code">{{ festival_banner.coupon_code }}</strong>
+                    <button class="btn-copy-code" data-code="{{ festival_banner.coupon_code }}" title="Copy code">
+                        <i class="bi bi-clipboard"></i>
+                    </button>
+                </p>
+                
+                <a href="{{ festival_banner.button_link }}" class="btn btn-festival animate__animated animate__pulse animate__infinite">
+                    <i class="bi bi-gift"></i> {{ festival_banner.button_text }}
+                </a>
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="festival-image animate__animated animate__fadeInRight">
+                    {% if festival_banner.banner_image %}
+                        <img src="{{ festival_banner.banner_image.url }}" alt="{{ festival_banner.festival_name }}" class="img-fluid festival-img">
+                    {% else %}
+                        <div class="festival-placeholder"></div>
+                    {% endif %}
+                    
+                    <!-- Floating Elements -->
+                    <div class="floating-element element-1">✨</div>
+                    <div class="floating-element element-2">🎊</div>
+                    <div class="floating-element element-3">🪔</div>
+                    <div class="floating-element element-4">⭐</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+
+    <!-- Why Choose Manovastra Section -->
+    <section class="why-choose py-5">
+        <div class="container">
+            <div class="section-header text-center mb-5">
+                <h2 class="section-title">Why Choose Manovastra</h2>
+                <p class="section-subtitle">Experience the finest in ethnic fashion</p>
+            </div>
+
+            <div class="row g-4">
+                <!-- Feature 1 -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-patch-check-fill"></i>
+                        </div>
+                        <h3 class="feature-title">Premium Quality</h3>
+                        <p class="feature-description">Handpicked fabrics and authentic designs crafted by master artisans</p>
+                    </div>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-award-fill"></i>
+                        </div>
+                        <h3 class="feature-title">100% Authentic Handloom</h3>
+                        <p class="feature-description">Supporting local weavers with genuine handcrafted ethnic wear</p>
+                    </div>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-truck"></i>
+                        </div>
+                        <h3 class="feature-title">Fast Delivery</h3>
+                        <p class="feature-description">Free shipping on orders above ₹999. Delivery within 3-5 business days</p>
+                    </div>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-shield-fill-check"></i>
+                        </div>
+                        <h3 class="feature-title">Trusted by Thousands</h3>
+                        <p class="feature-description">Over 50,000+ happy customers across India with 4.8★ ratings</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="newsletter-section py-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <div class="newsletter-content">
+                        <div class="newsletter-icon mb-3">
+                            <i class="bi bi-envelope-heart"></i>
+                        </div>
+                        <h2 class="newsletter-title">Join Our Fashion Family</h2>
+                        <p class="newsletter-description">Subscribe to get exclusive offers, styling tips, and early access to new collections</p>
+                        <form class="newsletter-form">
+                            <div class="input-group">
+                                <input type="email" class="form-control" placeholder="Enter your email address" required>
+                                <button class="btn btn-subscribe" type="submit">Subscribe Now</button>
+                            </div>
+                        </form>
+                        <p class="newsletter-privacy">We respect your privacy. Unsubscribe anytime.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer class="footer-main">
+        <div class="container">
+            <!-- Footer Top -->
+            <div class="row py-5">
+                <!-- About Column -->
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="footer-widget">
+                        <h3 class="footer-brand">Manovastra</h3>
+                        <p class="footer-about">Your destination for premium Indian ethnic wear. Celebrating tradition with contemporary elegance.</p>
+                        <div class="social-icons">
+                            <a href="#" class="social-link"><i class="bi bi-facebook"></i></a>
+                            <a href="#" class="social-link"><i class="bi bi-instagram"></i></a>
+                            <a href="#" class="social-link"><i class="bi bi-pinterest"></i></a>
+                            <a href="#" class="social-link"><i class="bi bi-youtube"></i></a>
+                            <a href="#" class="social-link"><i class="bi bi-twitter"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Links Column -->
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <div class="footer-widget">
+                        <h4 class="footer-title">Quick Links</h4>
+                        <ul class="footer-links">
+                            <li><a href="#">About Us</a></li>
+                            <li><a href="#">Our Story</a></li>
+                            <li><a href="#">Blog</a></li>
+                            <li><a href="#">Careers</a></li>
+                            <li><a href="#">Press</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Categories Column -->
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <div class="footer-widget">
+                        <h4 class="footer-title">Categories</h4>
+                        <ul class="footer-links">
+                            <li><a href="#">Silk Sarees</a></li>
+                            <li><a href="#">Designer Kurtis</a></li>
+                            <li><a href="#">Bridal Lehengas</a></li>
+                            <li><a href="#">New Arrivals</a></li>
+                            <li><a href="#">Sale</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Customer Service Column -->
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <div class="footer-widget">
+                        <h4 class="footer-title">Customer Service</h4>
+                        <ul class="footer-links">
+                            <li><a href="#">Contact Us</a></li>
+                            <li><a href="#">Track Order</a></li>
+                            <li><a href="#">Returns & Exchange</a></li>
+                            <li><a href="#">Shipping Info</a></li>
+                            <li><a href="#">Size Guide</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Contact Column -->
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="footer-widget">
+                        <h4 class="footer-title">Get in Touch</h4>
+                        <ul class="footer-contact">
+                            <li>
+                                <i class="bi bi-geo-alt-fill"></i>
+                                <span>MG Road, Bangalore, Karnataka 560001</span>
+                            </li>
+                            <li>
+                                <i class="bi bi-telephone-fill"></i>
+                                <span>+91 98765 43210</span>
+                            </li>
+                            <li>
+                                <i class="bi bi-envelope-fill"></i>
+                                <span>support@manovastra.com</span>
+                            </li>
+                            <li>
+                                <i class="bi bi-clock-fill"></i>
+                                <span>Mon - Sat: 10:00 AM - 7:00 PM</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment & Trust Badges -->
+            <div class="row py-4 border-top border-bottom footer-badges">
+                <div class="col-12">
+                    <div class="payment-methods text-center">
+                        <p class="mb-2">We Accept</p>
+                        <div class="payment-icons">
+                            <i class="bi bi-credit-card-2-front"></i>
+                            <i class="bi bi-wallet2"></i>
+                            <i class="bi bi-phone"></i>
+                            <span class="payment-text">Visa • Mastercard • UPI • Paytm • Net Banking</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Bottom -->
+            <div class="row py-4">
+                <div class="col-lg-6 text-center text-lg-start mb-3 mb-lg-0">
+                    <p class="footer-copyright mb-0">© 2026 Manovastra. All Rights Reserved.</p>
+                </div>
+                <div class="col-lg-6 text-center text-lg-end">
+                    <ul class="footer-legal">
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms & Conditions</a></li>
+                        <li><a href="#">Refund Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="{% static 'js/script.js' %}"></script>
+
+</body>
+</html>

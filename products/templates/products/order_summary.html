@@ -1,0 +1,497 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Summary | Manovastra</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/order_style.css' %}">
+</head>
+<body class="checkout-page">
+
+    <!-- Secure Checkout Header -->
+    <header class="checkout-header">
+        <div class="container">
+            <div class="row align-items-center py-3">
+                <!-- Logo -->
+                <div class="col-md-3 col-6">
+                    <div class="logo">
+                        <a href="index.html">
+                            <h1 class="brand-name mb-0">Manovastra</h1>
+                            <p class="brand-tagline mb-0">Secure Checkout</p>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Secure Badge -->
+                <div class="col-md-6 d-none d-md-block text-center">
+                    <div class="secure-badge">
+                        <i class="bi bi-shield-lock-fill"></i>
+                        <span>100% Secure Checkout</span>
+                    </div>
+                </div>
+
+                <!-- Help Link -->
+                <div class="col-md-3 col-6 text-end">
+                    <a href="#" class="help-link">
+                        <i class="bi bi-question-circle"></i>
+                        <span class="d-none d-md-inline">Need Help?</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Checkout Progress Indicator -->
+<section class="checkout-progress-section">
+    <div class="container">
+        <div class="progress-steps">
+            <div class="progress-step completed">
+                <div class="step-circle"><i class="bi bi-check"></i></div>
+                <span class="step-label">Cart</span>
+            </div>
+            <div class="progress-line completed"></div>
+            <div class="progress-step completed">
+                <div class="step-circle"><i class="bi bi-check"></i></div>
+                <span class="step-label">Address</span>
+            </div>
+            <div class="progress-line completed"></div>
+            <div class="progress-step active">
+                <div class="step-circle">3</div>
+                <span class="step-label">Order Summary</span>
+            </div>
+            <div class="progress-line"></div>
+            <div class="progress-step">
+                <div class="step-circle">4</div>
+                <span class="step-label">Payment</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Main Order Summary Section -->
+<section class="order-summary-section py-4">
+    <div class="container">
+        <div class="row g-4">
+            
+            <!-- Left Section - Order Details -->
+            <main class="col-lg-8">
+                
+                <!-- Delivery Address Card -->
+                <div class="summary-card address-card">
+                    <div class="card-header-custom">
+                        <h2 class="card-title-custom">
+                            <i class="bi bi-geo-alt-fill"></i> Delivery Address
+                        </h2>
+                        <a href="#" class="change-link">Change</a>
+                    </div>
+                    <div class="card-body-custom">
+                        <div class="address-info">
+                            <h3 class="customer-name">Customer Name</h3>
+                            <p class="address-text">
+                                Address Line 1,<br>
+                                Address Line 2,<br>
+                                City, State - Pincode
+                            </p>
+                            <p class="contact-info">
+                                <i class="bi bi-telephone-fill"></i>
+                                <strong>Mobile:</strong> +91 XXXXXXXXXX
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ordered Products Card -->
+                <div class="summary-card products-card">
+                    <div class="card-header-custom">
+                        <h2 class="card-title-custom">
+                            <i class="bi bi-bag-check-fill"></i> Order Items ({{ item.quantity }})
+                        </h2>
+                    </div>
+                    <div class="card-body-custom">
+                        
+                        <!-- Product Item -->
+                        <div class="order-product-item">
+                            <div class="product-left">
+                                <div class="product-image-thumb">
+                                    {% if item.image %}
+                                        <img src="{{ item.image }}" alt="{{ item.product_name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                    {% else %}
+                                        <div class="product-thumb-placeholder" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                                    {% endif %}
+                                </div>
+                                <div class="product-details">
+                                    <h3 class="product-name-order">{{ item.product_name }}</h3>
+                                    <p class="product-specs">
+                                        <span class="spec-item"><strong>Fabric:</strong> {{ item.fabric }}</span>
+                                        <span class="spec-item"><strong>Color:</strong> {{ item.color }}</span>
+                                    </p>
+                                    <p class="product-specs">
+                                        <span class="spec-item"><strong>Qty:</strong> {{ item.quantity }}</span>
+                                    </p>
+                                    <div class="product-actions-order">
+                                        <a href="{% url 'product_detail' item.product_slug %}" class="action-link">
+                                            <i class="bi bi-pencil"></i> Edit
+                                        </a>
+                                        <a href="{% url 'home' %}" class="action-link remove-link">
+                                            <i class="bi bi-trash"></i> Remove
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="product-right">
+                                <p class="product-price-order">₹{{ item.price|floatformat:0 }}</p>
+                                <p class="product-original-price">₹{{ item.original_price|floatformat:0 }}</p>
+                                <span class="product-discount-badge">
+                                    {% widthratio item.discount item.original_price 100 %}% OFF
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Delivery Options Card -->
+                <div class="summary-card delivery-options-card">
+                    <div class="card-header-custom">
+                        <h2 class="card-title-custom">
+                            <i class="bi bi-truck"></i> Delivery Options
+                        </h2>
+                    </div>
+                    <div class="card-body-custom">
+                        <div class="delivery-options">
+                            <label class="delivery-option-item active">
+                                <input type="radio" name="delivery" checked>
+                                <div class="radio-custom"></div>
+                                <div class="option-content">
+                                    <div class="option-header">
+                                        <strong>Standard Delivery</strong>
+                                        <span class="option-price">FREE</span>
+                                    </div>
+                                    <p class="option-description">
+                                        <i class="bi bi-calendar-check"></i>
+                                        Expected by <strong>5-7 business days</strong>
+                                    </p>
+                                </div>
+                            </label>
+
+                            <label class="delivery-option-item">
+                                <input type="radio" name="delivery">
+                                <div class="radio-custom"></div>
+                                <div class="option-content">
+                                    <div class="option-header">
+                                        <strong>Express Delivery</strong>
+                                        <span class="option-price">₹99</span>
+                                    </div>
+                                    <p class="option-description">
+                                        <i class="bi bi-lightning-charge-fill"></i>
+                                        Expected by <strong>2-3 business days</strong>
+                                    </p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Method Card -->
+                <div class="summary-card payment-method-card">
+                    <div class="card-header-custom">
+                        <h2 class="card-title-custom">
+                            <i class="bi bi-credit-card-fill"></i> Payment Method
+                        </h2>
+                        <a href="#" class="change-link">Change</a>
+                    </div>
+                    <div class="card-body-custom">
+                        <div class="payment-selected">
+                            <div class="payment-icon">
+                                <i class="bi bi-cash-coin"></i>
+                            </div>
+                            <div class="payment-info">
+                                <h3 class="payment-name">Cash on Delivery</h3>
+                                <p class="payment-description">Pay when you receive the order</p>
+                            </div>
+                            <div class="payment-status">
+                                <i class="bi bi-check-circle-fill"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+
+            <!-- Right Sidebar - Price Details -->
+            <aside class="col-lg-4">
+                <div class="sticky-sidebar">
+                    
+                    <!-- Price Details Card -->
+                    <div class="summary-card price-details-card">
+                        <div class="card-header-custom">
+                            <h2 class="card-title-custom">
+                                <i class="bi bi-receipt"></i> Price Details
+                            </h2>
+                        </div>
+                        <div class="card-body-custom">
+                            <div class="price-breakdown">
+                                <div class="price-row">
+                                    <span class="price-label">Total MRP ({{ item.quantity }} item{{ item.quantity|pluralize }})</span>
+                                    <span class="price-value">₹{{ total_mrp|floatformat:0 }}</span>
+                                </div>
+                                <div class="price-row discount-row">
+                                    <span class="price-label">Discount on MRP</span>
+                                    <span class="price-value discount-value">- ₹{{ discount_amount|floatformat:0 }}</span>
+                                </div>
+                                <div class="price-row">
+                                    <span class="price-label">Delivery Charges</span>
+                                    <span class="price-value free-value">FREE</span>
+                                </div>
+                                <div class="price-row">
+                                    <span class="price-label">Platform Fee</span>
+                                    <span class="price-value">₹0</span>
+                                </div>
+                                <hr class="price-divider">
+                                <div class="price-row total-row">
+                                    <span class="price-label">Total Amount</span>
+                                    <span class="price-value">₹{{ total_amount|floatformat:0 }}</span>
+                                </div>
+                            </div>
+                            <div class="savings-highlight">
+                                <i class="bi bi-tag-fill"></i>
+                                You will save ₹{{ savings|floatformat:0 }} on this order
+                            </div>
+                            
+                            <!-- Place Order Button -->
+                            <button class="btn btn-place-order mt-3 w-100">
+                                <i class="bi bi-bag-check-fill"></i> Place Order
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Secure Payment Badge -->
+                    <div class="secure-payment-badge">
+                        <i class="bi bi-shield-check"></i>
+                        <div class="badge-content">
+                            <strong>Safe and Secure Payments</strong>
+                            <p>100% Payment Protection</p>
+                        </div>
+                    </div>
+
+                    <!-- Trust Badges -->
+                    <div class="trust-badges-sidebar">
+                        <div class="trust-badge-item">
+                            <i class="bi bi-arrow-repeat"></i>
+                            <span>7 Days Return</span>
+                        </div>
+                        <div class="trust-badge-item">
+                            <i class="bi bi-award"></i>
+                            <span>100% Authentic</span>
+                        </div>
+                        <div class="trust-badge-item">
+                            <i class="bi bi-truck"></i>
+                            <span>Free Delivery</span>
+                        </div>
+                    </div>
+
+                </div>
+            </aside>
+
+        </div>
+    </div>
+</section>
+
+    <!-- Terms and Place Order Section -->
+    <section class="place-order-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="order-actions-wrapper">
+                        
+                        <!-- Terms & Conditions -->
+                        <div class="terms-section">
+                            <label class="terms-checkbox">
+                                <input type="checkbox" checked>
+                                <span class="checkbox-custom-order"></span>
+                                <span class="terms-text">
+                                    I agree to the <a href="#">Terms & Conditions</a>, <a href="#">Privacy Policy</a>, and <a href="#">Return Policy</a>
+                                </span>
+                            </label>
+                        </div>
+
+                        <!-- Place Order Button -->
+                        <div class="place-order-button-wrapper">
+                            <button class="btn-place-order">
+                                <span class="btn-text">Place Order</span>
+                                <span class="btn-amount">₹10,697</span>
+                            </button>
+                            <p class="secure-note">
+                                <i class="bi bi-lock-fill"></i>
+                                Your payment information is encrypted and secure
+                            </p>
+                        </div>
+
+                        <!-- Payment Icons -->
+                        <div class="payment-icons-footer">
+                            <span class="payment-label">We Accept:</span>
+                            <div class="payment-methods">
+                                <i class="bi bi-credit-card-2-front"></i>
+                                <i class="bi bi-wallet2"></i>
+                                <i class="bi bi-phone"></i>
+                                <i class="bi bi-cash-coin"></i>
+                                <span class="payment-text">Visa • Mastercard • UPI • Paytm • COD</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="checkout-footer">
+        <div class="container">
+            <div class="row py-4">
+                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                    <p class="footer-text mb-0">© 2026 Manovastra. All Rights Reserved.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <ul class="footer-links-checkout">
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Contact Support</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/order_script.js' %}"></script>
+
+<!-- Razorpay Checkout Script -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const placeOrderBtn = document.querySelector('.btn-place-order');
+    
+    if (placeOrderBtn) {
+        placeOrderBtn.addEventListener('click', function() {
+            // Disable button
+            placeOrderBtn.disabled = true;
+            placeOrderBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Processing...';
+            
+            // Create Razorpay order
+            fetch('/create-razorpay-order/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Open Razorpay payment modal
+                    openRazorpay(data);
+                } else {
+                    alert('Error: ' + data.message);
+                    placeOrderBtn.disabled = false;
+                    placeOrderBtn.innerHTML = '<i class="bi bi-bag-check-fill"></i> Place Order';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Something went wrong. Please try again.');
+                placeOrderBtn.disabled = false;
+                placeOrderBtn.innerHTML = '<i class="bi bi-bag-check-fill"></i> Place Order';
+            });
+        });
+    }
+    
+    function openRazorpay(orderData) {
+        const options = {
+            key: orderData.key_id,
+            amount: orderData.amount,
+            currency: orderData.currency,
+            name: 'Manovastra',
+            description: 'Premium Ethnic Wear',
+            order_id: orderData.order_id,
+            handler: function (response) {
+                // Payment successful - verify on backend
+                verifyPayment(response);
+            },
+            prefill: {
+                name: 'Customer Name',
+                email: 'customer@example.com',
+                contact: '9876543210'
+            },
+            theme: {
+                color: '#8B4513'
+            },
+            modal: {
+                ondismiss: function() {
+                    // Re-enable button if payment cancelled
+                    const btn = document.querySelector('.btn-place-order');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="bi bi-bag-check-fill"></i> Place Order';
+                }
+            }
+        };
+        
+        const rzp = new Razorpay(options);
+        rzp.open();
+    }
+    
+    function verifyPayment(response) {
+        const formData = new FormData();
+        formData.append('razorpay_order_id', response.razorpay_order_id);
+        formData.append('razorpay_payment_id', response.razorpay_payment_id);
+        formData.append('razorpay_signature', response.razorpay_signature);
+        
+        fetch('/verify-payment/', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Redirect to success page
+                window.location.href = '/order-success/' + data.order_id + '/';
+            } else {
+                alert('Payment verification failed: ' + data.message);
+                const btn = document.querySelector('.btn-place-order');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-bag-check-fill"></i> Place Order';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Payment verification failed. Please contact support.');
+        });
+    }
+    
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+});
+</script>
+
+</body>
+</html>

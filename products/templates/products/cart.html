@@ -1,0 +1,146 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart | Manovastra</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/order_style.css' %}">
+</head>
+<body>
+
+<!-- Header -->
+<header class="header-main">
+    <div class="container">
+        <div class="row align-items-center py-3">
+            <div class="col-lg-2 col-md-3 col-6">
+                <div class="logo">
+                    <a href="{% url 'home' %}">
+                        {% if site_settings and site_settings.logo %}
+                            <img src="{{ site_settings.logo.url }}" alt="{{ site_settings.site_name }}" class="logo-image">
+                        {% else %}
+                            <h1 class="brand-name mb-0">Manovastra</h1>
+                        {% endif %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Cart Section -->
+<section class="order-summary-section py-5">
+    <div class="container">
+        <h2 class="collection-title mb-4">Shopping Cart ({{ total_items }} item{{ total_items|pluralize }})</h2>
+
+        {% if cart_items %}
+        <div class="row g-4">
+            <div class="col-lg-8">
+                {% for item in cart_items %}
+                <div class="summary-card mb-3">
+                    <div class="order-product-item">
+                        <div class="product-left">
+                            <div class="product-image-thumb">
+                                {% if item.product.colors.first.images.first %}
+                                    <img src="{{ item.product.colors.first.images.first.image.url }}" alt="{{ item.product.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                {% endif %}
+                            </div>
+                            <div class="product-details">
+                                <h3 class="product-name-order">{{ item.product.name }}</h3>
+                                <p class="product-specs">
+                                    <span class="spec-item"><strong>Color:</strong> {{ item.color }}</span>
+                                    <span class="spec-item"><strong>Qty:</strong> {{ item.quantity }}</span>
+                                </p>
+                                <button class="btn btn-sm btn-danger btn-remove-cart" data-product-id="{{ item.product.id }}">
+                                    <i class="bi bi-trash"></i> Remove
+                                </button>
+                            </div>
+                        </div>
+                        <div class="product-right">
+                            <p class="product-price-order">₹{{ item.item_total|floatformat:0 }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="col-lg-4">
+                <div class="summary-card">
+                    <h3>Price Summary</h3>
+                    <div class="price-breakdown">
+                        <div class="price-row">
+                            <span>Subtotal</span>
+                            <span>₹{{ total_amount|floatformat:0 }}</span>
+                        </div>
+                        <div class="price-row">
+                            <span>Delivery</span>
+                            <span class="free-value">FREE</span>
+                        </div>
+                        <hr>
+                        <div class="price-row total-row">
+                            <span>Total</span>
+                            <span>₹{{ total_amount|floatformat:0 }}</span>
+                        </div>
+                    </div>
+                    <a href="{% url 'order_summary' %}" class="btn btn-primary w-100 mt-3">
+                        Proceed to Checkout
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-bag-x" style="font-size: 80px; color: #ccc;"></i>
+            <h3 class="mt-4">Your cart is empty</h3>
+            <a href="{% url 'home' %}" class="btn btn-primary mt-3">Start Shopping</a>
+        </div>
+        {% endif %}
+
+    </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.querySelectorAll('.btn-remove-cart').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const productId = this.dataset.productId;
+        
+        fetch('/remove-from-cart/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: 'product_id=' + productId
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        });
+    });
+});
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+</body>
+</html>

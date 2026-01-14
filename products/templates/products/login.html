@@ -1,0 +1,180 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Manovastra</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/login_style.css' %}">
+</head>
+
+<body class="login-page">
+
+    <!-- Login Page Header -->
+    <header class="login-header">
+        <div class="container">
+            <div class="row py-3">
+                <div class="col-12 text-center">
+                    <a href="index.html" class="logo-link">
+                        <h1 class="brand-name mb-0">Manovastra</h1>
+                        <p class="brand-tagline mb-0">Elegance Redefined</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Login Section -->
+<section class="login-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-5 col-md-7 col-sm-9">
+                
+                <!-- Login Card -->
+                <div class="login-card">
+                    
+                    <div class="login-card-header">
+                        <div class="login-icon">
+                            <i class="bi bi-person-circle"></i>
+                        </div>
+                        <h2 class="login-title">Login to Manovastra</h2>
+                        <p class="login-subtitle">Enter your email to receive OTP</p>
+                    </div>
+
+                    <!-- Email Form (Step 1) -->
+                    <form class="login-form" id="emailForm">
+                        {% csrf_token %}
+                        
+                        <div class="form-group-login">
+                            <label for="email" class="form-label-login">
+                                <i class="bi bi-envelope"></i> Email Address
+                            </label>
+                            <input 
+                                type="email" 
+                                id="email" 
+                                name="email" 
+                                class="form-control-login" 
+                                placeholder="Enter your email address"
+                                required
+                            >
+                            <div class="error-message" id="emailError" style="display: none;">
+                                <i class="bi bi-exclamation-circle"></i>
+                                <span id="emailErrorText"></span>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-login-primary" id="sendOtpBtn">
+                            <span>Send OTP</span>
+                            <i class="bi bi-arrow-right-circle"></i>
+                        </button>
+                    </form>
+
+                    <!-- OTP Form (Step 2 - Hidden initially) -->
+                    <form class="login-form" id="otpForm" style="display: none;">
+                        {% csrf_token %}
+                        
+                        <div class="form-group-login">
+                            <label for="otp" class="form-label-login">
+                                <i class="bi bi-shield-check"></i> Enter OTP
+                            </label>
+                            <input 
+                                type="text" 
+                                id="otp" 
+                                name="otp" 
+                                class="form-control-login" 
+                                placeholder="Enter 6-digit OTP"
+                                maxlength="6"
+                                required
+                            >
+                            <div class="error-message" id="otpError" style="display: none;">
+                                <i class="bi bi-exclamation-circle"></i>
+                                <span id="otpErrorText"></span>
+                            </div>
+                            <p class="otp-timer" id="otpTimer" style="margin-top: 10px; color: #48bb78;">
+                                OTP sent successfully! Valid for 5 minutes.
+                            </p>
+                        </div>
+
+                        <button type="submit" class="btn-login-primary" id="verifyOtpBtn">
+                            <span>Verify & Login</span>
+                            <i class="bi bi-check-circle"></i>
+                        </button>
+
+                        <button type="button" class="btn-resend-otp" id="resendOtpBtn" style="margin-top: 15px;">
+                            <i class="bi bi-arrow-clockwise"></i> Resend OTP
+                        </button>
+                    </form>
+
+                    <div class="security-badge">
+                        <i class="bi bi-shield-lock-fill"></i>
+                        <span>Your information is encrypted and secure</span>
+                    </div>
+
+                </div>
+
+                <!-- New User Section -->
+                <div class="new-user-section">
+                    <p class="new-user-text">New to Manovastra?</p>
+                    <a href="{% url 'register' %}" class="btn-create-account">
+                        Create an Account
+                        <i class="bi bi-person-plus"></i>
+                    </a>
+                </div>
+
+                <!-- Trust Badges -->
+                <div class="trust-badges-login">
+                    <div class="trust-badge-login">
+                        <i class="bi bi-lock-fill"></i>
+                        <span>Secure Login</span>
+                    </div>
+                    <div class="trust-badge-login">
+                        <i class="bi bi-shield-check"></i>
+                        <span>Privacy Protected</span>
+                    </div>
+                    <div class="trust-badge-login">
+                        <i class="bi bi-patch-check-fill"></i>
+                        <span>Trusted by 50k+</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+    <!-- Footer -->
+    <footer class="login-footer">
+        <div class="container">
+            <div class="row py-4">
+                <div class="col-12 text-center">
+                    <p class="footer-text mb-3">
+                        By continuing, you agree to Manovastra's 
+                        <a href="#">Terms of Service</a> and 
+                        <a href="#">Privacy Policy</a>
+                    </p>
+                    <ul class="footer-links-login">
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Contact Support</a></li>
+                        <li><a href="#">FAQs</a></li>
+                    </ul>
+                    <p class="footer-copyright">© 2026 Manovastra. All Rights Reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Background Decorative Elements -->
+    <div class="bg-decoration bg-decoration-1"></div>
+    <div class="bg-decoration bg-decoration-2"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/login_script.js' %}"></script>
+
+</body>
+</html>
