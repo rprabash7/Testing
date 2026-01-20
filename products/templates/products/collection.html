@@ -13,112 +13,159 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'css/collection_style.css' %}">
 </head>
 <body>
 
-    <!-- Top Announcement Bar -->
-    <div class="announcement-bar">
-        <div class="container">
-            <p class="mb-0 text-center">🎉 New Year Sale - Flat 40% OFF on All Sarees | Free Shipping on Orders Above ₹999</p>
-        </div>
-    </div>
-
     <!-- Header Section -->
-    <header class="header-main">
-        <div class="container">
-            <div class="row align-items-center py-3">
-                <!-- Logo -->
-                <div class="col-lg-2 col-md-3 col-6">
-                    <div class="logo">
-                        <a href="index.html">
+<header class="header-main">
+    <div class="container">
+        <div class="row align-items-center py-3">
+            <!-- Logo -->
+            <div class="col-lg-2 col-md-3 col-6">
+                <div class="logo">
+                    <a href="{% url 'home' %}">
+                        {% if site_settings and site_settings.logo %}
+                            <img src="{{ site_settings.logo.url }}" alt="{{ site_settings.site_name }}" class="logo-image">
+                        {% else %}
                             <h1 class="brand-name mb-0">Manovastra</h1>
                             <p class="brand-tagline mb-0">Elegance Redefined</p>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Search Bar -->
-                <div class="col-lg-6 col-md-5 d-none d-md-block">
-                    <div class="search-bar">
-                        <input type="text" class="form-control" placeholder="Search for Sarees, Kurtis, Lehengas...">
-                        <button class="btn-search">
-                            <i class="bi bi-search"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Header Icons -->
-                <div class="col-lg-4 col-md-4 col-6">
-                    <div class="header-icons">
-                        <a href="#" class="icon-link">
-                            <i class="bi bi-person"></i>
-                            <span class="d-none d-lg-inline">Account</span>
-                        </a>
-                        <a href="#" class="icon-link">
-                            <i class="bi bi-heart"></i>
-                            <span class="d-none d-lg-inline">Wishlist</span>
-                        </a>
-                        <a href="#" class="icon-link cart-link">
-                            <i class="bi bi-bag"></i>
-                            <span class="cart-badge">0</span>
-                            <span class="d-none d-lg-inline">Cart</span>
-                        </a>
-                    </div>
+                        {% endif %}
+                    </a>
                 </div>
             </div>
 
-            <!-- Mobile Search Bar -->
-            <div class="row d-md-none mb-3">
-                <div class="col-12">
-                    <div class="search-bar">
-                        <input type="text" class="form-control" placeholder="Search for Sarees, Kurtis...">
-                        <button class="btn-search">
-                            <i class="bi bi-search"></i>
-                        </button>
-                    </div>
-                </div>
+
+            <!-- Search Bar -->
+            <div class="col-lg-6 col-md-5 d-none d-md-block">
+                <form class="search-bar" method="GET" action="{% url 'search' %}">
+                    <input type="text" name="q" class="form-control search-input" placeholder="Search for Sarees, Kurtis, Lehengas..." value="{{ request.GET.q }}">
+                    <button type="submit" class="btn-search">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </form>
+            </div>
+
+
+            <!-- Header Icons -->
+<div class="col-lg-4 col-md-4 col-6">
+    <div class="header-icons">
+        {% if is_logged_in %}
+            <div class="dropdown">
+                <a href="#" class="icon-link dropdown-toggle" data-bs-toggle="dropdown">
+                    <i class="bi bi-person-circle"></i>
+                    <span class="d-none d-lg-inline">{{ user_name|truncatechars:15 }}</span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{% url 'my_orders' %}"><i class="bi bi-box"></i> My Orders</a></li>
+                    <li><a class="dropdown-item" href="{% url 'wishlist' %}"><i class="bi bi-heart"></i> Wishlist</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                </ul>
+            </div>
+        {% else %}
+            <a href="{% url 'login' %}" class="icon-link">
+                <i class="bi bi-person"></i>
+                <span class="d-none d-lg-inline">Account</span>
+            </a>
+        {% endif %}
+
+
+        <a href="{% url 'wishlist' %}" class="icon-link position-relative">
+            <i class="bi bi-heart"></i>
+            <span class="wishlist-badge" id="wishlistCount" style="display: none;">0</span>
+            <span class="d-none d-lg-inline">Wishlist</span>
+        </a>
+
+
+        <a href="{% url 'cart' %}" class="icon-link cart-link position-relative">
+            <i class="bi bi-bag"></i>
+            <span class="cart-badge" id="cartCount" style="display: none;">0</span>
+            <span class="d-none d-lg-inline">Cart</span>
+        </a>
+    </div>
+</div>
+
+
+        <!-- Mobile Search Bar -->
+        <div class="row d-md-none mb-3">
+            <div class="col-12">
+                <form class="search-bar" method="GET" action="{% url 'search' %}">
+                    <input type="text" name="q" class="form-control search-input" placeholder="Search for Sarees, Kurtis..." value="{{ request.GET.q }}">
+                    <button type="submit" class="btn-search">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </form>
             </div>
         </div>
-    </header>
+    </div>
+</header>
+
+
 
     <!-- Navigation Bar -->
-    <nav class="navbar-main">
-        <div class="container">
-            <ul class="nav-menu">
-                <li class="nav-item"><a href="#" class="nav-link active">Sarees</a></li>
-                <li class="nav-item"><a href="#" class="nav-link">Kurtis</a></li>
-                <li class="nav-item"><a href="#" class="nav-link">Lehengas</a></li>
-                <li class="nav-item"><a href="#" class="nav-link">Dress Materials</a></li>
-                <li class="nav-item"><a href="#" class="nav-link">New Arrivals</a></li>
-                <li class="nav-item"><a href="#" class="nav-link special">Offers</a></li>
-            </ul>
-        </div>
-    </nav>
+<nav class="navbar-main">
+    <div class="container">
+        <ul class="nav-menu">
+            <!-- Home -->
+            <li class="nav-item">
+                <a href="{% url 'home' %}" class="nav-link {% if request.path == '/' %}active{% endif %}">
+                    <i class="bi bi-house-door"></i> Home
+                </a>
+            </li>
 
-    <!-- Breadcrumb Navigation -->
-    <section class="breadcrumb-section">
-        <div class="container">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Sarees Collection</li>
-                </ol>
-            </nav>
-        </div>
-    </section>
 
-    <!-- Collection Header -->
-    <section class="collection-header">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-12">
-                    <h1 class="collection-title">Sarees Collection</h1>
-                    <p class="collection-description">Explore our exquisite range of handcrafted sarees featuring traditional weaves and contemporary designs</p>
-                </div>
+            <!-- Dynamic Categories from Database -->
+            {% for category in categories %}
+            <li class="nav-item">
+                <a href="{% url 'category_collection' category.slug %}" class="nav-link">
+                    {{ category.name }}
+                </a>
+            </li>
+            {% endfor %}
+
+
+            <!-- New Arrivals -->
+            <li class="nav-item">
+                <a href="{% url 'new_arrivals' %}" class="nav-link">
+                    <i class="bi bi-stars"></i> New Arrivals
+                </a>
+            </li>
+
+
+            <!-- Offers -->
+            <li class="nav-item">
+                <a href="{% url 'offers' %}" class="nav-link special">
+                    <i class="bi bi-tag-fill"></i> Offers
+                </a>
+            </li>
+
+
+            <!-- All Products -->
+            <li class="nav-item">
+                <a href="{% url 'all_products' %}" class="nav-link">
+                    All Products
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+    
+
+<!-- Collection Header -->
+<section class="collection-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-12">
+                <h1 class="collection-title">{{ category.name }} Collection</h1>
+                <p class="collection-description">Explore our exquisite range of handcrafted {{ category.name|lower }} featuring traditional weaves and contemporary designs</p>
             </div>
         </div>
-    </section>
+    </div>
+</section>
+
 
     <!-- Mobile Filter Toggle Button -->
     <div class="mobile-filter-toggle d-lg-none">
@@ -292,86 +339,87 @@
             <main class="col-lg-9">
                 
                 <!-- Results Bar -->
-                <div class="results-bar">
-                    <div class="results-info">
-                        <h2 class="results-count">{{ category.name }} - Showing {{ products|length }} of {{ total_products }} results</h2>
-                    </div>
-                    <div class="sorting-options">
-                        <label for="sort-select" class="sort-label">Sort by:</label>
-                        <select id="sort-select" class="form-select sort-select">
-                            <option value="featured" {% if current_sort == 'featured' %}selected{% endif %}>Featured</option>
-                            <option value="price-low" {% if current_sort == 'price-low' %}selected{% endif %}>Price: Low to High</option>
-                            <option value="price-high" {% if current_sort == 'price-high' %}selected{% endif %}>Price: High to Low</option>
-                            <option value="new" {% if current_sort == 'new' %}selected{% endif %}>New Arrivals</option>
-                            <option value="bestseller" {% if current_sort == 'bestseller' %}selected{% endif %}>Best Sellers</option>
-                            <option value="rating" {% if current_sort == 'rating' %}selected{% endif %}>Customer Rating</option>
-                            <option value="discount" {% if current_sort == 'discount' %}selected{% endif %}>Highest Discount</option>
-                        </select>
-                    </div>
-                </div>
+<div class="results-bar">
+    <div class="results-info">
+        <h2 class="results-count">{{ category.name }} - Showing {{ products|length }} of {{ total_products }} results</h2>
+    </div>
+    <div class="sorting-options">
+        <label for="sort-select" class="sort-label">Sort by:</label>
+        <select id="sort-select" class="form-select sort-select">
+            <option value="featured" {% if current_sort == 'featured' %}selected{% endif %}>Featured</option>
+            <option value="price-low" {% if current_sort == 'price-low' %}selected{% endif %}>Price: Low to High</option>
+            <option value="price-high" {% if current_sort == 'price-high' %}selected{% endif %}>Price: High to Low</option>
+            <option value="new" {% if current_sort == 'new' %}selected{% endif %}>New Arrivals</option>
+            <option value="bestseller" {% if current_sort == 'bestseller' %}selected{% endif %}>Best Sellers</option>
+            <option value="rating" {% if current_sort == 'rating' %}selected{% endif %}>Customer Rating</option>
+            <option value="discount" {% if current_sort == 'discount' %}selected{% endif %}>Highest Discount</option>
+        </select>
+    </div>
+</div>
+
 
                 <!-- Active Filters Display -->
                 <div class="active-filters" id="activeFilters"></div>
 
-                <!-- Product Grid -->
                 <div class="product-grid">
-                    <div class="row g-3" id="productGrid">
-                        
-                        {% for product in products %}
-                        <div class="col-xl-4 col-md-6 col-6 product-item" 
-                             data-fabric="{{ product.fabric }}"
-                             data-color="{{ product.primary_color }}"
-                             data-occasion="{{ product.occasion }}"
-                             data-price="{{ product.current_price }}"
-                             data-discount="{{ product.discount_percent }}"
-                             data-in-stock="{{ product.in_stock }}">
-                            <div class="collection-product-card">
-                                <div class="product-badge-collection">{{ product.get_badge_text }}</div>
-                                <div class="product-wishlist-btn">
-                                    <i class="bi bi-heart"></i>
-                                </div>
-                                <div class="product-image-collection">
-                                    <a href="{% url 'product_detail' product.slug %}">
-                                        {% if product.colors.first and product.colors.first.images.first %}
-                                            <img src="{{ product.colors.first.images.first.image.url }}" alt="{{ product.name }}" style="width: 100%; height: 100%; object-fit: cover;">
-                                        {% else %}
-                                            <div class="product-img-placeholder" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
-                                        {% endif %}
-                                    </a>
-                                </div>
-                                <div class="product-info-collection">
-                                    <a href="{% url 'product_detail' product.slug %}" class="product-name-collection">{{ product.name }}</a>
-                                    <p class="product-description-collection">{{ product.fabric }}</p>
-                                    <div class="product-rating-collection">
-                                        {% for i in "12345" %}
-                                            {% if forloop.counter <= product.rating|floatformat:0 %}
-                                                <i class="bi bi-star-fill"></i>
-                                            {% elif forloop.counter == product.rating|add:"0.5"|floatformat:0 %}
-                                                <i class="bi bi-star-half"></i>
-                                            {% else %}
-                                                <i class="bi bi-star"></i>
-                                            {% endif %}
-                                        {% endfor %}
-                                        <span class="rating-text">{{ product.rating }} ({{ product.rating_count }})</span>
-                                    </div>
-                                    <div class="product-price-collection">
-                                        <span class="price-current-collection">₹{{ product.current_price|floatformat:0 }}</span>
-                                        <span class="price-original-collection">₹{{ product.original_price|floatformat:0 }}</span>
-                                    </div>
-                                    <div class="product-actions-collection">
-                                        <a href="{% url 'product_detail' product.slug %}" class="btn-view-details">View Details</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {% empty %}
-                        <div class="col-12">
-                            <p class="text-center">No products found in this category.</p>
-                        </div>
+    <div class="row g-3" id="productGrid">
+        
+        {% for product in products %}
+        <div class="col-xl-4 col-md-6 col-6 product-item" 
+             data-product-id="{{ product.id }}"
+             data-fabric="{{ product.fabric }}"
+             data-color="{{ product.primary_color }}"
+             data-occasion="{{ product.occasion }}"
+             data-price="{{ product.current_price }}"
+             data-discount="{{ product.discount_percent }}"
+             data-in-stock="{{ product.in_stock }}">
+            <div class="collection-product-card">
+                <div class="product-badge-collection">{{ product.get_badge_text }}</div>
+                <div class="product-wishlist-btn" data-product-id="{{ product.id }}">
+                    <i class="bi bi-heart"></i>
+                </div>
+                <div class="product-image-collection">
+                    <a href="{% url 'product_detail' product.slug %}">
+                        {% if product.colors.first and product.colors.first.images.first %}
+                            <img src="{{ product.colors.first.images.first.image.url }}" alt="{{ product.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                        {% else %}
+                            <div class="product-img-placeholder" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                        {% endif %}
+                    </a>
+                </div>
+                <div class="product-info-collection">
+                    <a href="{% url 'product_detail' product.slug %}" class="product-name-collection">{{ product.name }}</a>
+                    <p class="product-description-collection">{{ product.fabric }}</p>
+                    <div class="product-rating-collection">
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= product.rating|floatformat:0 %}
+                                <i class="bi bi-star-fill"></i>
+                            {% elif forloop.counter == product.rating|add:"0.5"|floatformat:0 %}
+                                <i class="bi bi-star-half"></i>
+                            {% else %}
+                                <i class="bi bi-star"></i>
+                            {% endif %}
                         {% endfor %}
-
+                        <span class="rating-text">{{ product.rating }} ({{ product.rating_count }})</span>
+                    </div>
+                    <div class="product-price-collection">
+                        <span class="price-current-collection">₹{{ product.current_price|floatformat:0 }}</span>
+                        <span class="price-original-collection">₹{{ product.original_price|floatformat:0 }}</span>
+                    </div>
+                    <div class="product-actions-collection">
+                        <a href="{% url 'product_detail' product.slug %}" class="btn-view-details">View Details</a>
                     </div>
                 </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <p class="text-center">No products found in this category.</p>
+        </div>
+        {% endfor %}
+
+    </div>
+</div>
 
                 <!-- Pagination -->
                 {% if products.has_other_pages %}
@@ -410,109 +458,151 @@
     </div>
 </section>
 
-    <!-- Footer Section -->
-    <footer class="footer-main">
-        <div class="container">
-            <!-- Footer Top -->
-            <div class="row py-5">
-                <!-- About Column -->
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="footer-widget">
-                        <h3 class="footer-brand">Manovastra</h3>
-                        <p class="footer-about">Your destination for premium Indian ethnic wear. Celebrating tradition with contemporary elegance.</p>
-                        <div class="social-icons">
-                            <a href="#" class="social-link"><i class="bi bi-facebook"></i></a>
-                            <a href="#" class="social-link"><i class="bi bi-instagram"></i></a>
-                            <a href="#" class="social-link"><i class="bi bi-pinterest"></i></a>
-                            <a href="#" class="social-link"><i class="bi bi-youtube"></i></a>
-                            <a href="#" class="social-link"><i class="bi bi-twitter"></i></a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Quick Links Column -->
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <div class="footer-widget">
-                        <h4 class="footer-title">Quick Links</h4>
-                        <ul class="footer-links">
-                            <li><a href="#">About Us</a></li>
-                            <li><a href="#">Our Story</a></li>
-                            <li><a href="#">Blog</a></li>
-                            <li><a href="#">Careers</a></li>
-                            <li><a href="#">Press</a></li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Categories Column -->
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <div class="footer-widget">
-                        <h4 class="footer-title">Categories</h4>
-                        <ul class="footer-links">
-                            <li><a href="#">Silk Sarees</a></li>
-                            <li><a href="#">Designer Kurtis</a></li>
-                            <li><a href="#">Bridal Lehengas</a></li>
-                            <li><a href="#">New Arrivals</a></li>
-                            <li><a href="#">Sale</a></li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Customer Service Column -->
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <div class="footer-widget">
-                        <h4 class="footer-title">Customer Service</h4>
-                        <ul class="footer-links">
-                            <li><a href="#">Contact Us</a></li>
-                            <li><a href="#">Track Order</a></li>
-                            <li><a href="#">Returns & Exchange</a></li>
-                            <li><a href="#">Shipping Info</a></li>
-                            <li><a href="#">Size Guide</a></li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Contact Column -->
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="footer-widget">
-                        <h4 class="footer-title">Get in Touch</h4>
-                        <ul class="footer-contact">
-                            <li>
-                                <i class="bi bi-geo-alt-fill"></i>
-                                <span>MG Road, Bangalore, Karnataka 560001</span>
-                            </li>
-                            <li>
-                                <i class="bi bi-telephone-fill"></i>
-                                <span>+91 98765 43210</span>
-                            </li>
-                            <li>
-                                <i class="bi bi-envelope-fill"></i>
-                                <span>support@manovastra.com</span>
-                            </li>
-                            <li>
-                                <i class="bi bi-clock-fill"></i>
-                                <span>Mon - Sat: 10:00 AM - 7:00 PM</span>
-                            </li>
-                        </ul>
+      <!-- Footer Section -->
+<footer class="footer-main">
+    <div class="container">
+        <!-- Footer Top -->
+        <div class="row py-5">
+            <!-- About Column -->
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="footer-widget">
+                    <h3 class="footer-brand">{{ site_settings.site_name }}</h3>
+                    <p class="footer-about">{{ site_settings.about_text }}</p>
+                    <div class="social-icons">
+                        {% if site_settings.instagram_url %}
+                        <a href="{{ site_settings.instagram_url }}" target="_blank" class="social-link" title="Instagram">
+                            <i class="bi bi-instagram"></i>
+                        </a>
+                        {% endif %}
+                        
+                        {% if site_settings.youtube_url %}
+                        <a href="{{ site_settings.youtube_url }}" target="_blank" class="social-link" title="YouTube">
+                            <i class="bi bi-youtube"></i>
+                        </a>
+                        {% endif %}
+                        
+                        {% if site_settings.whatsapp_url %}
+                        <a href="{{ site_settings.whatsapp_url }}" target="_blank" class="social-link whatsapp" title="WhatsApp">
+                            <i class="bi bi-whatsapp"></i>
+                        </a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
 
-            <!-- Footer Bottom -->
-            <div class="row py-4 border-top" style="border-color: rgba(255, 255, 255, 0.1) !important;">
-                <div class="col-lg-6 text-center text-lg-start mb-3 mb-lg-0">
-                    <p class="footer-copyright mb-0">© 2026 Manovastra. All Rights Reserved.</p>
+
+            <!-- Quick Links Column -->
+            <div class="col-lg-2 col-md-6 mb-4">
+                <div class="footer-widget">
+                    <h4 class="footer-title">Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="{{ site_settings.about_us_link }}">About Us</a></li>
+                        <li><a href="{{ site_settings.our_story_link }}">Our Story</a></li>
+                        <li><a href="{{ site_settings.blog_link }}">Blog</a></li>
+                        <li><a href="{{ site_settings.careers_link }}">Careers</a></li>
+                        <li><a href="{{ site_settings.press_link }}">Press</a></li>
+                    </ul>
                 </div>
-                <div class="col-lg-6 text-center text-lg-end">
-                    <ul class="footer-legal">
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Terms & Conditions</a></li>
-                        <li><a href="#">Refund Policy</a></li>
+            </div>
+
+
+            <!-- Categories Column -->
+            <div class="col-lg-2 col-md-6 mb-4">
+                <div class="footer-widget">
+                    <h4 class="footer-title">Categories</h4>
+                    <ul class="footer-links">
+                        {% for category in nav_categories|slice:":5" %}
+                        <li><a href="{% url 'category_collection' category.slug %}">{{ category.name }}</a></li>
+                        {% endfor %}
+                        <li><a href="{% url 'new_arrivals' %}">New Arrivals</a></li>
+                        <li><a href="{% url 'offers' %}">Sale</a></li>
+                    </ul>
+                </div>
+            </div>
+
+
+            <!-- Customer Service Column -->
+            <div class="col-lg-2 col-md-6 mb-4">
+                <div class="footer-widget">
+                    <h4 class="footer-title">Customer Service</h4>
+                    <ul class="footer-links">
+                        <li><a href="{{ site_settings.contact_us_link }}">Contact Us</a></li>
+                        <li><a href="{{ site_settings.track_order_link }}">Track Order</a></li>
+                        <li><a href="{{ site_settings.returns_link }}">Returns & Exchange</a></li>
+                        <li><a href="{{ site_settings.shipping_link }}">Shipping Info</a></li>
+                        <li><a href="{{ site_settings.size_guide_link }}">Size Guide</a></li>
+                    </ul>
+                </div>
+            </div>
+
+
+            <!-- Contact Column -->
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="footer-widget">
+                    <h4 class="footer-title">Get in Touch</h4>
+                    <ul class="footer-contact">
+                        <li>
+                            <i class="bi bi-geo-alt-fill"></i>
+                            <span>{{ site_settings.address }}</span>
+                        </li>
+                        <li>
+                            <i class="bi bi-telephone-fill"></i>
+                            <a href="tel:{{ site_settings.phone }}">{{ site_settings.phone }}</a>
+                        </li>
+                        <li>
+                            <i class="bi bi-envelope-fill"></i>
+                            <a href="mailto:{{ site_settings.email }}">{{ site_settings.email }}</a>
+                        </li>
+                        {% if site_settings.whatsapp %}
+                        <li>
+                            <i class="bi bi-whatsapp"></i>
+                            <a href="https://wa.me/{{ site_settings.whatsapp }}" target="_blank">WhatsApp Us</a>
+                        </li>
+                        {% endif %}
+                        <li>
+                            <i class="bi bi-clock-fill"></i>
+                            <span>{{ site_settings.working_hours }}</span>
+                        </li>
                     </ul>
                 </div>
             </div>
         </div>
-    </footer>
+
+
+        <!-- Payment & Trust Badges -->
+        <div class="row py-4 border-top border-bottom footer-badges">
+            <div class="col-12">
+                <div class="payment-methods text-center">
+                    <p class="mb-2">We Accept</p>
+                    <div class="payment-icons">
+                        <i class="bi bi-credit-card-2-front"></i>
+                        <i class="bi bi-wallet2"></i>
+                        <i class="bi bi-phone"></i>
+                        {% if site_settings.enable_cod %}
+                        <i class="bi bi-cash-coin"></i>
+                        {% endif %}
+                        <span class="payment-text">Visa • Mastercard • UPI • Paytm • Net Banking{% if site_settings.enable_cod %} • COD{% endif %}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Footer Bottom -->
+        <div class="row py-4">
+            <div class="col-lg-6 text-center text-lg-start mb-3 mb-lg-0">
+                <p class="footer-copyright mb-0">{{ site_settings.copyright_text }}</p>
+            </div>
+            <div class="col-lg-6 text-center text-lg-end">
+                <ul class="footer-legal">
+                    <li><a href="{{ site_settings.privacy_policy_link }}">Privacy Policy</a></li>
+                    <li><a href="{{ site_settings.terms_link }}">Terms & Conditions</a></li>
+                    <li><a href="{{ site_settings.refund_policy_link }}">Refund Policy</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{% static 'js/collection_script.js' %}"></script>

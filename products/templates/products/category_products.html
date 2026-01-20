@@ -10,14 +10,16 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/collection_style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/allproduct_style.css' %}">
 </head>
 <body>
 
-<!-- Header -->
+<!-- Header Section -->
 <header class="header-main">
     <div class="container">
         <div class="row align-items-center py-3">
+            <!-- Logo -->
             <div class="col-lg-2 col-md-3 col-6">
                 <div class="logo">
                     <a href="{% url 'home' %}">
@@ -31,62 +33,88 @@
                 </div>
             </div>
 
+
+            <!-- Search Bar -->
             <div class="col-lg-6 col-md-5 d-none d-md-block">
                 <form class="search-bar" method="GET" action="{% url 'search' %}">
-                    <input type="text" name="q" class="form-control search-input" placeholder="Search for Sarees, Kurtis, Lehengas...">
+                    <input type="text" name="q" class="form-control search-input" placeholder="Search for Sarees, Kurtis, Lehengas..." value="{{ request.GET.q }}">
                     <button type="submit" class="btn-search">
                         <i class="bi bi-search"></i>
                     </button>
                 </form>
             </div>
 
-            <div class="col-lg-4 col-md-4 col-6">
-                <div class="header-icons">
-                    {% if is_logged_in %}
-                        <div class="dropdown">
-                            <a href="#" class="icon-link dropdown-toggle" data-bs-toggle="dropdown">
-                                <i class="bi bi-person-circle"></i>
-                                <span class="d-none d-lg-inline">{{ user_name|truncatechars:15 }}</span>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{% url 'my_orders' %}"><i class="bi bi-box"></i> My Orders</a></li>
-                                <li><a class="dropdown-item" href="{% url 'wishlist' %}"><i class="bi bi-heart"></i> Wishlist</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
-                            </ul>
-                        </div>
-                    {% else %}
-                        <a href="{% url 'login' %}" class="icon-link">
-                            <i class="bi bi-person"></i>
-                            <span class="d-none d-lg-inline">Account</span>
-                        </a>
-                    {% endif %}
 
-                    <a href="{% url 'wishlist' %}" class="icon-link">
-                        <i class="bi bi-heart"></i>
-                    </a>
+            <!-- Header Icons -->
+<div class="col-lg-4 col-md-4 col-6">
+    <div class="header-icons">
+        {% if is_logged_in %}
+            <div class="dropdown">
+                <a href="#" class="icon-link dropdown-toggle" data-bs-toggle="dropdown">
+                    <i class="bi bi-person-circle"></i>
+                    <span class="d-none d-lg-inline">{{ user_name|truncatechars:15 }}</span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{% url 'my_orders' %}"><i class="bi bi-box"></i> My Orders</a></li>
+                    <li><a class="dropdown-item" href="{% url 'wishlist' %}"><i class="bi bi-heart"></i> Wishlist</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                </ul>
+            </div>
+        {% else %}
+            <a href="{% url 'login' %}" class="icon-link">
+                <i class="bi bi-person"></i>
+                <span class="d-none d-lg-inline">Account</span>
+            </a>
+        {% endif %}
 
-                    <a href="{% url 'cart' %}" class="icon-link cart-link">
-                        <i class="bi bi-bag"></i>
-                        <span class="cart-badge" id="cartCount">0</span>
-                    </a>
-                </div>
+
+        <a href="{% url 'wishlist' %}" class="icon-link position-relative">
+            <i class="bi bi-heart"></i>
+            <span class="wishlist-badge" id="wishlistCount" style="display: none;">0</span>
+            <span class="d-none d-lg-inline">Wishlist</span>
+        </a>
+
+
+        <a href="{% url 'cart' %}" class="icon-link cart-link position-relative">
+            <i class="bi bi-bag"></i>
+            <span class="cart-badge" id="cartCount" style="display: none;">0</span>
+            <span class="d-none d-lg-inline">Cart</span>
+        </a>
+    </div>
+</div>
+
+
+        <!-- Mobile Search Bar -->
+        <div class="row d-md-none mb-3">
+            <div class="col-12">
+                <form class="search-bar" method="GET" action="{% url 'search' %}">
+                    <input type="text" name="q" class="form-control search-input" placeholder="Search for Sarees, Kurtis..." value="{{ request.GET.q }}">
+                    <button type="submit" class="btn-search">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </form>
             </div>
         </div>
     </div>
 </header>
 
-<!-- Navigation Bar -->
+
+
+    <!-- Navigation Bar -->
 <nav class="navbar-main">
     <div class="container">
         <ul class="nav-menu">
+            <!-- Home -->
             <li class="nav-item">
-                <a href="{% url 'home' %}" class="nav-link">
+                <a href="{% url 'home' %}" class="nav-link {% if request.path == '/' %}active{% endif %}">
                     <i class="bi bi-house-door"></i> Home
                 </a>
             </li>
 
-            {% for category in site_settings.categories.all %}
+
+            <!-- Dynamic Categories from Database -->
+            {% for category in categories %}
             <li class="nav-item">
                 <a href="{% url 'category_collection' category.slug %}" class="nav-link">
                     {{ category.name }}
@@ -94,20 +122,26 @@
             </li>
             {% endfor %}
 
+
+            <!-- New Arrivals -->
             <li class="nav-item">
-                <a href="{% url 'new_arrivals' %}" class="nav-link {% if page_title == 'New Arrivals' %}active{% endif %}">
+                <a href="{% url 'new_arrivals' %}" class="nav-link">
                     <i class="bi bi-stars"></i> New Arrivals
                 </a>
             </li>
 
+
+            <!-- Offers -->
             <li class="nav-item">
-                <a href="{% url 'offers' %}" class="nav-link special {% if page_title == 'Special Offers' %}active{% endif %}">
+                <a href="{% url 'offers' %}" class="nav-link special">
                     <i class="bi bi-tag-fill"></i> Offers
                 </a>
             </li>
 
+
+            <!-- All Products -->
             <li class="nav-item">
-                <a href="{% url 'all_products' %}" class="nav-link {% if page_title == 'All Products' %}active{% endif %}">
+                <a href="{% url 'all_products' %}" class="nav-link">
                     All Products
                 </a>
             </li>
@@ -230,6 +264,154 @@
 
     </div>
 </section>
+
+
+    <!-- Footer Section -->
+<footer class="footer-main">
+    <div class="container">
+        <!-- Footer Top -->
+        <div class="row py-5">
+            <!-- About Column -->
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="footer-widget">
+                    <h3 class="footer-brand">{{ site_settings.site_name }}</h3>
+                    <p class="footer-about">{{ site_settings.about_text }}</p>
+                    <div class="social-icons">
+                        {% if site_settings.instagram_url %}
+                        <a href="{{ site_settings.instagram_url }}" target="_blank" class="social-link" title="Instagram">
+                            <i class="bi bi-instagram"></i>
+                        </a>
+                        {% endif %}
+                        
+                        {% if site_settings.youtube_url %}
+                        <a href="{{ site_settings.youtube_url }}" target="_blank" class="social-link" title="YouTube">
+                            <i class="bi bi-youtube"></i>
+                        </a>
+                        {% endif %}
+                        
+                        {% if site_settings.whatsapp_url %}
+                        <a href="{{ site_settings.whatsapp_url }}" target="_blank" class="social-link whatsapp" title="WhatsApp">
+                            <i class="bi bi-whatsapp"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Quick Links Column -->
+            <div class="col-lg-2 col-md-6 mb-4">
+                <div class="footer-widget">
+                    <h4 class="footer-title">Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="{{ site_settings.about_us_link }}">About Us</a></li>
+                        <li><a href="{{ site_settings.our_story_link }}">Our Story</a></li>
+                        <li><a href="{{ site_settings.blog_link }}">Blog</a></li>
+                        <li><a href="{{ site_settings.careers_link }}">Careers</a></li>
+                        <li><a href="{{ site_settings.press_link }}">Press</a></li>
+                    </ul>
+                </div>
+            </div>
+
+
+            <!-- Categories Column -->
+            <div class="col-lg-2 col-md-6 mb-4">
+                <div class="footer-widget">
+                    <h4 class="footer-title">Categories</h4>
+                    <ul class="footer-links">
+                        {% for category in nav_categories|slice:":5" %}
+                        <li><a href="{% url 'category_collection' category.slug %}">{{ category.name }}</a></li>
+                        {% endfor %}
+                        <li><a href="{% url 'new_arrivals' %}">New Arrivals</a></li>
+                        <li><a href="{% url 'offers' %}">Sale</a></li>
+                    </ul>
+                </div>
+            </div>
+
+
+            <!-- Customer Service Column -->
+            <div class="col-lg-2 col-md-6 mb-4">
+                <div class="footer-widget">
+                    <h4 class="footer-title">Customer Service</h4>
+                    <ul class="footer-links">
+                        <li><a href="{{ site_settings.contact_us_link }}">Contact Us</a></li>
+                        <li><a href="{{ site_settings.track_order_link }}">Track Order</a></li>
+                        <li><a href="{{ site_settings.returns_link }}">Returns & Exchange</a></li>
+                        <li><a href="{{ site_settings.shipping_link }}">Shipping Info</a></li>
+                        <li><a href="{{ site_settings.size_guide_link }}">Size Guide</a></li>
+                    </ul>
+                </div>
+            </div>
+
+
+            <!-- Contact Column -->
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="footer-widget">
+                    <h4 class="footer-title">Get in Touch</h4>
+                    <ul class="footer-contact">
+                        <li>
+                            <i class="bi bi-geo-alt-fill"></i>
+                            <span>{{ site_settings.address }}</span>
+                        </li>
+                        <li>
+                            <i class="bi bi-telephone-fill"></i>
+                            <a href="tel:{{ site_settings.phone }}">{{ site_settings.phone }}</a>
+                        </li>
+                        <li>
+                            <i class="bi bi-envelope-fill"></i>
+                            <a href="mailto:{{ site_settings.email }}">{{ site_settings.email }}</a>
+                        </li>
+                        {% if site_settings.whatsapp %}
+                        <li>
+                            <i class="bi bi-whatsapp"></i>
+                            <a href="https://wa.me/{{ site_settings.whatsapp }}" target="_blank">WhatsApp Us</a>
+                        </li>
+                        {% endif %}
+                        <li>
+                            <i class="bi bi-clock-fill"></i>
+                            <span>{{ site_settings.working_hours }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Payment & Trust Badges -->
+        <div class="row py-4 border-top border-bottom footer-badges">
+            <div class="col-12">
+                <div class="payment-methods text-center">
+                    <p class="mb-2">We Accept</p>
+                    <div class="payment-icons">
+                        <i class="bi bi-credit-card-2-front"></i>
+                        <i class="bi bi-wallet2"></i>
+                        <i class="bi bi-phone"></i>
+                        {% if site_settings.enable_cod %}
+                        <i class="bi bi-cash-coin"></i>
+                        {% endif %}
+                        <span class="payment-text">Visa • Mastercard • UPI • Paytm • Net Banking{% if site_settings.enable_cod %} • COD{% endif %}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Footer Bottom -->
+        <div class="row py-4">
+            <div class="col-lg-6 text-center text-lg-start mb-3 mb-lg-0">
+                <p class="footer-copyright mb-0">{{ site_settings.copyright_text }}</p>
+            </div>
+            <div class="col-lg-6 text-center text-lg-end">
+                <ul class="footer-legal">
+                    <li><a href="{{ site_settings.privacy_policy_link }}">Privacy Policy</a></li>
+                    <li><a href="{{ site_settings.terms_link }}">Terms & Conditions</a></li>
+                    <li><a href="{{ site_settings.refund_policy_link }}">Refund Policy</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{% static 'js/collection_script.js' %}"></script>

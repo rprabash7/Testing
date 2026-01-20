@@ -7486,3 +7486,1011 @@ button:disabled {
 html {
     scroll-behavior: smooth;
 }
+
+
+
+
+        .header-main {
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .logo-image {
+            max-height: 60px;
+            width: auto;
+        }
+        .brand-name {
+            font-family: 'Playfair Display', serif;
+            color: #8B4513;
+        }
+        .collection-title {
+            font-family: 'Playfair Display', serif;
+            color: #333;
+            font-weight: 600;
+        }
+        .summary-card {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        .summary-card:hover {
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        .order-item-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .order-item-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .order-status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .status-confirmed { background: #d4edda; color: #155724; }
+        .status-shipped { background: #cce5ff; color: #004085; }
+        .status-delivered { background: #d1ecf1; color: #0c5460; }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-cancelled { background: #f8d7da; color: #721c24; }
+        .success-alert {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+        }
+        .empty-state i {
+            font-size: 100px;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+
+
+
+/* ============================================
+   MANOVASTRA - ORDERS PAGE
+   Professional Order History & Tracking
+   Jewelry Gold-Yellow-Red Luxury Theme
+   Production-Ready CSS
+   ============================================ */
+
+/* ================================================================================
+   ORDERS PAGE SECTION
+   ================================================================================ */
+
+.orders-page-section {
+    padding: 50px 0;
+    background: #F8F8F8;
+    min-height: calc(100vh - 200px);
+}
+
+/* ================================================================================
+   SUCCESS ALERT
+   ================================================================================ */
+
+.success-alert {
+    background: linear-gradient(135deg, rgba(40, 167, 69, 0.1), rgba(40, 167, 69, 0.05));
+    border: 2px solid var(--success-green);
+    border-radius: 16px;
+    padding: 40px 30px;
+    text-align: center;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 20px rgba(40, 167, 69, 0.15);
+    animation: slideInDown 0.5s ease-out;
+}
+
+@keyframes slideInDown {
+    from {
+        transform: translateY(-30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.success-alert .bi-check-circle-fill {
+    color: var(--success-green);
+    font-size: 50px;
+    margin-bottom: 15px;
+}
+
+.success-alert h3 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--success-green);
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+.success-alert p {
+    font-size: 16px;
+    color: var(--text-medium);
+    margin-bottom: 0;
+}
+
+/* ================================================================================
+   PAGE TITLE
+   ================================================================================ */
+
+.collection-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-heading);
+}
+
+.collection-title .bi {
+    color: var(--primary-gold);
+    font-size: 30px;
+}
+
+/* ================================================================================
+   SUMMARY CARD (ORDER CARD)
+   ================================================================================ */
+
+.summary-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    margin-bottom: 25px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: fadeInUp 0.5s ease-out;
+    animation-fill-mode: both;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.summary-card:nth-child(1) { animation-delay: 0.1s; }
+.summary-card:nth-child(2) { animation-delay: 0.2s; }
+.summary-card:nth-child(3) { animation-delay: 0.3s; }
+.summary-card:nth-child(4) { animation-delay: 0.4s; }
+.summary-card:nth-child(5) { animation-delay: 0.5s; }
+
+.summary-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(199, 175, 107, 0.2);
+}
+
+/* Order Header Section */
+.summary-card .row.mb-3 {
+    margin-bottom: 20px;
+}
+
+.summary-card .pb-3 {
+    padding-bottom: 20px;
+}
+
+.summary-card .border-bottom {
+    border-bottom: 2px solid var(--border-light) !important;
+}
+
+.summary-card h5 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.summary-card h5 .bi {
+    color: var(--primary-gold);
+    font-size: 22px;
+}
+
+.summary-card p.text-muted {
+    font-size: 14px;
+    color: var(--text-medium);
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.summary-card p.text-muted .bi {
+    font-size: 16px;
+}
+
+/* Total Amount */
+.summary-card h4.text-primary {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--primary-red) !important;
+    margin-bottom: 10px;
+}
+
+/* ================================================================================
+   ORDER STATUS BADGES
+   ================================================================================ */
+
+.order-status {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: relative;
+    cursor: help;
+}
+
+/* Status Variants */
+.status-pending {
+    background: rgba(255, 193, 7, 0.15);
+    color: #E67E00;
+    border: 2px solid var(--warning-orange);
+}
+
+.status-confirmed {
+    background: rgba(23, 162, 184, 0.15);
+    color: var(--info-blue);
+    border: 2px solid var(--info-blue);
+}
+
+.status-shipped {
+    background: rgba(40, 167, 69, 0.15);
+    color: var(--success-green);
+    border: 2px solid var(--success-green);
+    animation: statusPulse 2s infinite;
+}
+
+@keyframes statusPulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 0 6px rgba(40, 167, 69, 0);
+    }
+}
+
+.status-delivered {
+    background: rgba(199, 175, 107, 0.15);
+    color: var(--dark-gold);
+    border: 2px solid var(--primary-gold);
+}
+
+.status-cancelled {
+    background: rgba(220, 53, 69, 0.15);
+    color: var(--danger-red);
+    border: 2px solid var(--danger-red);
+}
+
+/* Status Tooltip */
+.order-status:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 110%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--text-dark);
+    color: var(--white);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.order-status:hover::before {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: var(--text-dark);
+    z-index: 10;
+}
+
+/* ================================================================================
+   ORDER ITEMS SECTION
+   ================================================================================ */
+
+.order-items {
+    margin-bottom: 20px;
+}
+
+.order-item-card {
+    display: flex;
+    gap: 20px;
+    padding: 15px;
+    background: rgba(199, 175, 107, 0.04);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Hover Slide Effect */
+.order-item-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(199, 175, 107, 0.1),
+        transparent
+    );
+    transition: left 0.5s ease;
+}
+
+.order-item-card:hover::before {
+    left: 100%;
+}
+
+.order-item-card:hover {
+    background: rgba(199, 175, 107, 0.08);
+    border-color: var(--light-gold);
+}
+
+.order-item-image {
+    width: 100px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+    background: var(--white);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.order-item-card .flex-grow-1 {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.order-item-card h6 {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-dark);
+    margin-bottom: 6px;
+    line-height: 1.4;
+}
+
+.order-item-card p {
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.order-item-card strong {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--primary-red);
+}
+
+.order-item-card .text-end {
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+/* ================================================================================
+   DELIVERY ADDRESS SECTION
+   ================================================================================ */
+
+.summary-card h6 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.summary-card h6 .bi {
+    color: var(--primary-gold);
+    font-size: 18px;
+}
+
+.summary-card p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-medium);
+    margin-bottom: 5px;
+}
+
+.summary-card p strong {
+    color: var(--text-dark);
+    font-weight: 600;
+}
+
+.summary-card small {
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+/* ================================================================================
+   PAYMENT DETAILS SECTION
+   ================================================================================ */
+
+.summary-card .text-end h6 {
+    justify-content: flex-end;
+}
+
+.summary-card .text-end p {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.summary-card .text-end p .text-muted {
+    color: var(--text-medium);
+    font-weight: 500;
+}
+
+.summary-card .text-end p strong {
+    color: var(--text-dark);
+    font-weight: 700;
+}
+
+.summary-card .text-end h5 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--primary-red);
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 2px dashed var(--border-light);
+}
+
+/* ================================================================================
+   ORDER ACTIONS SECTION
+   ================================================================================ */
+
+.summary-card .mt-3.pt-3.border-top {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 2px solid var(--border-light) !important;
+    text-align: center;
+}
+
+.btn-outline-primary {
+    background: transparent;
+    border: 2px solid var(--light-gold);
+    color: var(--dark-gold);
+    padding: 10px 25px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+}
+
+.btn-outline-primary:hover {
+    background: var(--light-gold);
+    border-color: var(--primary-gold);
+    color: var(--primary-gold);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(199, 175, 107, 0.25);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-gold), var(--dark-gold));
+    border: none;
+    color: var(--white);
+    padding: 10px 25px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(199, 175, 107, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Button Shine Effect */
+.btn-primary::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+    );
+    transition: left 0.6s ease;
+}
+
+.btn-primary:hover::before {
+    left: 100%;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, var(--primary-yellow), var(--bright-yellow));
+    color: var(--primary-red);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(242, 213, 60, 0.5);
+}
+
+/* Button Size Variants */
+.btn-sm {
+    padding: 8px 20px;
+    font-size: 13px;
+}
+
+.btn-lg {
+    padding: 14px 35px;
+    font-size: 16px;
+}
+
+/* Print Button */
+.btn-print {
+    background: rgba(199, 175, 107, 0.1);
+    border: 2px solid var(--light-gold);
+    color: var(--dark-gold);
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-print:hover {
+    background: var(--light-gold);
+    border-color: var(--primary-gold);
+    color: var(--primary-gold);
+}
+
+/* ================================================================================
+   EMPTY STATE
+   ================================================================================ */
+
+.empty-state {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 80px 40px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    max-width: 600px;
+    margin: 50px auto;
+}
+
+.empty-state .bi {
+    font-size: 120px;
+    color: var(--light-gold);
+    margin-bottom: 25px;
+    opacity: 0.8;
+    animation: floatIcon 3s ease-in-out infinite;
+}
+
+@keyframes floatIcon {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-15px);
+    }
+}
+
+.empty-state h3 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 15px;
+}
+
+.empty-state p {
+    font-size: 16px;
+    color: var(--text-medium);
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+.empty-state .btn {
+    padding: 14px 40px;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+/* ================================================================================
+   LOADING STATE
+   ================================================================================ */
+
+.summary-card.loading {
+    opacity: 0.6;
+    pointer-events: none;
+    position: relative;
+}
+
+.summary-card.loading::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--light-gold);
+    border-top-color: var(--primary-gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+/* ================================================================================
+   RESPONSIVE DESIGN
+   ================================================================================ */
+
+/* TABLET (max-width: 991px) */
+@media (max-width: 991px) {
+    .summary-card {
+        padding: 25px;
+    }
+
+    .summary-card .col-md-6 {
+        margin-top: 20px;
+    }
+
+    .summary-card .col-md-6:first-child {
+        margin-top: 0;
+    }
+
+    .summary-card .col-md-6.text-end {
+        text-align: left !important;
+    }
+
+    .summary-card .text-end h6 {
+        justify-content: flex-start !important;
+    }
+
+    .summary-card .text-end p {
+        justify-content: space-between;
+    }
+}
+
+/* MOBILE (max-width: 768px) */
+@media (max-width: 768px) {
+    .collection-title {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    .summary-card {
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .summary-card h5 {
+        font-size: 18px;
+    }
+
+    .summary-card h4.text-primary {
+        font-size: 24px;
+    }
+
+    .order-item-card {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .order-item-image {
+        width: 100%;
+        height: 200px;
+    }
+
+    .order-item-card .text-end {
+        text-align: left !important;
+        justify-content: flex-start;
+    }
+
+    .success-alert {
+        padding: 30px 20px;
+    }
+
+    .success-alert h3 {
+        font-size: 20px;
+    }
+
+    .empty-state {
+        padding: 60px 30px;
+    }
+
+    .empty-state .bi {
+        font-size: 80px;
+    }
+
+    .empty-state h3 {
+        font-size: 24px;
+    }
+}
+
+/* SMALL MOBILE (max-width: 576px) */
+@media (max-width: 576px) {
+    .collection-title {
+        font-size: 20px;
+    }
+
+    .summary-card {
+        padding: 15px;
+    }
+
+    .summary-card h5 {
+        font-size: 16px;
+    }
+
+    .summary-card h4.text-primary {
+        font-size: 20px;
+    }
+
+    .order-status {
+        padding: 5px 12px;
+        font-size: 11px;
+    }
+
+    .order-item-image {
+        height: 180px;
+    }
+
+    .order-item-card h6 {
+        font-size: 14px;
+    }
+
+    .order-item-card strong {
+        font-size: 16px;
+    }
+
+    .summary-card h6 {
+        font-size: 14px;
+    }
+
+    .summary-card .mt-3.pt-3.border-top .btn {
+        display: block;
+        width: 100%;
+        margin-bottom: 10px;
+        margin-right: 0 !important;
+    }
+
+    .summary-card .mt-3.pt-3.border-top .btn.me-2 {
+        margin-right: 0 !important;
+    }
+
+    .empty-state {
+        padding: 40px 20px;
+    }
+
+    .empty-state .bi {
+        font-size: 60px;
+    }
+
+    .empty-state h3 {
+        font-size: 20px;
+    }
+
+    .empty-state p {
+        font-size: 14px;
+    }
+
+    .btn-sm {
+        padding: 8px 16px;
+        font-size: 12px;
+    }
+}
+
+/* ================================================================================
+   PRINT STYLES
+   ================================================================================ */
+
+@media print {
+    .summary-card .mt-3.pt-3.border-top,
+    .btn-print,
+    .collection-title,
+    .success-alert {
+        display: none;
+    }
+
+    .summary-card {
+        break-inside: avoid;
+        page-break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #000;
+        margin-bottom: 20px;
+    }
+
+    .order-status {
+        border: 1px solid currentColor;
+    }
+
+    body {
+        background: white;
+    }
+}
+
+/* ================================================================================
+   ACCESSIBILITY
+   ================================================================================ */
+
+.btn-primary:focus-visible,
+.btn-outline-primary:focus-visible,
+.btn-print:focus-visible {
+    outline: 3px solid rgba(242, 213, 60, 0.6);
+    outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .summary-card,
+    .success-alert,
+    .empty-state .bi,
+    .status-shipped,
+    * {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+@media (prefers-contrast: high) {
+    .summary-card,
+    .empty-state {
+        border: 3px solid currentColor;
+    }
+
+    .order-status {
+        border-width: 3px;
+    }
+}
+
+/* ================================================================================
+   ADDITIONAL ENHANCEMENTS
+   ================================================================================ */
+
+/* Order Timeline (Optional) */
+.order-timeline {
+    position: relative;
+    padding-left: 30px;
+    margin-top: 20px;
+}
+
+.order-timeline::before {
+    content: "";
+    position: absolute;
+    left: 8px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--border-light);
+}
+
+.timeline-item {
+    position: relative;
+    padding-bottom: 20px;
+}
+
+.timeline-item::before {
+    content: "";
+    position: absolute;
+    left: -26px;
+    top: 0;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--white);
+    border: 3px solid var(--primary-gold);
+}
+
+.timeline-item.completed::before {
+    background: var(--success-green);
+    border-color: var(--success-green);
+}
+
+.timeline-item h6 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+}
+
+.timeline-item p {
+    font-size: 12px;
+    color: var(--text-light);
+    margin: 0;
+}
+
+/* Order Filter Tabs (Optional) */
+.order-filters {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+}
+
+.filter-tab {
+    padding: 8px 20px;
+    background: var(--white);
+    border: 2px solid var(--border-light);
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-medium);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-tab:hover,
+.filter-tab.active {
+    background: linear-gradient(135deg, var(--primary-gold), var(--dark-gold));
+    border-color: var(--primary-gold);
+    color: var(--white);
+}
+
+/* Tracking Number */
+.tracking-number {
+    background: rgba(199, 175, 107, 0.1);
+    border-left: 3px solid var(--primary-gold);
+    padding: 10px 15px;
+    border-radius: 6px;
+    font-size: 13px;
+    margin-top: 10px;
+}
+
+.tracking-number strong {
+    color: var(--primary-gold);
+}
+
+/* ================================================================================
+   END OF STYLESHEET - MANOVASTRA ORDERS PAGE
+   ================================================================================ */

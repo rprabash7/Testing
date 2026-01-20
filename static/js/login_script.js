@@ -23,18 +23,19 @@ document.addEventListener('DOMContentLoaded', function() {
         sendOtpBtn.disabled = true;
         sendOtpBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Sending...';
         
+        const formData = new FormData();
+        formData.append('email', userEmail);
+        
         fetch('/send-login-otp/', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
                 'X-CSRFToken': getCookie('csrftoken')
             },
-            body: 'email=' + encodeURIComponent(userEmail)
+            body: formData
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Hide email form, show OTP form
                 emailForm.style.display = 'none';
                 otpForm.style.display = 'block';
                 document.querySelector('.login-subtitle').textContent = 'OTP sent to ' + userEmail;
@@ -80,7 +81,6 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Redirect to home
                 window.location.href = data.redirect_url;
             } else {
                 showError('otpError', 'otpErrorText', data.message);
@@ -101,13 +101,15 @@ document.addEventListener('DOMContentLoaded', function() {
         resendOtpBtn.disabled = true;
         resendOtpBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Sending...';
         
+        const formData = new FormData();
+        formData.append('email', userEmail);
+        
         fetch('/send-login-otp/', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
                 'X-CSRFToken': getCookie('csrftoken')
             },
-            body: 'email=' + encodeURIComponent(userEmail)
+            body: formData
         })
         .then(response => response.json())
         .then(data => {

@@ -311,3 +311,74 @@ function getCookie(name) {
     }
     return cookieValue;
 }
+
+
+// Buy Now Button Click Handler
+document.getElementById('buyNowBtn').addEventListener('click', function() {
+    const selectedColor = document.querySelector('input[name="color"]:checked');
+    const selectedSize = document.querySelector('.size-option.active');
+    const quantity = document.getElementById('quantityInput').value;
+    
+    // Validation
+    if (!selectedColor) {
+        alert('Please select a color');
+        return;
+    }
+    
+    if (!selectedSize) {
+        alert('Please select a size');
+        return;
+    }
+    
+    // Send buy now request
+    fetch(`/product/{{ product.slug }}/buy-now/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            color: selectedColor.value,
+            size: selectedSize.dataset.size,
+            quantity: quantity
+        })
+    })
+    .then(response => {
+        // Check if redirected to login (user not logged in)
+        if (response.redirected && response.url.includes('/login/')) {
+            // Show login required message
+            if (confirm('⚠️ Please login to continue shopping!\n\nClick OK to go to Login page')) {
+                window.location.href = `/login/?next=/product/{{ product.slug }}/`;
+            }
+            return null;
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data && data.success) {
+            window.location.href = data.redirect_url;
+        } else if (data && !data.success) {
+            alert(data.error || 'An error occurred. Please try again.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+    });
+});
+
+// Get CSRF token function
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}

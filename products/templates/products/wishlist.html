@@ -4,20 +4,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Wishlist | Manovastra</title>
+    <title>Manovastra - Premium Indian Ethnic Wear for Women | Sarees, Kurtis & Lehengas</title>
+    <meta name="description" content="Shop premium Indian ethnic wear at Manovastra. Explore handloom sarees, designer kurtis, and elegant lehengas. Trusted by thousands of women across India.">
     
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/collection_style.css' %}">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/wishlist.css' %}">
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 </head>
 <body>
 
-<!-- Header -->
+<!-- Header Section -->
 <header class="header-main">
     <div class="container">
         <div class="row align-items-center py-3">
+            <!-- Logo -->
             <div class="col-lg-2 col-md-3 col-6">
                 <div class="logo">
                     <a href="{% url 'home' %}">
@@ -25,121 +39,440 @@
                             <img src="{{ site_settings.logo.url }}" alt="{{ site_settings.site_name }}" class="logo-image">
                         {% else %}
                             <h1 class="brand-name mb-0">Manovastra</h1>
+                            <p class="brand-tagline mb-0">Elegance Redefined</p>
                         {% endif %}
                     </a>
                 </div>
             </div>
+
+
+            <!-- Search Bar -->
             <div class="col-lg-6 col-md-5 d-none d-md-block">
                 <form class="search-bar" method="GET" action="{% url 'search' %}">
-                    <input type="text" name="q" class="form-control search-input" placeholder="Search...">
-                    <button type="submit" class="btn-search"><i class="bi bi-search"></i></button>
+                    <input type="text" name="q" class="form-control search-input" placeholder="Search for Sarees, Kurtis, Lehengas..." value="{{ request.GET.q }}">
+                    <button type="submit" class="btn-search">
+                        <i class="bi bi-search"></i>
+                    </button>
                 </form>
             </div>
-            <div class="col-lg-4 col-md-4 col-6">
-                <div class="header-icons">
-                    <a href="{% url 'login' %}" class="icon-link">
-                        <i class="bi bi-person"></i>
-                        <span class="d-none d-lg-inline">Account</span>
-                    </a>
-                    <a href="{% url 'wishlist' %}" class="icon-link">
-                        <i class="bi bi-heart-fill"></i>
-                    </a>
-                    <a href="{% url 'cart' %}" class="icon-link">
-                        <i class="bi bi-bag"></i>
-                    </a>
-                </div>
+
+
+            <!-- Header Icons -->
+<div class="col-lg-4 col-md-4 col-6">
+    <div class="header-icons">
+        {% if is_logged_in %}
+            <div class="dropdown">
+                <a href="#" class="icon-link dropdown-toggle" data-bs-toggle="dropdown">
+                    <i class="bi bi-person-circle"></i>
+                    <span class="d-none d-lg-inline">{{ user_name|truncatechars:15 }}</span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{% url 'my_orders' %}"><i class="bi bi-box"></i> My Orders</a></li>
+                    <li><a class="dropdown-item" href="{% url 'wishlist' %}"><i class="bi bi-heart"></i> Wishlist</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                </ul>
+            </div>
+        {% else %}
+            <a href="{% url 'login' %}" class="icon-link">
+                <i class="bi bi-person"></i>
+                <span class="d-none d-lg-inline">Account</span>
+            </a>
+        {% endif %}
+
+
+        <a href="{% url 'wishlist' %}" class="icon-link position-relative">
+            <i class="bi bi-heart"></i>
+            <span class="wishlist-badge" id="wishlistCount" style="display: none;">0</span>
+            <span class="d-none d-lg-inline">Wishlist</span>
+        </a>
+
+
+        <a href="{% url 'cart' %}" class="icon-link cart-link position-relative">
+            <i class="bi bi-bag"></i>
+            <span class="cart-badge" id="cartCount" style="display: none;">0</span>
+            <span class="d-none d-lg-inline">Cart</span>
+        </a>
+    </div>
+</div>
+
+
+        <!-- Mobile Search Bar -->
+        <div class="row d-md-none mb-3">
+            <div class="col-12">
+                <form class="search-bar" method="GET" action="{% url 'search' %}">
+                    <input type="text" name="q" class="form-control search-input" placeholder="Search for Sarees, Kurtis..." value="{{ request.GET.q }}">
+                    <button type="submit" class="btn-search">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </form>
             </div>
         </div>
     </div>
 </header>
 
-<!-- Wishlist Section -->
-<section class="collection-section py-5">
+
+
+    <!-- Navigation Bar -->
+<nav class="navbar-main">
+    <div class="container">
+        <ul class="nav-menu">
+            <!-- Home -->
+            <li class="nav-item">
+                <a href="{% url 'home' %}" class="nav-link {% if request.path == '/' %}active{% endif %}">
+                    <i class="bi bi-house-door"></i> Home
+                </a>
+            </li>
+
+
+            <!-- Dynamic Categories from Database -->
+            {% for category in categories %}
+            <li class="nav-item">
+                <a href="{% url 'category_collection' category.slug %}" class="nav-link">
+                    {{ category.name }}
+                </a>
+            </li>
+            {% endfor %}
+
+
+            <!-- New Arrivals -->
+            <li class="nav-item">
+                <a href="{% url 'new_arrivals' %}" class="nav-link">
+                    <i class="bi bi-stars"></i> New Arrivals
+                </a>
+            </li>
+
+
+            <!-- Offers -->
+            <li class="nav-item">
+                <a href="{% url 'offers' %}" class="nav-link special">
+                    <i class="bi bi-tag-fill"></i> Offers
+                </a>
+            </li>
+
+
+            <!-- All Products -->
+            <li class="nav-item">
+                <a href="{% url 'all_products' %}" class="nav-link">
+                    All Products
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+{% if products %}
+<!-- Wishlist Page Header -->
+<section class="wishlist-header-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="wishlist-page-title">
+                    <i class="bi bi-heart-fill"></i> My Wishlist
+                </h1>
+                <p class="wishlist-page-subtitle">Your favorite ethnic styles, saved for later</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <div class="wishlist-count-badge">
+                    <i class="bi bi-bag-heart"></i>
+                    <span class="count-number">{{ products.count }}</span> Items Saved
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Wishlist Items Section -->
+<section class="wishlist-items-section py-5">
     <div class="container">
         
-        <div class="mb-4">
-            <h2 class="collection-title">My Wishlist</h2>
-            <p class="collection-subtitle">{{ products.count }} item{{ products.count|pluralize }} in your wishlist</p>
-        </div>
-
-        {% if products %}
-        <div class="row g-4">
-            {% for product in products %}
-            <div class="col-lg-3 col-md-4 col-sm-6">
-                <div class="product-card">
-                    <div class="product-image-wrapper">
-                        {% if product.colors.first.images.first %}
-                            <img src="{{ product.colors.first.images.first.image.url }}" alt="{{ product.name }}" class="product-image">
-                        {% endif %}
-                        
-                        <span class="product-badge">{{ product.get_badge_text }}</span>
-                        
-                        <button class="btn-remove-wishlist" data-product-id="{{ product.id }}">
-                            <i class="bi bi-x"></i>
+        <!-- Wishlist Products Grid -->
+        <div class="wishlist-grid">
+            <div class="row g-4" id="wishlistContainer">
+                
+                {% for product in products %}
+                <!-- Wishlist Product Card -->
+                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6" data-product-id="{{ product.id }}">
+                    <div class="wishlist-product-card">
+                        <button class="btn-remove-wishlist" 
+                                data-product-id="{{ product.id }}"
+                                title="Remove from wishlist">
+                            <i class="bi bi-x-circle-fill"></i>
                         </button>
-                        
-                        <div class="product-overlay">
-                            <a href="{% url 'product_detail' product.slug %}" class="btn-quick-view">
-                                <i class="bi bi-eye"></i> View
+                        <div class="wishlist-product-image">
+                            <a href="{% url 'product_detail' product.slug %}">
+                                {% if product.colors.first.images.first %}
+                                    <img src="{{ product.colors.first.images.first.image.url }}" 
+                                         alt="{{ product.name }}" 
+                                         class="img-fluid">
+                                {% else %}
+                                    <div class="wishlist-img-placeholder">
+                                        <i class="bi bi-image"></i>
+                                    </div>
+                                {% endif %}
                             </a>
+                            
+                            {% if product.discount_percent > 0 %}
+                            <span class="wishlist-badge">{{ product.discount_percent }}% OFF</span>
+                            {% elif product.is_bestseller %}
+                            <span class="wishlist-badge bestseller">Bestseller</span>
+                            {% else %}
+                            <span class="wishlist-badge">New</span>
+                            {% endif %}
+                        </div>
+                        <div class="wishlist-product-info">
+                            <a href="{% url 'product_detail' product.slug %}" class="wishlist-product-name">
+                                {{ product.name }}
+                            </a>
+                            <p class="wishlist-product-desc">{{ product.fabric }}</p>
+                            
+                            <div class="wishlist-rating">
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-half"></i>
+                                <span class="rating-count">{{ product.rating }}</span>
+                            </div>
+                            
+                            <div class="wishlist-price">
+                                <span class="price-current">₹{{ product.current_price|floatformat:0 }}</span>
+                                {% if product.discount_percent > 0 %}
+                                <span class="price-original">₹{{ product.original_price|floatformat:0 }}</span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="wishlist-actions">
+                                <a href="#" class="btn-move-to-cart" 
+                                   data-product-id="{{ product.id }}"
+                                   data-product-color="{{ product.colors.first.name|default:'Default' }}">
+                                    <i class="bi bi-bag-plus"></i> Move to Cart
+                                </a>
+                                <a href="{% url 'product_detail' product.slug %}" class="btn-view-product">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </div>
                         </div>
                     </div>
-                    
-                    <div class="product-info">
-                        <h3 class="product-name">
-                            <a href="{% url 'product_detail' product.slug %}">{{ product.name }}</a>
-                        </h3>
-                        
-                        <div class="product-rating">
-                            <i class="bi bi-star-fill"></i>
-                            <span>{{ product.rating }}</span>
-                        </div>
-                        
-                        <div class="product-price-section">
-                            <span class="product-price">₹{{ product.current_price|floatformat:0 }}</span>
-                            <span class="product-original-price">₹{{ product.original_price|floatformat:0 }}</span>
+                </div>
+                {% endfor %}
+
+            </div>
+        </div>
+
+        <!-- Wishlist Actions Summary -->
+        <div class="wishlist-summary-actions">
+            <div class="row justify-content-center mt-5">
+                <div class="col-lg-6 text-center">
+                    <div class="summary-card">
+                        <h3 class="summary-title">Ready to checkout?</h3>
+                        <p class="summary-text">Move all items to cart and complete your purchase</p>
+                        <div class="summary-buttons">
+                            <a href="#" class="btn-move-all-to-cart" id="moveAllToCart">
+                                <i class="bi bi-bag-check"></i> Move All to Cart
+                            </a>
+                            <a href="{% url 'home' %}" class="btn-continue-shopping-secondary">
+                                Continue Shopping
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
-            {% endfor %}
         </div>
-        {% else %}
-        <div class="text-center py-5">
-            <i class="bi bi-heart" style="font-size: 80px; color: #ccc;"></i>
-            <h3 class="mt-4">Your wishlist is empty</h3>
-            <p>Add items you love to your wishlist</p>
-            <a href="{% url 'home' %}" class="btn btn-primary mt-3">Start Shopping</a>
-        </div>
-        {% endif %}
 
     </div>
 </section>
 
+{% else %}
+<!-- Empty Wishlist State -->
+<section class="empty-wishlist-section py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-5 col-md-7">
+                <div class="empty-wishlist-card">
+                    <div class="empty-icon">
+                        <i class="bi bi-heart"></i>
+                    </div>
+                    <h2 class="empty-title">Your Wishlist is Empty</h2>
+                    <p class="empty-description">
+                        Looks like you haven't added any items to your wishlist yet. 
+                        Browse our beautiful collection and save your favorites!
+                    </p>
+                    <a href="{% url 'home' %}" class="btn-continue-shopping">
+                        <i class="bi bi-arrow-left-circle"></i> Continue Shopping
+                    </a>
+                    <div class="empty-features">
+                        <div class="feature-item">
+                            <i class="bi bi-heart-fill"></i>
+                            <span>Save items for later</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="bi bi-bell-fill"></i>
+                            <span>Get price drop alerts</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="bi bi-bookmark-fill"></i>
+                            <span>Track your favorites</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+
+  <!-- Footer Section -->
+<footer class="footer-main">
+    <div class="container">
+        <!-- Footer Top -->
+        <div class="row py-5">
+            <!-- About Column -->
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="footer-widget">
+                    <h3 class="footer-brand">{{ site_settings.site_name }}</h3>
+                    <p class="footer-about">{{ site_settings.about_text }}</p>
+                    <div class="social-icons">
+                        {% if site_settings.instagram_url %}
+                        <a href="{{ site_settings.instagram_url }}" target="_blank" class="social-link" title="Instagram">
+                            <i class="bi bi-instagram"></i>
+                        </a>
+                        {% endif %}
+                        
+                        {% if site_settings.youtube_url %}
+                        <a href="{{ site_settings.youtube_url }}" target="_blank" class="social-link" title="YouTube">
+                            <i class="bi bi-youtube"></i>
+                        </a>
+                        {% endif %}
+                        
+                        {% if site_settings.whatsapp_url %}
+                        <a href="{{ site_settings.whatsapp_url }}" target="_blank" class="social-link whatsapp" title="WhatsApp">
+                            <i class="bi bi-whatsapp"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Quick Links Column -->
+            <div class="col-lg-2 col-md-6 mb-4">
+                <div class="footer-widget">
+                    <h4 class="footer-title">Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="{{ site_settings.about_us_link }}">About Us</a></li>
+                        <li><a href="{{ site_settings.our_story_link }}">Our Story</a></li>
+                        <li><a href="{{ site_settings.blog_link }}">Blog</a></li>
+                        <li><a href="{{ site_settings.careers_link }}">Careers</a></li>
+                        <li><a href="{{ site_settings.press_link }}">Press</a></li>
+                    </ul>
+                </div>
+            </div>
+
+
+            <!-- Categories Column -->
+            <div class="col-lg-2 col-md-6 mb-4">
+                <div class="footer-widget">
+                    <h4 class="footer-title">Categories</h4>
+                    <ul class="footer-links">
+                        {% for category in nav_categories|slice:":5" %}
+                        <li><a href="{% url 'category_collection' category.slug %}">{{ category.name }}</a></li>
+                        {% endfor %}
+                        <li><a href="{% url 'new_arrivals' %}">New Arrivals</a></li>
+                        <li><a href="{% url 'offers' %}">Sale</a></li>
+                    </ul>
+                </div>
+            </div>
+
+
+            <!-- Customer Service Column -->
+            <div class="col-lg-2 col-md-6 mb-4">
+                <div class="footer-widget">
+                    <h4 class="footer-title">Customer Service</h4>
+                    <ul class="footer-links">
+                        <li><a href="{{ site_settings.contact_us_link }}">Contact Us</a></li>
+                        <li><a href="{{ site_settings.track_order_link }}">Track Order</a></li>
+                        <li><a href="{{ site_settings.returns_link }}">Returns & Exchange</a></li>
+                        <li><a href="{{ site_settings.shipping_link }}">Shipping Info</a></li>
+                        <li><a href="{{ site_settings.size_guide_link }}">Size Guide</a></li>
+                    </ul>
+                </div>
+            </div>
+
+
+            <!-- Contact Column -->
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="footer-widget">
+                    <h4 class="footer-title">Get in Touch</h4>
+                    <ul class="footer-contact">
+                        <li>
+                            <i class="bi bi-geo-alt-fill"></i>
+                            <span>{{ site_settings.address }}</span>
+                        </li>
+                        <li>
+                            <i class="bi bi-telephone-fill"></i>
+                            <a href="tel:{{ site_settings.phone }}">{{ site_settings.phone }}</a>
+                        </li>
+                        <li>
+                            <i class="bi bi-envelope-fill"></i>
+                            <a href="mailto:{{ site_settings.email }}">{{ site_settings.email }}</a>
+                        </li>
+                        {% if site_settings.whatsapp %}
+                        <li>
+                            <i class="bi bi-whatsapp"></i>
+                            <a href="https://wa.me/{{ site_settings.whatsapp }}" target="_blank">WhatsApp Us</a>
+                        </li>
+                        {% endif %}
+                        <li>
+                            <i class="bi bi-clock-fill"></i>
+                            <span>{{ site_settings.working_hours }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Payment & Trust Badges -->
+        <div class="row py-4 border-top border-bottom footer-badges">
+            <div class="col-12">
+                <div class="payment-methods text-center">
+                    <p class="mb-2">We Accept</p>
+                    <div class="payment-icons">
+                        <i class="bi bi-credit-card-2-front"></i>
+                        <i class="bi bi-wallet2"></i>
+                        <i class="bi bi-phone"></i>
+                        {% if site_settings.enable_cod %}
+                        <i class="bi bi-cash-coin"></i>
+                        {% endif %}
+                        <span class="payment-text">Visa • Mastercard • UPI • Paytm • Net Banking{% if site_settings.enable_cod %} • COD{% endif %}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Footer Bottom -->
+        <div class="row py-4">
+            <div class="col-lg-6 text-center text-lg-start mb-3 mb-lg-0">
+                <p class="footer-copyright mb-0">{{ site_settings.copyright_text }}</p>
+            </div>
+            <div class="col-lg-6 text-center text-lg-end">
+                <ul class="footer-legal">
+                    <li><a href="{{ site_settings.privacy_policy_link }}">Privacy Policy</a></li>
+                    <li><a href="{{ site_settings.terms_link }}">Terms & Conditions</a></li>
+                    <li><a href="{{ site_settings.refund_policy_link }}">Refund Policy</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// Remove from wishlist
-document.querySelectorAll('.btn-remove-wishlist').forEach(btn => {
-    btn.addEventListener('click', function() {
-        const productId = this.dataset.productId;
-        
-        fetch('/remove-from-wishlist/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'X-CSRFToken': getCookie('csrftoken')
-            },
-            body: 'product_id=' + productId
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            }
-        });
-    });
-});
-
+// CSRF Token Helper
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -154,7 +487,320 @@ function getCookie(name) {
     }
     return cookieValue;
 }
+
+// Remove from wishlist
+document.querySelectorAll('.btn-remove-wishlist').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const productId = this.dataset.productId;
+        const card = this.closest('[data-product-id]');
+        
+        // Show loading
+        this.innerHTML = '<i class="bi bi-hourglass-split"></i>';
+        this.disabled = true;
+        
+        fetch('/remove-from-wishlist/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: 'product_id=' + productId
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Remove card with animation
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.8)';
+                
+                setTimeout(() => {
+                    card.remove();
+                    
+                    // Check if wishlist is empty
+                    const container = document.getElementById('wishlistContainer');
+                    if (container && container.children.length === 0) {
+                        // Reload to show empty state
+                        window.location.reload();
+                    }
+                }, 300);
+            } else {
+                alert('Error removing item. Please try again.');
+                this.innerHTML = '<i class="bi bi-x-circle-fill"></i>';
+                this.disabled = false;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Network error. Please check your connection.');
+            this.innerHTML = '<i class="bi bi-x-circle-fill"></i>';
+            this.disabled = false;
+        });
+    });
+});
+
+// Move to cart (Single Item)
+document.querySelectorAll('.btn-move-to-cart').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const productId = this.dataset.productId;
+        const productColor = this.dataset.productColor;
+        const card = this.closest('[data-product-id]');
+        
+        // Show loading
+        this.innerHTML = '<i class="bi bi-hourglass-split"></i> Adding...';
+        this.style.pointerEvents = 'none';
+        
+        const formData = new FormData();
+        formData.append('product_id', productId);
+        formData.append('quantity', 1);
+        formData.append('color', productColor);
+        
+        fetch('/add-to-cart/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Item added to cart, now remove from wishlist
+                fetch('/remove-from-wishlist/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: 'product_id=' + productId
+                })
+                .then(response => response.json())
+                .then(removeData => {
+                    if (removeData.success) {
+                        // Show success message
+                        this.innerHTML = '<i class="bi bi-check-circle-fill"></i> Moved!';
+                        this.style.background = '#10b981';
+                        
+                        // Remove card
+                        setTimeout(() => {
+                            card.style.opacity = '0';
+                            card.style.transform = 'scale(0.8)';
+                            
+                            setTimeout(() => {
+                                card.remove();
+                                
+                                // Check if empty
+                                const container = document.getElementById('wishlistContainer');
+                                if (container && container.children.length === 0) {
+                                    window.location.reload();
+                                }
+                            }, 300);
+                        }, 500);
+                    }
+                });
+            } else {
+                alert('Error adding to cart. Please try again.');
+                this.innerHTML = '<i class="bi bi-bag-plus"></i> Move to Cart';
+                this.style.pointerEvents = 'auto';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Network error. Please try again.');
+            this.innerHTML = '<i class="bi bi-bag-plus"></i> Move to Cart';
+            this.style.pointerEvents = 'auto';
+        });
+    });
+});
+
+// Move ALL to cart
+const moveAllBtn = document.getElementById('moveAllToCart');
+if (moveAllBtn) {
+    moveAllBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // Show loading
+        this.innerHTML = '<i class="bi bi-hourglass-split"></i> Moving All...';
+        this.style.pointerEvents = 'none';
+        
+        const buttons = document.querySelectorAll('.btn-move-to-cart');
+        let completed = 0;
+        const total = buttons.length;
+        
+        if (total === 0) {
+            window.location.reload();
+            return;
+        }
+        
+        buttons.forEach((btn, index) => {
+            setTimeout(() => {
+                // Trigger click
+                btn.click();
+                completed++;
+                
+                // Update progress
+                this.innerHTML = `<i class="bi bi-hourglass-split"></i> Moving ${completed}/${total}...`;
+                
+                // When all done, reload
+                if (completed === total) {
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                }
+            }, index * 500); // 500ms delay between each
+        });
+    });
+}
+
+
+
+/* ============================================
+   WISHLIST PAGE INTERACTIONS
+   ============================================ */
+
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // Remove from wishlist
+    document.querySelectorAll('.btn-remove-wishlist').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const productId = this.dataset.productId;
+            const card = this.closest('[data-product-id]');
+            
+            if (confirm('Remove this item from wishlist?')) {
+                // Add removing animation
+                card.classList.add('removing');
+                
+                // Remove after animation
+                setTimeout(() => {
+                    card.remove();
+                    updateWishlistCount();
+                }, 400);
+                
+                // Send to backend
+                removeFromWishlist(productId);
+            }
+        });
+    });
+    
+    // Move to cart
+    document.querySelectorAll('.btn-move-to-cart').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const productId = this.dataset.productId;
+            const card = this.closest('[data-product-id]');
+            
+            // Add loading state
+            this.classList.add('loading');
+            this.innerHTML = '<i class="bi bi-hourglass-split"></i> Moving...';
+            
+            // Simulate API call
+            setTimeout(() => {
+                // Add to cart
+                addToCart(productId);
+                
+                // Remove from wishlist
+                card.classList.add('removing');
+                setTimeout(() => {
+                    card.remove();
+                    updateWishlistCount();
+                }, 400);
+                
+                // Show success message
+                showToast('Item moved to cart!', 'success');
+            }, 800);
+        });
+    });
+    
+    // Move all to cart
+    const moveAllBtn = document.getElementById('moveAllToCart');
+    if (moveAllBtn) {
+        moveAllBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            if (confirm('Move all items to cart?')) {
+                const allProducts = document.querySelectorAll('.btn-move-to-cart');
+                
+                allProducts.forEach((btn, index) => {
+                    setTimeout(() => {
+                        btn.click();
+                    }, index * 200);
+                });
+            }
+        });
+    }
+    
+    // Helper functions
+    function updateWishlistCount() {
+        const remaining = document.querySelectorAll('.wishlist-product-card').length;
+        const countBadge = document.querySelector('.count-number');
+        
+        if (countBadge) {
+            countBadge.textContent = remaining;
+        }
+        
+        // If empty, show empty state
+        if (remaining === 0) {
+            window.location.reload();
+        }
+    }
+    
+    function removeFromWishlist(productId) {
+        // Send AJAX request to backend
+        fetch('/wishlist/remove/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ product_id: productId })
+        });
+    }
+    
+    function addToCart(productId) {
+        // Send AJAX request to add to cart
+        fetch('/cart/add/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ product_id: productId })
+        });
+    }
+    
+    function showToast(message, type) {
+        const toast = document.createElement('div');
+        toast.className = 'success-toast';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+    
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+});
+
+
+
 </script>
+
 
 <style>
 .btn-remove-wishlist {

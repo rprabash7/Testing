@@ -1,4 +1,6 @@
 from django.db import models
+from django.utils.text import slugify
+
 
 class Category(models.Model):
     CATEGORY_IMAGES = {
@@ -61,7 +63,7 @@ class Product(models.Model):
     # Pricing
     current_price = models.DecimalField(max_digits=10, decimal_places=2)
     original_price = models.DecimalField(max_digits=10, decimal_places=2)
-    discount_percent = models.IntegerField(default=0)
+    discount_percent = models.IntegerField(default=0, editable=False)  # Auto-calculated
     
     # Rating
     rating = models.DecimalField(max_digits=2, decimal_places=1, default=4.5)
@@ -90,19 +92,62 @@ class Product(models.Model):
     class Meta:
         ordering = ['-created_at']
     
-    def __str__(self):
-        return self.name
-    
-    def get_badge_text(self):
-        if self.badge_type == 'bestseller':
-            return 'Bestseller'
-        elif self.badge_type == 'new':
-            return 'New'
+    def save(self, *args, **kwargs):
+        """Auto-calculate discount percentage before saving"""
+        if self.original_price and self.current_price:
+            if self.original_price > 0:
+                discount = ((self.original_price - self.current_price) / self.original_price) * 100
+                self.discount_percent = round(discount)
+            else:
+                self.discount_percent = 0
         else:
+            self.discount_percent = 0
+        
+        # Auto-generate slug if not provided
+        if not self.slug:
+            self.slug = slugify(self.name)
+        
+        super().save(*args, **kwargs)
+    
+    @property
+    def discount_amount(self):
+        """Calculate discount amount in rupees"""
+        return self.original_price - self.current_price
+    
+    @property
+    def get_badge_text(self):
+        """Get badge text based on product type"""
+        if self.badge_type == 'new':
+            return 'New Arrival'
+        elif self.badge_type == 'hot':
+            return 'Hot Deal'
+        elif self.badge_type == 'sale':
             return f'{self.discount_percent}% OFF'
+        elif self.is_bestseller:
+            return 'Bestseller'
+        return ''
+    
+    @property
+    def average_rating_stars(self):
+        """Return rating as full/half/empty stars dict"""
+        full_stars = int(self.rating)
+        half_star = 1 if (self.rating - full_stars) >= 0.5 else 0
+        empty_stars = 5 - full_stars - half_star
+        return {
+            'full': full_stars,
+            'half': half_star,
+            'empty': empty_stars
+        }
+    
+    def get_rating_stars(self):
+        """Alias for template compatibility"""
+        return self.average_rating_stars
     
     def get_occasions_list(self):
         return [o.strip() for o in self.occasion.split(',')]
+    
+    def __str__(self):
+        return self.name
 
 
 class ProductColor(models.Model):
@@ -244,8 +289,6 @@ class OrderItem(models.Model):
         return self.price * self.quantity
 
 
-# ... Keep all existing models ...
-
 class Payment(models.Model):
     PAYMENT_STATUS = [
         ('pending', 'Pending'),
@@ -270,8 +313,6 @@ class Payment(models.Model):
         ordering = ['-created_at']
 
 
-# ... Keep all existing models ...
-
 class UserOTP(models.Model):
     email = models.EmailField()
     otp = models.CharField(max_length=6)
@@ -283,8 +324,8 @@ class UserOTP(models.Model):
     
     def is_expired(self):
         from django.utils import timezone
-        from django.conf import settings
-        expiry_time = timezone.now() - timezone.timedelta(minutes=settings.OTP_EXPIRY_TIME)
+        from datetime import timedelta
+        expiry_time = timezone.now() - timedelta(minutes=10)  # 10 minutes expiry
         return self.created_at < expiry_time
     
     class Meta:
@@ -294,9 +335,8 @@ class UserOTP(models.Model):
 class UserProfile(models.Model):
     email = models.EmailField(unique=True)
     name = models.CharField(max_length=200)
-    phone = models.CharField(max_length=15)
+    phone = models.CharField(max_length=15, blank=True)
     is_verified = models.BooleanField(default=False)
-    password = models.CharField(max_length=200)  # Hashed password
     created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
@@ -306,34 +346,52 @@ class UserProfile(models.Model):
         ordering = ['-created_at']
 
 
-# ... Keep all existing models ...
-
 class SiteSetting(models.Model):
-    logo = models.ImageField(upload_to='site/', blank=True, null=True)
-    site_name = models.CharField(max_length=100, default='Manovastra')
-    tagline = models.CharField(max_length=200, default='Elegance Redefined')
-    email = models.EmailField(default='info@manovastra.com')
-    phone = models.CharField(max_length=15, default='+91 98765 43210')
-    address = models.TextField(default='Bangalore, Karnataka, India')
+    logo = models.ImageField(upload_to='site/', blank=True, null=True, help_text="Website logo")
+    site_name = models.CharField(max_length=100, default="Manovastra")
+    tagline = models.CharField(max_length=200, default="Elegance Redefined")
+    about_text = models.TextField(default="Your destination for premium Indian ethnic wear. Celebrating tradition with contemporary elegance.", help_text="Footer about text")
     
-    # Social Media
-    facebook_url = models.URLField(blank=True)
-    instagram_url = models.URLField(blank=True)
-    twitter_url = models.URLField(blank=True)
+    email = models.EmailField(default="support@manovastra.com")
+    phone = models.CharField(max_length=20, default="+91 98765 43210")
+    whatsapp = models.CharField(max_length=20, default="+919353823619", help_text="WhatsApp number with country code")
+    address = models.TextField(default="MG Road, Bangalore, Karnataka 560001")
+    working_hours = models.CharField(max_length=100, default="Mon - Sat: 10:00 AM - 7:00 PM")
     
-    # Settings
-    enable_cod = models.BooleanField(default=True)
-    free_shipping_above = models.DecimalField(max_digits=10, decimal_places=2, default=999)
+    instagram_url = models.URLField(blank=True, null=True, help_text="Instagram profile URL")
+    youtube_url = models.URLField(blank=True, null=True, help_text="YouTube channel URL")
+    whatsapp_url = models.URLField(blank=True, null=True, help_text="WhatsApp direct link (wa.me/...)")
+    facebook_url = models.URLField(blank=True, null=True)
+    twitter_url = models.URLField(blank=True, null=True)
     
-    def __str__(self):
-        return self.site_name
+    about_us_link = models.CharField(max_length=200, default="#", help_text="About Us page link")
+    our_story_link = models.CharField(max_length=200, default="#", help_text="Our Story page link")
+    blog_link = models.CharField(max_length=200, default="#", help_text="Blog page link")
+    careers_link = models.CharField(max_length=200, default="#", help_text="Careers page link")
+    press_link = models.CharField(max_length=200, default="#", help_text="Press page link")
+    
+    contact_us_link = models.CharField(max_length=200, default="#", help_text="Contact Us page link")
+    track_order_link = models.CharField(max_length=200, default="/my-orders/", help_text="Track Order page link")
+    returns_link = models.CharField(max_length=200, default="#", help_text="Returns & Exchange page link")
+    shipping_link = models.CharField(max_length=200, default="#", help_text="Shipping Info page link")
+    size_guide_link = models.CharField(max_length=200, default="#", help_text="Size Guide page link")
+    
+    privacy_policy_link = models.CharField(max_length=200, default="#", help_text="Privacy Policy page link")
+    terms_link = models.CharField(max_length=200, default="#", help_text="Terms & Conditions page link")
+    refund_policy_link = models.CharField(max_length=200, default="#", help_text="Refund Policy page link")
+    
+    enable_cod = models.BooleanField(default=True, help_text="Enable Cash on Delivery")
+    free_shipping_above = models.DecimalField(max_digits=10, decimal_places=2, default=999.00, help_text="Free shipping above this amount")
+    
+    copyright_text = models.CharField(max_length=200, default="© 2026 Manovastra. All Rights Reserved.")
     
     class Meta:
         verbose_name = 'Site Setting'
         verbose_name_plural = 'Site Settings'
+    
+    def __str__(self):
+        return self.site_name
 
-
-# ... Keep all existing models ...
 
 class HeroBanner(models.Model):
     title = models.CharField(max_length=200, help_text="Main title")
@@ -357,31 +415,24 @@ class HeroBanner(models.Model):
         verbose_name_plural = 'Hero Banners'
 
 
-
-# ... Keep all existing models ...
-
 class FestivalBanner(models.Model):
     festival_name = models.CharField(max_length=200, help_text="Festival name (e.g., Makar Sankranti)")
     festival_tag = models.CharField(max_length=100, help_text="Tag line with emoji (e.g., 🪔 Festival Special)")
     title = models.CharField(max_length=200, help_text="Main title")
     description = models.TextField(help_text="Short description")
     
-    # Offer Details
     offer_text_1 = models.CharField(max_length=50, default="UPTO", help_text="First offer text")
     offer_percentage = models.CharField(max_length=10, default="50%", help_text="Discount percentage")
     offer_text_2 = models.CharField(max_length=50, default="OFF", help_text="Second offer text")
     coupon_code = models.CharField(max_length=50, help_text="Coupon code (e.g., SANKRANTI50)")
     
-    # Image & Link
     banner_image = models.ImageField(upload_to='festival_banners/', help_text="Festival banner image (800x600px)")
     button_text = models.CharField(max_length=100, default="Shop Festival Collection")
     button_link = models.CharField(max_length=200, default="/offers/", help_text="Button link URL")
     
-    # Background Colors
     bg_color_1 = models.CharField(max_length=7, default="#FF6B6B", help_text="Background gradient color 1 (hex)")
     bg_color_2 = models.CharField(max_length=7, default="#FFE66D", help_text="Background gradient color 2 (hex)")
     
-    # Status
     is_active = models.BooleanField(default=True, help_text="Show on homepage")
     start_date = models.DateField(help_text="Festival start date")
     end_date = models.DateField(help_text="Festival end date")
@@ -391,7 +442,6 @@ class FestivalBanner(models.Model):
         return self.festival_name
     
     def is_valid(self):
-        """Check if festival is currently active"""
         from django.utils import timezone
         today = timezone.now().date()
         return self.is_active and self.start_date <= today <= self.end_date

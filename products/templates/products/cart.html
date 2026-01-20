@@ -4,20 +4,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shopping Cart | Manovastra</title>
+    <title>Shopping Cart - Manovastra</title>
+    <meta name="description" content="Review your cart and proceed to checkout">
     
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/order_style.css' %}">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/cart.css' %}">
 </head>
+
 <body>
 
-<!-- Header -->
+<!-- Header Section -->
 <header class="header-main">
     <div class="container">
         <div class="row align-items-center py-3">
+            <!-- Logo -->
             <div class="col-lg-2 col-md-3 col-6">
                 <div class="logo">
                     <a href="{% url 'home' %}">
@@ -25,108 +37,660 @@
                             <img src="{{ site_settings.logo.url }}" alt="{{ site_settings.site_name }}" class="logo-image">
                         {% else %}
                             <h1 class="brand-name mb-0">Manovastra</h1>
+                            <p class="brand-tagline mb-0">Elegance Redefined</p>
                         {% endif %}
                     </a>
                 </div>
+            </div>
+
+
+            <!-- Search Bar -->
+            <div class="col-lg-6 col-md-5 d-none d-md-block">
+                <form class="search-bar" method="GET" action="{% url 'search' %}">
+                    <input type="text" name="q" class="form-control search-input" placeholder="Search for Sarees, Kurtis, Lehengas..." value="{{ request.GET.q }}">
+                    <button type="submit" class="btn-search">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </form>
+            </div>
+
+
+            <!-- Header Icons -->
+<div class="col-lg-4 col-md-4 col-6">
+    <div class="header-icons">
+        {% if is_logged_in %}
+            <div class="dropdown">
+                <a href="#" class="icon-link dropdown-toggle" data-bs-toggle="dropdown">
+                    <i class="bi bi-person-circle"></i>
+                    <span class="d-none d-lg-inline">{{ user_name|truncatechars:15 }}</span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{% url 'my_orders' %}"><i class="bi bi-box"></i> My Orders</a></li>
+                    <li><a class="dropdown-item" href="{% url 'wishlist' %}"><i class="bi bi-heart"></i> Wishlist</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                </ul>
+            </div>
+        {% else %}
+            <a href="{% url 'login' %}" class="icon-link">
+                <i class="bi bi-person"></i>
+                <span class="d-none d-lg-inline">Account</span>
+            </a>
+        {% endif %}
+
+
+        <a href="{% url 'wishlist' %}" class="icon-link position-relative">
+            <i class="bi bi-heart"></i>
+            <span class="wishlist-badge" id="wishlistCount" style="display: none;">0</span>
+            <span class="d-none d-lg-inline">Wishlist</span>
+        </a>
+
+
+        <a href="{% url 'cart' %}" class="icon-link cart-link position-relative">
+            <i class="bi bi-bag"></i>
+            <span class="cart-badge" id="cartCount" style="display: none;">0</span>
+            <span class="d-none d-lg-inline">Cart</span>
+        </a>
+    </div>
+</div>
+
+
+        <!-- Mobile Search Bar -->
+        <div class="row d-md-none mb-3">
+            <div class="col-12">
+                <form class="search-bar" method="GET" action="{% url 'search' %}">
+                    <input type="text" name="q" class="form-control search-input" placeholder="Search for Sarees, Kurtis..." value="{{ request.GET.q }}">
+                    <button type="submit" class="btn-search">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </form>
             </div>
         </div>
     </div>
 </header>
 
-<!-- Cart Section -->
-<section class="order-summary-section py-5">
+
+
+    <!-- Navigation Bar -->
+<nav class="navbar-main">
     <div class="container">
-        <h2 class="collection-title mb-4">Shopping Cart ({{ total_items }} item{{ total_items|pluralize }})</h2>
+        <ul class="nav-menu">
+            <!-- Home -->
+            <li class="nav-item">
+                <a href="{% url 'home' %}" class="nav-link {% if request.path == '/' %}active{% endif %}">
+                    <i class="bi bi-house-door"></i> Home
+                </a>
+            </li>
 
-        {% if cart_items %}
-        <div class="row g-4">
-            <div class="col-lg-8">
-                {% for item in cart_items %}
-                <div class="summary-card mb-3">
-                    <div class="order-product-item">
-                        <div class="product-left">
-                            <div class="product-image-thumb">
-                                {% if item.product.colors.first.images.first %}
-                                    <img src="{{ item.product.colors.first.images.first.image.url }}" alt="{{ item.product.name }}" style="width: 100%; height: 100%; object-fit: cover;">
-                                {% endif %}
-                            </div>
-                            <div class="product-details">
-                                <h3 class="product-name-order">{{ item.product.name }}</h3>
-                                <p class="product-specs">
-                                    <span class="spec-item"><strong>Color:</strong> {{ item.color }}</span>
-                                    <span class="spec-item"><strong>Qty:</strong> {{ item.quantity }}</span>
-                                </p>
-                                <button class="btn btn-sm btn-danger btn-remove-cart" data-product-id="{{ item.product.id }}">
-                                    <i class="bi bi-trash"></i> Remove
-                                </button>
-                            </div>
-                        </div>
-                        <div class="product-right">
-                            <p class="product-price-order">₹{{ item.item_total|floatformat:0 }}</p>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
+
+            <!-- Dynamic Categories from Database -->
+            {% for category in categories %}
+            <li class="nav-item">
+                <a href="{% url 'category_collection' category.slug %}" class="nav-link">
+                    {{ category.name }}
+                </a>
+            </li>
+            {% endfor %}
+
+
+            <!-- New Arrivals -->
+            <li class="nav-item">
+                <a href="{% url 'new_arrivals' %}" class="nav-link">
+                    <i class="bi bi-stars"></i> New Arrivals
+                </a>
+            </li>
+
+
+            <!-- Offers -->
+            <li class="nav-item">
+                <a href="{% url 'offers' %}" class="nav-link special">
+                    <i class="bi bi-tag-fill"></i> Offers
+                </a>
+            </li>
+
+
+            <!-- All Products -->
+            <li class="nav-item">
+                <a href="{% url 'all_products' %}" class="nav-link">
+                    All Products
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+
+{% if cart_items %}
+<!-- Cart Page Header -->
+<section class="cart-header-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="cart-page-title">
+                    <i class="bi bi-cart3"></i> My Cart
+                </h1>
+                <p class="cart-page-subtitle">Review your items before checkout</p>
             </div>
-
-            <div class="col-lg-4">
-                <div class="summary-card">
-                    <h3>Price Summary</h3>
-                    <div class="price-breakdown">
-                        <div class="price-row">
-                            <span>Subtotal</span>
-                            <span>₹{{ total_amount|floatformat:0 }}</span>
-                        </div>
-                        <div class="price-row">
-                            <span>Delivery</span>
-                            <span class="free-value">FREE</span>
-                        </div>
-                        <hr>
-                        <div class="price-row total-row">
-                            <span>Total</span>
-                            <span>₹{{ total_amount|floatformat:0 }}</span>
-                        </div>
-                    </div>
-                    <a href="{% url 'order_summary' %}" class="btn btn-primary w-100 mt-3">
-                        Proceed to Checkout
-                    </a>
+            <div class="col-md-4 text-md-end">
+                <div class="cart-count-badge">
+                    <i class="bi bi-bag-check"></i>
+                    <span class="count-number" id="itemCount">{{ item_count }}</span> Items in Cart
                 </div>
             </div>
         </div>
-        {% else %}
-        <div class="text-center py-5">
-            <i class="bi bi-bag-x" style="font-size: 80px; color: #ccc;"></i>
-            <h3 class="mt-4">Your cart is empty</h3>
-            <a href="{% url 'home' %}" class="btn btn-primary mt-3">Start Shopping</a>
-        </div>
-        {% endif %}
-
     </div>
 </section>
 
+<!-- Main Cart Section -->
+<section class="cart-content-section py-5">
+    <div class="container">
+        <div class="row g-4">
+            
+            <!-- Left Section - Cart Items -->
+            <main class="col-lg-8">
+                
+                <!-- Cart Items List -->
+                <div class="cart-items-wrapper">
+                    
+                    {% for item in cart_items %}
+                    <!-- Cart Item -->
+                    <div class="cart-item-card" data-product-id="{{ item.product.id }}" data-color="{{ item.color }}">
+                        <div class="cart-item-content">
+                            <div class="cart-item-left">
+                                <!-- Product Image -->
+                                <div class="cart-product-image">
+                                    <a href="{% url 'product_detail' item.product.slug %}">
+                                        {% if item.product.colors.first.images.first %}
+                                            <img src="{{ item.product.colors.first.images.first.image.url }}" 
+                                                 alt="{{ item.product.name }}"
+                                                 style="width: 100%; height: 100%; object-fit: cover;">
+                                        {% endif %}
+                                    </a>
+                                </div>
+                                
+                                <!-- Product Details -->
+                                <div class="cart-product-details">
+                                    <a href="{% url 'product_detail' item.product.slug %}" class="cart-product-name">
+                                        {{ item.product.name }}
+                                    </a>
+                                    <div class="cart-product-specs">
+                                        <span class="spec-badge"><i class="bi bi-patch-check"></i> {{ item.product.fabric }}</span>
+                                        <span class="spec-badge">Color: {{ item.color }}</span>
+                                    </div>
+                                    <div class="cart-product-meta">
+                                        <span class="availability-tag in-stock">
+                                            <i class="bi bi-check-circle-fill"></i> In Stock
+                                        </span>
+                                        <span class="delivery-info">
+                                            <i class="bi bi-truck"></i> Delivery in 3-5 days
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="cart-item-right">
+                                <!-- Price Section -->
+                                <div class="cart-price-section">
+                                    <div class="cart-price-current item-total">₹{{ item.item_total|floatformat:0 }}</div>
+                                    {% if item.product.discount_percent > 0 %}
+                                    <div class="cart-price-original">₹{{ item.product.original_price|floatformat:0 }} each</div>
+                                    <div class="cart-discount-badge">{{ item.product.discount_percent }}% OFF</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Cart Item Actions -->
+                        <div class="cart-item-actions">
+                            <div class="quantity-controls">
+                                <label class="qty-label">Quantity:</label>
+                                <div class="qty-selector-cart">
+                                    <button class="qty-btn-cart qty-minus" data-price="{{ item.product.current_price }}">
+                                        <i class="bi bi-dash"></i>
+                                    </button>
+                                    <input type="number" class="qty-input-cart" value="{{ item.quantity }}" min="1" max="10" readonly data-price="{{ item.product.current_price }}">
+                                    <button class="qty-btn-cart qty-plus" data-price="{{ item.product.current_price }}">
+                                        <i class="bi bi-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="item-actions-buttons">
+                                <button class="btn-action-cart btn-remove" data-product-id="{{ item.product.id }}" data-color="{{ item.color }}">
+                                    <i class="bi bi-trash3"></i> Remove
+                                </button>
+                                <button class="btn-action-cart btn-wishlist" 
+                                        data-product-id="{{ item.product.id }}"
+                                        data-product-color="{{ item.color }}">
+                                    <i class="bi bi-heart"></i> Move to Wishlist
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                </div>
+
+                <!-- Trust Benefits Section (Mobile - Below Items) -->
+                <div class="trust-benefits-mobile d-lg-none mt-4">
+                    <div class="benefits-grid">
+                        <div class="benefit-item">
+                            <i class="bi bi-truck"></i>
+                            <div class="benefit-text">
+                                <strong>Free Shipping</strong>
+                                <span>On orders above ₹999</span>
+                            </div>
+                        </div>
+                        <div class="benefit-item">
+                            <i class="bi bi-arrow-repeat"></i>
+                            <div class="benefit-text">
+                                <strong>Easy Returns</strong>
+                                <span>7 days return policy</span>
+                            </div>
+                        </div>
+                        <div class="benefit-item">
+                            <i class="bi bi-shield-check"></i>
+                            <div class="benefit-text">
+                                <strong>Secure Payment</strong>
+                                <span>100% safe & encrypted</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+
+            <!-- Right Section - Price Summary -->
+            <aside class="col-lg-4">
+                <div class="sticky-cart-sidebar">
+                    
+                    <!-- Price Summary Card -->
+                    <div class="cart-summary-card">
+                        <div class="summary-header">
+                            <h3 class="summary-title">
+                                <i class="bi bi-receipt"></i> Price Summary
+                            </h3>
+                        </div>
+                        
+                        <div class="summary-body">
+                            <!-- Price Breakdown -->
+                            <div class="price-breakdown-cart">
+                                <div class="price-row-cart">
+                                    <span class="price-label-cart">Total MRP (<span id="summaryItemCount">{{ item_count }}</span> items)</span>
+                                    <span class="price-value-cart" id="summarySubtotal">₹{{ subtotal|floatformat:0 }}</span>
+                                </div>
+                                <div class="price-row-cart">
+                                    <span class="price-label-cart">Delivery Charges</span>
+                                    <span class="price-value-cart free-value-cart" id="summaryDelivery">
+                                        {% if delivery_charge > 0 %}
+                                            ₹{{ delivery_charge|floatformat:0 }}
+                                        {% else %}
+                                            FREE
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                <hr class="price-divider-cart">
+                                <div class="price-row-cart total-row-cart">
+                                    <span class="price-label-cart">Total Amount</span>
+                                    <span class="price-value-cart" id="summaryTotal">₹{{ total|floatformat:0 }}</span>
+                                </div>
+                            </div>
+
+                            <!-- Savings Highlight -->
+                            <div class="savings-highlight-cart" id="savingsHighlight" style="display: {% if delivery_charge == 0 %}block{% else %}none{% endif %};">
+                                <i class="bi bi-tag-fill"></i>
+                                You saved on delivery charges!
+                            </div>
+
+                            <!-- Checkout Button -->
+                            <button type="button" class="btn-checkout-cart" data-bs-toggle="modal" data-bs-target="#cartAddressModal">
+                                <span>Proceed to Checkout</span>
+                                <i class="bi bi-arrow-right-circle"></i>
+                            </button>
+
+                            <!-- Secure Checkout Badge -->
+                            <div class="secure-checkout-badge">
+                                <i class="bi bi-shield-lock-fill"></i>
+                                <span>Safe and Secure Payments</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Trust Benefits (Desktop) -->
+                    <div class="trust-benefits-desktop d-none d-lg-block">
+                        <div class="benefits-list">
+                            <div class="benefit-item-desktop">
+                                <i class="bi bi-truck"></i>
+                                <div class="benefit-content">
+                                    <strong>Free Shipping</strong>
+                                    <span>On orders above ₹999</span>
+                                </div>
+                            </div>
+                            <div class="benefit-item-desktop">
+                                <i class="bi bi-arrow-repeat"></i>
+                                <div class="benefit-content">
+                                    <strong>Easy Returns</strong>
+                                    <span>7 days return policy</span>
+                                </div>
+                            </div>
+                            <div class="benefit-item-desktop">
+                                <i class="bi bi-shield-check"></i>
+                                <div class="benefit-content">
+                                    <strong>Secure Payment</strong>
+                                    <span>100% safe & encrypted</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Methods -->
+                    <div class="payment-methods-cart">
+                        <p class="payment-label">We Accept:</p>
+                        <div class="payment-icons-cart">
+                            <i class="bi bi-credit-card-2-front"></i>
+                            <i class="bi bi-wallet2"></i>
+                            <i class="bi bi-phone"></i>
+                            <i class="bi bi-cash-coin"></i>
+                        </div>
+                        <p class="payment-text">Visa • Mastercard • UPI • Paytm • COD</p>
+                    </div>
+
+                </div>
+            </aside>
+
+        </div>
+    </div>
+</section>
+
+{% else %}
+<!-- Empty Cart State -->
+<section class="empty-cart-section py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-5 col-md-7">
+                <div class="empty-cart-card">
+                    <div class="empty-cart-icon">
+                        <i class="bi bi-cart-x"></i>
+                    </div>
+                    <h2 class="empty-cart-title">Your Cart is Empty</h2>
+                    <p class="empty-cart-description">
+                        Looks like you haven't added anything to your cart yet. 
+                        Start shopping and add your favorite ethnic wear!
+                    </p>
+                    <a href="{% url 'home' %}" class="btn-start-shopping">
+                        <i class="bi bi-arrow-left-circle"></i> Start Shopping
+                    </a>
+                    <div class="empty-cart-suggestions">
+                        <p class="suggestions-title">You might also like:</p>
+                        <div class="suggestion-links">
+                            <a href="{% url 'all_products' %}">All Products</a>
+                            <a href="{% url 'new_arrivals' %}">New Arrivals</a>
+                            <a href="{% url 'offers' %}">Offers</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- CART ADDRESS MODAL -->
+<div class="modal fade" id="cartAddressModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-geo-alt-fill"></i> Enter Delivery Address
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="cartDeliveryAddressForm">
+                    {% csrf_token %}
+                    
+                    <!-- Personal Details -->
+                    <div class="mb-4">
+                        <h6 class="mb-3">Personal Details</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Full Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="customer_name" 
+                                       value="{{ request.session.user_name }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Phone Number <span class="text-danger">*</span></label>
+                                <input type="tel" class="form-control" name="customer_phone" 
+                                       placeholder="10-digit mobile" pattern="[0-9]{10}" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Address Details -->
+                    <div class="mb-4">
+                        <h6 class="mb-3">Address Details</h6>
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label">Flat / House No. / Building <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="address_line1" 
+                                       placeholder="Flat 101, Building Name" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Area / Street / Locality <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="address_line2" 
+                                       placeholder="Street Name, Locality" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Landmark (Optional)</label>
+                                <input type="text" class="form-control" name="landmark" 
+                                       placeholder="Near Bus Stop">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Pincode <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="pincode" id="cartModalPincode"
+                                       placeholder="6-digit pincode" pattern="[0-9]{6}" maxlength="6" required>
+                                <div class="pincode-status mt-2" id="cartModalPincodeStatus"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">City <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="city" id="cartModalCity" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">State <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="state" id="cartModalState" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Delivery Options -->
+                    <div class="mb-3">
+                        <h6 class="mb-3">Delivery Options</h6>
+                        <div class="delivery-options-modal">
+                            <div class="delivery-option-modal">
+                                <input type="radio" name="delivery_type" id="cartModalStandard" value="standard" checked>
+                                <label for="cartModalStandard">
+                                    <div>
+                                        <strong>Standard Delivery</strong>
+                                        <small class="d-block text-muted">5-7 business days • FREE</small>
+                                    </div>
+                                    <span class="badge bg-success">₹0</span>
+                                </label>
+                            </div>
+                            <div class="delivery-option-modal">
+                                <input type="radio" name="delivery_type" id="cartModalExpress" value="express">
+                                <label for="cartModalExpress">
+                                    <div>
+                                        <strong>Express Delivery</strong>
+                                        <small class="d-block text-muted">2-3 business days</small>
+                                    </div>
+                                    <span class="badge bg-warning" id="cartModalExpressCharge">₹99</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="cartProceedToPaymentBtn">
+                    <i class="bi bi-credit-card"></i> Proceed to Payment
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+  <!-- Footer Section -->
+<footer class="footer-main">
+    <div class="container">
+        <!-- Footer Top -->
+        <div class="row py-5">
+            <!-- About Column -->
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="footer-widget">
+                    <h3 class="footer-brand">{{ site_settings.site_name }}</h3>
+                    <p class="footer-about">{{ site_settings.about_text }}</p>
+                    <div class="social-icons">
+                        {% if site_settings.instagram_url %}
+                        <a href="{{ site_settings.instagram_url }}" target="_blank" class="social-link" title="Instagram">
+                            <i class="bi bi-instagram"></i>
+                        </a>
+                        {% endif %}
+                        
+                        {% if site_settings.youtube_url %}
+                        <a href="{{ site_settings.youtube_url }}" target="_blank" class="social-link" title="YouTube">
+                            <i class="bi bi-youtube"></i>
+                        </a>
+                        {% endif %}
+                        
+                        {% if site_settings.whatsapp_url %}
+                        <a href="{{ site_settings.whatsapp_url }}" target="_blank" class="social-link whatsapp" title="WhatsApp">
+                            <i class="bi bi-whatsapp"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Quick Links Column -->
+            <div class="col-lg-2 col-md-6 mb-4">
+                <div class="footer-widget">
+                    <h4 class="footer-title">Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="{{ site_settings.about_us_link }}">About Us</a></li>
+                        <li><a href="{{ site_settings.our_story_link }}">Our Story</a></li>
+                        <li><a href="{{ site_settings.blog_link }}">Blog</a></li>
+                        <li><a href="{{ site_settings.careers_link }}">Careers</a></li>
+                        <li><a href="{{ site_settings.press_link }}">Press</a></li>
+                    </ul>
+                </div>
+            </div>
+
+
+            <!-- Categories Column -->
+            <div class="col-lg-2 col-md-6 mb-4">
+                <div class="footer-widget">
+                    <h4 class="footer-title">Categories</h4>
+                    <ul class="footer-links">
+                        {% for category in nav_categories|slice:":5" %}
+                        <li><a href="{% url 'category_collection' category.slug %}">{{ category.name }}</a></li>
+                        {% endfor %}
+                        <li><a href="{% url 'new_arrivals' %}">New Arrivals</a></li>
+                        <li><a href="{% url 'offers' %}">Sale</a></li>
+                    </ul>
+                </div>
+            </div>
+
+
+            <!-- Customer Service Column -->
+            <div class="col-lg-2 col-md-6 mb-4">
+                <div class="footer-widget">
+                    <h4 class="footer-title">Customer Service</h4>
+                    <ul class="footer-links">
+                        <li><a href="{{ site_settings.contact_us_link }}">Contact Us</a></li>
+                        <li><a href="{{ site_settings.track_order_link }}">Track Order</a></li>
+                        <li><a href="{{ site_settings.returns_link }}">Returns & Exchange</a></li>
+                        <li><a href="{{ site_settings.shipping_link }}">Shipping Info</a></li>
+                        <li><a href="{{ site_settings.size_guide_link }}">Size Guide</a></li>
+                    </ul>
+                </div>
+            </div>
+
+
+            <!-- Contact Column -->
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="footer-widget">
+                    <h4 class="footer-title">Get in Touch</h4>
+                    <ul class="footer-contact">
+                        <li>
+                            <i class="bi bi-geo-alt-fill"></i>
+                            <span>{{ site_settings.address }}</span>
+                        </li>
+                        <li>
+                            <i class="bi bi-telephone-fill"></i>
+                            <a href="tel:{{ site_settings.phone }}">{{ site_settings.phone }}</a>
+                        </li>
+                        <li>
+                            <i class="bi bi-envelope-fill"></i>
+                            <a href="mailto:{{ site_settings.email }}">{{ site_settings.email }}</a>
+                        </li>
+                        {% if site_settings.whatsapp %}
+                        <li>
+                            <i class="bi bi-whatsapp"></i>
+                            <a href="https://wa.me/{{ site_settings.whatsapp }}" target="_blank">WhatsApp Us</a>
+                        </li>
+                        {% endif %}
+                        <li>
+                            <i class="bi bi-clock-fill"></i>
+                            <span>{{ site_settings.working_hours }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Payment & Trust Badges -->
+        <div class="row py-4 border-top border-bottom footer-badges">
+            <div class="col-12">
+                <div class="payment-methods text-center">
+                    <p class="mb-2">We Accept</p>
+                    <div class="payment-icons">
+                        <i class="bi bi-credit-card-2-front"></i>
+                        <i class="bi bi-wallet2"></i>
+                        <i class="bi bi-phone"></i>
+                        {% if site_settings.enable_cod %}
+                        <i class="bi bi-cash-coin"></i>
+                        {% endif %}
+                        <span class="payment-text">Visa • Mastercard • UPI • Paytm • Net Banking{% if site_settings.enable_cod %} • COD{% endif %}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Footer Bottom -->
+        <div class="row py-4">
+            <div class="col-lg-6 text-center text-lg-start mb-3 mb-lg-0">
+                <p class="footer-copyright mb-0">{{ site_settings.copyright_text }}</p>
+            </div>
+            <div class="col-lg-6 text-center text-lg-end">
+                <ul class="footer-legal">
+                    <li><a href="{{ site_settings.privacy_policy_link }}">Privacy Policy</a></li>
+                    <li><a href="{{ site_settings.terms_link }}">Terms & Conditions</a></li>
+                    <li><a href="{{ site_settings.refund_policy_link }}">Refund Policy</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Razorpay Script -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-document.querySelectorAll('.btn-remove-cart').forEach(btn => {
-    btn.addEventListener('click', function() {
-        const productId = this.dataset.productId;
-        
-        fetch('/remove-from-cart/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'X-CSRFToken': getCookie('csrftoken')
-            },
-            body: 'product_id=' + productId
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            }
-        });
-    });
-});
-
+// CSRF Token Helper
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -141,6 +705,346 @@ function getCookie(name) {
     }
     return cookieValue;
 }
+
+// Update cart totals
+function updateCartTotals() {
+    let subtotal = 0;
+    let itemCount = 0;
+    
+    document.querySelectorAll('.cart-item-card').forEach(card => {
+        const qtyInput = card.querySelector('.qty-input-cart');
+        const price = parseFloat(qtyInput.dataset.price);
+        const quantity = parseInt(qtyInput.value);
+        const itemTotal = price * quantity;
+        
+        card.querySelector('.item-total').textContent = '₹' + Math.round(itemTotal).toLocaleString('en-IN');
+        
+        subtotal += itemTotal;
+        itemCount += quantity;
+    });
+    
+    const deliveryCharge = subtotal >= 999 ? 0 : 50;
+    const total = subtotal + deliveryCharge;
+    
+    document.getElementById('summaryItemCount').textContent = itemCount;
+    document.getElementById('summarySubtotal').textContent = '₹' + Math.round(subtotal).toLocaleString('en-IN');
+    document.getElementById('summaryDelivery').textContent = deliveryCharge === 0 ? 'FREE' : '₹' + deliveryCharge;
+    document.getElementById('summaryTotal').textContent = '₹' + Math.round(total).toLocaleString('en-IN');
+    document.getElementById('itemCount').textContent = itemCount;
+    document.getElementById('cartBadge').textContent = itemCount;
+    
+    const savingsEl = document.getElementById('savingsHighlight');
+    if (savingsEl) {
+        savingsEl.style.display = deliveryCharge === 0 ? 'block' : 'none';
+    }
+}
+
+// Quantity Plus
+document.querySelectorAll('.qty-plus').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const card = this.closest('.cart-item-card');
+        const input = card.querySelector('.qty-input-cart');
+        const productId = card.dataset.productId;
+        const color = card.dataset.color;
+        const currentValue = parseInt(input.value);
+        
+        if (currentValue < 10) {
+            const newValue = currentValue + 1;
+            input.value = newValue;
+            updateQuantityInSession(productId, color, newValue);
+            updateCartTotals();
+        }
+    });
+});
+
+// Quantity Minus
+document.querySelectorAll('.qty-minus').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const card = this.closest('.cart-item-card');
+        const input = card.querySelector('.qty-input-cart');
+        const productId = card.dataset.productId;
+        const color = card.dataset.color;
+        const currentValue = parseInt(input.value);
+        
+        if (currentValue > 1) {
+            const newValue = currentValue - 1;
+            input.value = newValue;
+            updateQuantityInSession(productId, color, newValue);
+            updateCartTotals();
+        }
+    });
+});
+
+// Update quantity in session
+function updateQuantityInSession(productId, color, quantity) {
+    const formData = new FormData();
+    formData.append('product_id', productId);
+    formData.append('color', color);
+    formData.append('quantity', quantity);
+    
+    fetch('/update-cart-quantity/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.success) {
+            console.error('Failed to update quantity');
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+// Remove from cart
+document.querySelectorAll('.btn-remove').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const productId = this.dataset.productId;
+        const color = this.dataset.color;
+        const card = this.closest('.cart-item-card');
+        
+        this.innerHTML = '<i class="bi bi-hourglass-split"></i> Removing...';
+        this.disabled = true;
+        
+        fetch('/remove-from-cart/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: 'product_id=' + productId + '&color=' + encodeURIComponent(color)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.8)';
+                
+                setTimeout(() => {
+                    card.remove();
+                    
+                    const remainingItems = document.querySelectorAll('.cart-item-card').length;
+                    if (remainingItems === 0) {
+                        window.location.reload();
+                    } else {
+                        updateCartTotals();
+                    }
+                }, 300);
+            }
+        });
+    });
+});
+
+// Move to wishlist
+document.querySelectorAll('.btn-wishlist').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const productId = this.dataset.productId;
+        const color = this.dataset.productColor;
+        const card = this.closest('.cart-item-card');
+        
+        this.innerHTML = '<i class="bi bi-hourglass-split"></i> Moving...';
+        this.disabled = true;
+        
+        fetch('/add-to-wishlist/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: 'product_id=' + productId
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                fetch('/remove-from-cart/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: 'product_id=' + productId + '&color=' + encodeURIComponent(color)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        this.innerHTML = '<i class="bi bi-check-circle-fill"></i> Moved!';
+                        this.style.background = '#10b981';
+                        
+                        setTimeout(() => {
+                            card.style.opacity = '0';
+                            card.style.transform = 'scale(0.8)';
+                            
+                            setTimeout(() => {
+                                card.remove();
+                                
+                                const remainingItems = document.querySelectorAll('.cart-item-card').length;
+                                if (remainingItems === 0) {
+                                    window.location.reload();
+                                } else {
+                                    updateCartTotals();
+                                }
+                            }, 300);
+                        }, 500);
+                    }
+                });
+            }
+        });
+    });
+});
+
+// ========== CART CHECKOUT WITH RAZORPAY ==========
+
+const cartModalPincode = document.getElementById('cartModalPincode');
+const cartModalCity = document.getElementById('cartModalCity');
+const cartModalState = document.getElementById('cartModalState');
+const cartModalPincodeStatus = document.getElementById('cartModalPincodeStatus');
+const cartProceedBtn = document.getElementById('cartProceedToPaymentBtn');
+
+let cartPincodeServiceable = false;
+let cartExpressCharge = 99;
+
+// Check Pincode in Modal
+if (cartModalPincode) {
+    cartModalPincode.addEventListener('blur', function() {
+        const pincode = this.value.trim();
+        
+        if (pincode.length !== 6) return;
+        
+        cartModalPincodeStatus.innerHTML = '<small class="text-info"><i class="bi bi-arrow-repeat"></i> Checking...</small>';
+        
+        const formData = new FormData();
+        formData.append('pincode', pincode);
+        
+        fetch('/check-pincode/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.serviceable) {
+                cartPincodeServiceable = true;
+                cartModalCity.value = data.city;
+                cartModalState.value = data.state;
+                cartExpressCharge = parseFloat(data.express_delivery.charge);
+                
+                document.getElementById('cartModalExpressCharge').textContent = '₹' + cartExpressCharge;
+                cartModalPincodeStatus.innerHTML = '<small class="text-success"><i class="bi bi-check-circle"></i> Delivery available</small>';
+            } else {
+                cartPincodeServiceable = false;
+                cartModalPincodeStatus.innerHTML = '<small class="text-danger"><i class="bi bi-x-circle"></i> Delivery not available</small>';
+            }
+        })
+        .catch(err => {
+            console.error('Error:', err);
+            cartModalPincodeStatus.innerHTML = '<small class="text-danger">Error checking pincode</small>';
+        });
+    });
+}
+
+// Proceed to Payment from Cart
+if (cartProceedBtn) {
+    cartProceedBtn.addEventListener('click', function() {
+        const form = document.getElementById('cartDeliveryAddressForm');
+        
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+        
+        if (!cartPincodeServiceable) {
+            alert('Please enter a valid serviceable pincode');
+            return;
+        }
+        
+        cartProceedBtn.disabled = true;
+        cartProceedBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Processing...';
+        
+        const formData = new FormData(form);
+        
+        fetch('/create-order-from-cart/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Initialize Razorpay
+                const options = {
+                    key: data.key_id,
+                    amount: data.amount,
+                    currency: 'INR',
+                    name: 'Manovastra',
+                    description: 'Cart Order Payment',
+                    order_id: data.razorpay_order_id,
+                    prefill: {
+                        name: data.customer_name,
+                        email: data.customer_email,
+                        contact: data.customer_phone
+                    },
+                    theme: {
+                        color: '#B8860B'
+                    },
+                    handler: function(response) {
+                        // Verify payment
+                        const verifyData = new FormData();
+                        verifyData.append('razorpay_payment_id', response.razorpay_payment_id);
+                        verifyData.append('razorpay_order_id', response.razorpay_order_id);
+                        verifyData.append('razorpay_signature', response.razorpay_signature);
+                        
+                        fetch('/verify-payment-cart/', {
+                            method: 'POST',
+                            body: verifyData
+                        })
+                        .then(res => res.json())
+                        .then(result => {
+                            if (result.success) {
+                                window.location.href = '/my-orders/?success=true';
+                            } else {
+                                alert('Payment verification failed');
+                                cartProceedBtn.disabled = false;
+                                cartProceedBtn.innerHTML = '<i class="bi bi-credit-card"></i> Proceed to Payment';
+                            }
+                        });
+                    },
+                    modal: {
+                        ondismiss: function() {
+                            cartProceedBtn.disabled = false;
+                            cartProceedBtn.innerHTML = '<i class="bi bi-credit-card"></i> Proceed to Payment';
+                        }
+                    }
+                };
+                
+                const rzp = new Razorpay(options);
+                rzp.open();
+                
+                // Close address modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('cartAddressModal'));
+                if (modal) modal.hide();
+                
+            } else {
+                alert(data.message || 'Failed to process order');
+                cartProceedBtn.disabled = false;
+                cartProceedBtn.innerHTML = '<i class="bi bi-credit-card"></i> Proceed to Payment';
+            }
+        })
+        .catch(err => {
+            console.error('Error:', err);
+            alert('An error occurred. Please try again.');
+            cartProceedBtn.disabled = false;
+            cartProceedBtn.innerHTML = '<i class="bi bi-credit-card"></i> Proceed to Payment';
+        });
+    });
+}
+
 </script>
+
 </body>
 </html>

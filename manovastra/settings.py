@@ -10,24 +10,21 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
-import os
-
 from pathlib import Path
+import os
+from decouple import config  # 👈 Add this line
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', 'your-secret-key-here')
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-dt$mo%+(_scof5!pp6e9gafb6n9$zczg_0+&w4lp@=q2m)rl)b')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = ['manovastra.onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=lambda v: [s.strip() for s in v.split(',')])
 
 
 # Application definition
@@ -44,7 +41,6 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', 
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -74,15 +70,36 @@ TEMPLATES = [
 WSGI_APPLICATION = 'manovastra.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
+# ===================== DATABASE CONFIGURATION =====================
+# Dual Database Setup: PostgreSQL (Production) + SQLite3 (Development)
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Get database mode from environment variable (default: 'sqlite')
+# ===================== DATABASE CONFIGURATION =====================
+DATABASE_MODE = config('DATABASE_MODE', default='sqlite')
+
+if DATABASE_MODE == 'postgres':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': config('DB_NAME', default='manovastra_db'),
+            'USER': config('DB_USER', default='postgres'),
+            'PASSWORD': config('DB_PASSWORD', default=''),
+            'HOST': config('DB_HOST', default='localhost'),
+            'PORT': config('DB_PORT', default='5432'),
+        }
     }
-}
+    print("✅ Using PostgreSQL Database (Production Mode)")
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+    print("✅ Using SQLite3 Database (Development Mode)")
+
+
+# ==================================================================
 
 
 # Password validation
@@ -109,7 +126,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'  # Changed to Indian Time Zone
 
 USE_I18N = True
 
@@ -119,7 +136,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-# Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
@@ -129,19 +145,30 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 
-# Razorpay Settings (Test Mode)
-RAZORPAY_KEY_ID = 'rzp_test_S3XrGanfxdmeW5'  # Replace with your test key
-RAZORPAY_KEY_SECRET = 'Ln7Jbe3d1jTDkv1kqUx30GOJ'    # Replace with your test secret
+# Default primary key field type
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Email Configuration (Gmail with App Password)
+
+# Razorpay Settings
+RAZORPAY_KEY_ID = config('RAZORPAY_KEY_ID', default='rzp_test_S3XrGanfxdmeW5')
+RAZORPAY_KEY_SECRET = config('RAZORPAY_KEY_SECRET', default='Ln7Jbe3d1jTDkv1kqUx30GOJ')
+
+
+# Email Configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'prabashnau@gmail.com'  # Replace with your Gmail
-EMAIL_HOST_PASSWORD = 'usir ohcs fkhi mijt'  # Paste your 16-digit App Password here
-DEFAULT_FROM_EMAIL = 'Manovastra <your-email@gmail.com>'
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='prabashnau@gmail.com')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='usir ohcs fkhi mijt')
+DEFAULT_FROM_EMAIL = f'Manovastra <{EMAIL_HOST_USER}>'
+
+
 
 # OTP Settings
 OTP_EXPIRY_TIME = 5  # minutes
 
+
+# Manager Login Credentials
+MANAGER_USERNAME = "manager"
+MANAGER_PASSWORD = "manager123"

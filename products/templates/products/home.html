@@ -21,9 +21,11 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 </head>
 <body>
+
 
     <!-- Top Announcement Bar -->
     <div class="announcement-bar">
@@ -31,6 +33,7 @@
             <p class="mb-0 text-center">🎉 New Year Sale - Flat 40% OFF on All Sarees | Free Shipping on Orders Above ₹999</p>
         </div>
     </div>
+
 
     <!-- Header Section -->
 <header class="header-main">
@@ -50,6 +53,7 @@
                 </div>
             </div>
 
+
             <!-- Search Bar -->
             <div class="col-lg-6 col-md-5 d-none d-md-block">
                 <form class="search-bar" method="GET" action="{% url 'search' %}">
@@ -59,6 +63,7 @@
                     </button>
                 </form>
             </div>
+
 
             <!-- Header Icons -->
 <div class="col-lg-4 col-md-4 col-6">
@@ -83,11 +88,13 @@
             </a>
         {% endif %}
 
+
         <a href="{% url 'wishlist' %}" class="icon-link position-relative">
             <i class="bi bi-heart"></i>
             <span class="wishlist-badge" id="wishlistCount" style="display: none;">0</span>
             <span class="d-none d-lg-inline">Wishlist</span>
         </a>
+
 
         <a href="{% url 'cart' %}" class="icon-link cart-link position-relative">
             <i class="bi bi-bag"></i>
@@ -96,6 +103,7 @@
         </a>
     </div>
 </div>
+
 
         <!-- Mobile Search Bar -->
         <div class="row d-md-none mb-3">
@@ -112,6 +120,7 @@
 </header>
 
 
+
     <!-- Navigation Bar -->
 <nav class="navbar-main">
     <div class="container">
@@ -123,6 +132,7 @@
                 </a>
             </li>
 
+
             <!-- Dynamic Categories from Database -->
             {% for category in categories %}
             <li class="nav-item">
@@ -132,6 +142,7 @@
             </li>
             {% endfor %}
 
+
             <!-- New Arrivals -->
             <li class="nav-item">
                 <a href="{% url 'new_arrivals' %}" class="nav-link">
@@ -139,12 +150,14 @@
                 </a>
             </li>
 
+
             <!-- Offers -->
             <li class="nav-item">
                 <a href="{% url 'offers' %}" class="nav-link special">
                     <i class="bi bi-tag-fill"></i> Offers
                 </a>
             </li>
+
 
             <!-- All Products -->
             <li class="nav-item">
@@ -155,6 +168,7 @@
         </ul>
     </div>
 </nav>
+
 
 
     <!-- Hero Banner Section - Dynamic Carousel -->
@@ -173,6 +187,7 @@
             </button>
             {% endfor %}
         </div>
+
 
         <!-- Carousel Inner -->
         <div class="carousel-inner">
@@ -203,6 +218,7 @@
             {% endfor %}
         </div>
 
+
         <!-- Carousel Controls -->
         <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -216,6 +232,7 @@
 </section>
 
 
+
     <!-- Featured Categories Section -->
 <section class="featured-categories py-5">
     <div class="container">
@@ -223,6 +240,7 @@
             <h2 class="section-title">Shop by Category</h2>
             <p class="section-subtitle">Explore our curated collections for every occasion</p>
         </div>
+
 
         <div class="row g-4">
             {% for category in categories %}
@@ -251,8 +269,9 @@
     </div>
 </section>
 
+
     <!-- Best Selling Products Section -->
-<section class="best-sellers py-5">
+<section class="best-sellers py-5 bg-light">
     <div class="container">
         <div class="section-header text-center mb-5">
             <h2 class="section-title">Best Sellers</h2>
@@ -261,56 +280,97 @@
 
         <div class="row g-4">
             {% for product in bestsellers %}
-            <!-- Product Card -->
             <div class="col-lg-3 col-md-4 col-6">
                 <div class="product-card">
-                    <div class="product-badge {% if product.is_bestseller %}bestseller{% endif %}">
+                    <!-- Badge with auto-calculated discount -->
+                    {% if product.discount_percent > 0 %}
+                    <div class="product-badge sale">
+                        {{ product.discount_percent }}% OFF
+                    </div>
+                    {% elif product.is_bestseller %}
+                    <div class="product-badge bestseller">
+                        Bestseller
+                    </div>
+                    {% elif product.badge_type %}
+                    <div class="product-badge">
                         {{ product.get_badge_text }}
                     </div>
+                    {% endif %}
                     
                     <!-- Wishlist Button -->
-                    <button class="product-wishlist btn-wishlist-toggle" data-product-id="{{ product.id }}">
+                    <button class="product-wishlist btn-wishlist-toggle" 
+                            data-product-id="{{ product.id }}"
+                            aria-label="Add to wishlist">
                         <i class="bi bi-heart"></i>
                     </button>
                     
+                    <!-- Product Image -->
                     <a href="{% url 'product_detail' product.slug %}" class="text-decoration-none">
                         <div class="product-image">
-                            {% if product.colors.first and product.colors.first.images.first %}
-                                <img src="{{ product.colors.first.images.first.image.url }}" alt="{{ product.name }}" class="img-fluid" style="width: 100%; height: 100%; object-fit: cover;">
+                            {% if product.colors.first.images.first %}
+                                <img src="{{ product.colors.first.images.first.image.url }}" 
+                                     alt="{{ product.name }}" 
+                                     class="img-fluid" 
+                                     loading="lazy">
                             {% else %}
-                                <div class="product-placeholder product-{{ forloop.counter }}">{{ product.name }}</div>
+                                <div class="product-placeholder">
+                                    <i class="bi bi-image"></i>
+                                    <p class="mt-2">{{ product.name }}</p>
+                                </div>
                             {% endif %}
                         </div>
                     </a>
                     
+                    <!-- Product Info -->
                     <div class="product-info">
                         <a href="{% url 'product_detail' product.slug %}" class="text-decoration-none">
                             <h4 class="product-name">{{ product.name }}</h4>
                         </a>
                         
+                        <!-- Star Rating Display -->
                         <div class="product-rating">
-                            {% for i in "12345" %}
-                                {% if forloop.counter <= product.rating|floatformat:0 %}
+                            {% with stars=product.average_rating_stars %}
+                                <!-- Full Stars -->
+                                {% for i in "12345"|slice:":"|slice:stars.full %}
                                     <i class="bi bi-star-fill"></i>
-                                {% elif forloop.counter == product.rating|add:"0.5"|floatformat:0 %}
+                                {% endfor %}
+                                
+                                <!-- Half Star -->
+                                {% if stars.half %}
                                     <i class="bi bi-star-half"></i>
-                                {% else %}
-                                    <i class="bi bi-star"></i>
                                 {% endif %}
-                            {% endfor %}
-                            <span class="rating-count">({{ product.rating_count }})</span>
+                                
+                                <!-- Empty Stars -->
+                                {% for i in "12345"|slice:":"|slice:stars.empty %}
+                                    <i class="bi bi-star"></i>
+                                {% endfor %}
+                            {% endwith %}
+                            
+                            <span class="rating-count">({{ product.rating_count|default:"0" }})</span>
                         </div>
                         
+                        <!-- Price with auto-calculated discount -->
                         <div class="product-price">
                             <span class="price-current">₹{{ product.current_price|floatformat:0 }}</span>
-                            <span class="price-original">₹{{ product.original_price|floatformat:0 }}</span>
+                            {% if product.discount_percent > 0 %}
+                                <span class="price-original">₹{{ product.original_price|floatformat:0 }}</span>
+                                <span class="price-discount">({{ product.discount_percent }}% OFF)</span>
+                            {% endif %}
                         </div>
+                        
+                        <!-- Savings Badge -->
+                        {% if product.discount_amount > 0 %}
+                        <div class="savings-badge">
+                            <i class="bi bi-tag-fill"></i> Save ₹{{ product.discount_amount|floatformat:0 }}
+                        </div>
+                        {% endif %}
                         
                         <!-- Add to Cart Button -->
                         <button class="btn-add-cart btn-add-to-cart-quick" 
                                 data-product-id="{{ product.id }}" 
                                 data-product-name="{{ product.name }}"
-                                data-product-color="{{ product.colors.first.name|default:'Default' }}">
+                                data-product-color="{{ product.colors.first.name|default:'Default' }}"
+                                aria-label="Add {{ product.name }} to cart">
                             <i class="bi bi-bag-plus"></i> Add to Cart
                         </button>
                     </div>
@@ -318,16 +378,22 @@
             </div>
             {% empty %}
             <div class="col-12">
-                <p class="text-center">No products available. Please add products from admin panel.</p>
+                <div class="alert alert-warning text-center">
+                    <i class="bi bi-exclamation-triangle me-2"></i> 
+                    No products available. Please add products from admin panel.
+                </div>
             </div>
             {% endfor %}
         </div>
 
         <div class="text-center mt-5">
-            <a href="{% url 'all_products' %}" class="btn btn-view-all">View All Products</a>
+            <a href="{% url 'all_products' %}" class="btn btn-view-all">
+                View All Products <i class="bi bi-arrow-right ms-2"></i>
+            </a>
         </div>
     </div>
 </section>
+
 
     <!-- Festival Offer Banner -->
 {% if festival_banner %}
@@ -384,6 +450,7 @@
 {% endif %}
 
 
+
     <!-- Why Choose Manovastra Section -->
     <section class="why-choose py-5">
         <div class="container">
@@ -391,6 +458,7 @@
                 <h2 class="section-title">Why Choose Manovastra</h2>
                 <p class="section-subtitle">Experience the finest in ethnic fashion</p>
             </div>
+
 
             <div class="row g-4">
                 <!-- Feature 1 -->
@@ -404,6 +472,7 @@
                     </div>
                 </div>
 
+
                 <!-- Feature 2 -->
                 <div class="col-lg-3 col-md-6">
                     <div class="feature-card">
@@ -415,6 +484,7 @@
                     </div>
                 </div>
 
+
                 <!-- Feature 3 -->
                 <div class="col-lg-3 col-md-6">
                     <div class="feature-card">
@@ -425,6 +495,7 @@
                         <p class="feature-description">Free shipping on orders above ₹999. Delivery within 3-5 business days</p>
                     </div>
                 </div>
+
 
                 <!-- Feature 4 -->
                 <div class="col-lg-3 col-md-6">
@@ -439,6 +510,7 @@
             </div>
         </div>
     </section>
+
 
     <!-- Newsletter Section -->
     <section class="newsletter-section py-5">
@@ -464,129 +536,498 @@
         </div>
     </section>
 
+
     <!-- Footer Section -->
-    <footer class="footer-main">
-        <div class="container">
-            <!-- Footer Top -->
-            <div class="row py-5">
-                <!-- About Column -->
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="footer-widget">
-                        <h3 class="footer-brand">Manovastra</h3>
-                        <p class="footer-about">Your destination for premium Indian ethnic wear. Celebrating tradition with contemporary elegance.</p>
-                        <div class="social-icons">
-                            <a href="#" class="social-link"><i class="bi bi-facebook"></i></a>
-                            <a href="#" class="social-link"><i class="bi bi-instagram"></i></a>
-                            <a href="#" class="social-link"><i class="bi bi-pinterest"></i></a>
-                            <a href="#" class="social-link"><i class="bi bi-youtube"></i></a>
-                            <a href="#" class="social-link"><i class="bi bi-twitter"></i></a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Quick Links Column -->
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <div class="footer-widget">
-                        <h4 class="footer-title">Quick Links</h4>
-                        <ul class="footer-links">
-                            <li><a href="#">About Us</a></li>
-                            <li><a href="#">Our Story</a></li>
-                            <li><a href="#">Blog</a></li>
-                            <li><a href="#">Careers</a></li>
-                            <li><a href="#">Press</a></li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Categories Column -->
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <div class="footer-widget">
-                        <h4 class="footer-title">Categories</h4>
-                        <ul class="footer-links">
-                            <li><a href="#">Silk Sarees</a></li>
-                            <li><a href="#">Designer Kurtis</a></li>
-                            <li><a href="#">Bridal Lehengas</a></li>
-                            <li><a href="#">New Arrivals</a></li>
-                            <li><a href="#">Sale</a></li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Customer Service Column -->
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <div class="footer-widget">
-                        <h4 class="footer-title">Customer Service</h4>
-                        <ul class="footer-links">
-                            <li><a href="#">Contact Us</a></li>
-                            <li><a href="#">Track Order</a></li>
-                            <li><a href="#">Returns & Exchange</a></li>
-                            <li><a href="#">Shipping Info</a></li>
-                            <li><a href="#">Size Guide</a></li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Contact Column -->
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="footer-widget">
-                        <h4 class="footer-title">Get in Touch</h4>
-                        <ul class="footer-contact">
-                            <li>
-                                <i class="bi bi-geo-alt-fill"></i>
-                                <span>MG Road, Bangalore, Karnataka 560001</span>
-                            </li>
-                            <li>
-                                <i class="bi bi-telephone-fill"></i>
-                                <span>+91 98765 43210</span>
-                            </li>
-                            <li>
-                                <i class="bi bi-envelope-fill"></i>
-                                <span>support@manovastra.com</span>
-                            </li>
-                            <li>
-                                <i class="bi bi-clock-fill"></i>
-                                <span>Mon - Sat: 10:00 AM - 7:00 PM</span>
-                            </li>
-                        </ul>
+<footer class="footer-main">
+    <div class="container">
+        <!-- Footer Top -->
+        <div class="row py-5">
+            <!-- About Column -->
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="footer-widget">
+                    <h3 class="footer-brand">{{ site_settings.site_name }}</h3>
+                    <p class="footer-about">{{ site_settings.about_text }}</p>
+                    <div class="social-icons">
+                        {% if site_settings.instagram_url %}
+                        <a href="{{ site_settings.instagram_url }}" target="_blank" class="social-link" title="Instagram">
+                            <i class="bi bi-instagram"></i>
+                        </a>
+                        {% endif %}
+                        
+                        {% if site_settings.youtube_url %}
+                        <a href="{{ site_settings.youtube_url }}" target="_blank" class="social-link" title="YouTube">
+                            <i class="bi bi-youtube"></i>
+                        </a>
+                        {% endif %}
+                        
+                        {% if site_settings.whatsapp_url %}
+                        <a href="{{ site_settings.whatsapp_url }}" target="_blank" class="social-link whatsapp" title="WhatsApp">
+                            <i class="bi bi-whatsapp"></i>
+                        </a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
 
-            <!-- Payment & Trust Badges -->
-            <div class="row py-4 border-top border-bottom footer-badges">
-                <div class="col-12">
-                    <div class="payment-methods text-center">
-                        <p class="mb-2">We Accept</p>
-                        <div class="payment-icons">
-                            <i class="bi bi-credit-card-2-front"></i>
-                            <i class="bi bi-wallet2"></i>
-                            <i class="bi bi-phone"></i>
-                            <span class="payment-text">Visa • Mastercard • UPI • Paytm • Net Banking</span>
-                        </div>
-                    </div>
+
+            <!-- Quick Links Column -->
+            <div class="col-lg-2 col-md-6 mb-4">
+                <div class="footer-widget">
+                    <h4 class="footer-title">Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="{{ site_settings.about_us_link }}">About Us</a></li>
+                        <li><a href="{{ site_settings.our_story_link }}">Our Story</a></li>
+                        <li><a href="{{ site_settings.blog_link }}">Blog</a></li>
+                        <li><a href="{{ site_settings.careers_link }}">Careers</a></li>
+                        <li><a href="{{ site_settings.press_link }}">Press</a></li>
+                    </ul>
                 </div>
             </div>
 
-            <!-- Footer Bottom -->
-            <div class="row py-4">
-                <div class="col-lg-6 text-center text-lg-start mb-3 mb-lg-0">
-                    <p class="footer-copyright mb-0">© 2026 Manovastra. All Rights Reserved.</p>
+
+            <!-- Categories Column -->
+            <div class="col-lg-2 col-md-6 mb-4">
+                <div class="footer-widget">
+                    <h4 class="footer-title">Categories</h4>
+                    <ul class="footer-links">
+                        {% for category in nav_categories|slice:":5" %}
+                        <li><a href="{% url 'category_collection' category.slug %}">{{ category.name }}</a></li>
+                        {% endfor %}
+                        <li><a href="{% url 'new_arrivals' %}">New Arrivals</a></li>
+                        <li><a href="{% url 'offers' %}">Sale</a></li>
+                    </ul>
                 </div>
-                <div class="col-lg-6 text-center text-lg-end">
-                    <ul class="footer-legal">
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Terms & Conditions</a></li>
-                        <li><a href="#">Refund Policy</a></li>
+            </div>
+
+
+            <!-- Customer Service Column -->
+            <div class="col-lg-2 col-md-6 mb-4">
+                <div class="footer-widget">
+                    <h4 class="footer-title">Customer Service</h4>
+                    <ul class="footer-links">
+                        <li><a href="{{ site_settings.contact_us_link }}">Contact Us</a></li>
+                        <li><a href="{{ site_settings.track_order_link }}">Track Order</a></li>
+                        <li><a href="{{ site_settings.returns_link }}">Returns & Exchange</a></li>
+                        <li><a href="{{ site_settings.shipping_link }}">Shipping Info</a></li>
+                        <li><a href="{{ site_settings.size_guide_link }}">Size Guide</a></li>
+                    </ul>
+                </div>
+            </div>
+
+
+            <!-- Contact Column -->
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="footer-widget">
+                    <h4 class="footer-title">Get in Touch</h4>
+                    <ul class="footer-contact">
+                        <li>
+                            <i class="bi bi-geo-alt-fill"></i>
+                            <span>{{ site_settings.address }}</span>
+                        </li>
+                        <li>
+                            <i class="bi bi-telephone-fill"></i>
+                            <a href="tel:{{ site_settings.phone }}">{{ site_settings.phone }}</a>
+                        </li>
+                        <li>
+                            <i class="bi bi-envelope-fill"></i>
+                            <a href="mailto:{{ site_settings.email }}">{{ site_settings.email }}</a>
+                        </li>
+                        {% if site_settings.whatsapp %}
+                        <li>
+                            <i class="bi bi-whatsapp"></i>
+                            <a href="https://wa.me/{{ site_settings.whatsapp }}" target="_blank">WhatsApp Us</a>
+                        </li>
+                        {% endif %}
+                        <li>
+                            <i class="bi bi-clock-fill"></i>
+                            <span>{{ site_settings.working_hours }}</span>
+                        </li>
                     </ul>
                 </div>
             </div>
         </div>
-    </footer>
+
+
+        <!-- Payment & Trust Badges -->
+        <div class="row py-4 border-top border-bottom footer-badges">
+            <div class="col-12">
+                <div class="payment-methods text-center">
+                    <p class="mb-2">We Accept</p>
+                    <div class="payment-icons">
+                        <i class="bi bi-credit-card-2-front"></i>
+                        <i class="bi bi-wallet2"></i>
+                        <i class="bi bi-phone"></i>
+                        {% if site_settings.enable_cod %}
+                        <i class="bi bi-cash-coin"></i>
+                        {% endif %}
+                        <span class="payment-text">Visa • Mastercard • UPI • Paytm • Net Banking{% if site_settings.enable_cod %} • COD{% endif %}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Footer Bottom -->
+        <div class="row py-4">
+            <div class="col-lg-6 text-center text-lg-start mb-3 mb-lg-0">
+                <p class="footer-copyright mb-0">{{ site_settings.copyright_text }}</p>
+            </div>
+            <div class="col-lg-6 text-center text-lg-end">
+                <ul class="footer-legal">
+                    <li><a href="{{ site_settings.privacy_policy_link }}">Privacy Policy</a></li>
+                    <li><a href="{{ site_settings.terms_link }}">Terms & Conditions</a></li>
+                    <li><a href="{{ site_settings.refund_policy_link }}">Refund Policy</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+<!-- Floating WhatsApp Button -->
+{% if site_settings.whatsapp_url %}
+<a href="{{ site_settings.whatsapp_url }}" target="_blank" class="whatsapp-float" title="Chat on WhatsApp">
+    <i class="bi bi-whatsapp"></i>
+</a>
+{% endif %}
+
+
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- Custom JS -->
     <script src="{% static 'js/script.js' %}"></script>
+
+
+
+
+    <script>
+// ========================================
+// WISHLIST FUNCTIONALITY - SIMPLE VERSION
+// ========================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Initializing wishlist...');
+    
+    // Update wishlist count on page load
+    updateWishlistCount();
+    
+    // Add click handlers to all wishlist buttons
+    document.querySelectorAll('.btn-wishlist-toggle, .product-wishlist').forEach(btn => {
+        console.log('Found wishlist button:', btn);
+        
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const productId = this.getAttribute('data-product-id');
+            console.log('Clicked wishlist for product:', productId);
+            
+            if (!productId) {
+                console.error('No product ID found!');
+                alert('Error: Product ID not found');
+                return;
+            }
+            
+            const icon = this.querySelector('i');
+            const isInWishlist = icon && icon.classList.contains('bi-heart-fill');
+            
+            if (isInWishlist) {
+                removeFromWishlistSimple(productId, this);
+            } else {
+                addToWishlistSimple(productId, this);
+            }
+        });
+    });
+});
+
+function addToWishlistSimple(productId, btn) {
+    console.log('Adding product to wishlist:', productId);
+    
+    // Disable button
+    btn.disabled = true;
+    btn.style.opacity = '0.6';
+    
+    // Create form data
+    const formData = new FormData();
+    formData.append('product_id', productId);
+    
+    // Get CSRF token
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || getCookie('csrftoken');
+    console.log('CSRF Token:', csrfToken);
+    
+    fetch('/add-to-wishlist/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken
+        },
+        body: formData
+    })
+    .then(response => {
+        console.log('Response status:', response.status);
+        return response.json();
+    })
+    .then(data => {
+        console.log('Response data:', data);
+        
+        if (data.success) {
+            // Update button UI
+            const icon = btn.querySelector('i');
+            if (icon) {
+                icon.classList.remove('bi-heart');
+                icon.classList.add('bi-heart-fill');
+            }
+            btn.classList.add('active');
+            
+            // Update count
+            updateWishlistCount();
+            
+            // Show success message
+            alert('✓ Added to wishlist!');
+        } else {
+            alert('⚠ ' + (data.message || 'Failed to add to wishlist'));
+        }
+        
+        btn.disabled = false;
+        btn.style.opacity = '1';
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('❌ Error: ' + error.message);
+        btn.disabled = false;
+        btn.style.opacity = '1';
+    });
+}
+
+function removeFromWishlistSimple(productId, btn) {
+    console.log('Removing product from wishlist:', productId);
+    
+    btn.disabled = true;
+    
+    const formData = new FormData();
+    formData.append('product_id', productId);
+    
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || getCookie('csrftoken');
+    
+    fetch('/remove-from-wishlist/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Remove response:', data);
+        
+        if (data.success) {
+            const icon = btn.querySelector('i');
+            if (icon) {
+                icon.classList.remove('bi-heart-fill');
+                icon.classList.add('bi-heart');
+            }
+            btn.classList.remove('active');
+            
+            updateWishlistCount();
+            alert('✓ Removed from wishlist');
+        } else {
+            alert('⚠ ' + (data.message || 'Failed to remove'));
+        }
+        
+        btn.disabled = false;
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('❌ Error: ' + error.message);
+        btn.disabled = false;
+    });
+}
+
+function updateWishlistCount() {
+    fetch('/wishlist-count/')
+        .then(response => response.json())
+        .then(data => {
+            console.log('Wishlist count:', data.count);
+            
+            const badge = document.getElementById('wishlistCount');
+            if (badge) {
+                if (data.count > 0) {
+                    badge.textContent = data.count;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        })
+        .catch(error => console.error('Error updating count:', error));
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Test on page load
+console.log('Wishlist script loaded!');
+console.log('CSRF Token:', getCookie('csrftoken'));
+console.log('Wishlist buttons found:', document.querySelectorAll('.btn-wishlist-toggle, .product-wishlist').length);
+</script>
+
+
+
+<!-- WISHLIST SCRIPT - ADD BEFORE </body> -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Wishlist initialized');
+    
+    // Update count
+    updateWishlistCount();
+    
+    // Add handlers
+    document.querySelectorAll('.btn-wishlist-toggle').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const productId = this.getAttribute('data-product-id');
+            const icon = this.querySelector('i');
+            
+            if (icon.classList.contains('bi-heart-fill')) {
+                // Remove
+                removeWishlist(productId, this);
+            } else {
+                // Add
+                addWishlist(productId, this);
+            }
+        });
+    });
+});
+
+function addWishlist(productId, btn) {
+    btn.disabled = true;
+    
+    const formData = new FormData();
+    formData.append('product_id', productId);
+    
+    fetch('/add-to-wishlist/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            const icon = btn.querySelector('i');
+            icon.classList.remove('bi-heart');
+            icon.classList.add('bi-heart-fill');
+            btn.classList.add('active');
+            updateWishlistCount();
+            showNotification('Added to wishlist! ❤️');
+        } else {
+            showNotification(data.message);
+        }
+        btn.disabled = false;
+    })
+    .catch(err => {
+        console.error(err);
+        btn.disabled = false;
+    });
+}
+
+function removeWishlist(productId, btn) {
+    btn.disabled = true;
+    
+    const formData = new FormData();
+    formData.append('product_id', productId);
+    
+    fetch('/remove-from-wishlist/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            const icon = btn.querySelector('i');
+            icon.classList.remove('bi-heart-fill');
+            icon.classList.add('bi-heart');
+            btn.classList.remove('active');
+            updateWishlistCount();
+            showNotification('Removed from wishlist');
+        }
+        btn.disabled = false;
+    })
+    .catch(err => {
+        console.error(err);
+        btn.disabled = false;
+    });
+}
+
+function updateWishlistCount() {
+    fetch('/wishlist-count/')
+        .then(r => r.json())
+        .then(data => {
+            const badge = document.getElementById('wishlistCount');
+            if (badge) {
+                if (data.count > 0) {
+                    badge.textContent = data.count;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        });
+}
+
+function showNotification(message) {
+    const notif = document.createElement('div');
+    notif.style.cssText = `
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        background: #10b981;
+        color: white;
+        padding: 15px 25px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        z-index: 99999;
+        font-weight: 500;
+    `;
+    notif.textContent = message;
+    document.body.appendChild(notif);
+    
+    setTimeout(() => notif.remove(), 2500);
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
 
 </body>
 </html>
