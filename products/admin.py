@@ -144,7 +144,6 @@ class ProductAdmin(admin.ModelAdmin):
         else:
             color = '#ef4444'
         
-        # Format rating as string first
         rating_text = '{:.1f}'.format(rating_val)
         
         return format_html(
@@ -209,11 +208,12 @@ class ProductAdmin(admin.ModelAdmin):
                 '<div style="background: linear-gradient(135deg, #10b981, #059669); color: white; '
                 'padding: 8px 15px; border-radius: 8px; display: inline-block; font-weight: bold; '
                 'font-size: 14px; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);">'
-                '💰 ₹{:.0f} saved'
+                '💰 ₹{} saved'
                 '</div>',
-                amount
+                int(amount)
             )
-        return format_html('<span style="color: #9ca3af; font-style: italic;">No discount</span>')
+        # FIX: Added empty string as argument
+        return format_html('<span style="color: #9ca3af; font-style: italic;">{}</span>', 'No discount')
     discount_amount_display.short_description = '💸 You Save'
     
     def save_model(self, request, obj, form, change):
