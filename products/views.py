@@ -795,8 +795,6 @@ def create_buy_now_order(request):
         })
 
 
-
-
 @csrf_exempt
 @require_POST
 def verify_payment_direct(request):

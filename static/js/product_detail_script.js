@@ -182,85 +182,92 @@ document.addEventListener('DOMContentLoaded', function() {
     // ========== 6. BUY NOW - FIXED VERSION ==========
     const buyNowBtns = document.querySelectorAll('.btn-buy-now, .btn-buy-now-mobile, #buyNowBtn');
     
-    buyNowBtns.forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
+    // In your product_detail JavaScript file
+// Find the Buy Now button click handler and replace with this:
+
+buyNowBtns.forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        const qty = qtyInput ? parseInt(qtyInput.value) : 1;
+        
+        // ✅ Get first color if available
+        const activeColor = document.querySelector('.color-swatch.active');
+        const colorId = activeColor ? activeColor.getAttribute('data-color-id') : null;
+        
+        console.log('⚡ Buy Now clicked');
+        console.log('  - Color ID:', colorId);
+        console.log('  - Quantity:', qty);
+        
+        // Disable button
+        btn.disabled = true;
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Processing...';
+        
+        // Get product slug from URL
+        const productSlug = window.location.pathname.split('/')[2];
+        
+        // Send request
+        fetch('/product/' + productSlug + '/buy-now/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                color_id: colorId,
+                quantity: qty
+            })
+        })
+        .then(response => {
+            console.log('Response status:', response.status);
             
-            const qty = qtyInput ? parseInt(qtyInput.value) : 1;
-            const colorName = selectedColorName ? selectedColorName.textContent : 'Default';
-            
-            // ✅ VALIDATE COLOR SELECTED
-            if (!selectedColorId) {
-                alert('❌ Please select a color first!');
-                return;
+            // Check if redirected to login
+            if (response.redirected && response.url.includes('/login/')) {
+                if (confirm('⚠️ Please login to continue!\n\nClick OK to go to Login page')) {
+                    window.location.href = '/login/?next=' + window.location.pathname;
+                }
+                btn.disabled = false;
+                btn.innerHTML = originalHTML;
+                return null;
             }
             
-            console.log('⚡ Buy Now clicked');
-            console.log('  - Color ID:', selectedColorId);
-            console.log('  - Color Name:', colorName);
-            console.log('  - Quantity:', qty);
+            return response.json();
+        })
+        .then(data => {
+            console.log('Response data:', data);
             
-            // Disable button
-            btn.disabled = true;
-            const originalHTML = btn.innerHTML;
-            btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Processing...';
+            if (!data) return;
             
-            // Get product slug from URL
-            const productSlug = window.location.pathname.split('/')[2];
-            
-            // ✅ SEND COLOR_ID IN REQUEST
-            fetch('/product/' + productSlug + '/buy-now/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken')
-                },
-                body: JSON.stringify({
-                    color_id: selectedColorId,  // ✅ SEND COLOR ID
-                    quantity: qty
-                })
-            })
-            .then(response => {
-                // Check if redirected to login
-                if (response.redirected && response.url.includes('/login/')) {
-                    if (confirm('⚠️ Please login to continue!\n\nClick OK to go to Login page')) {
-                        window.location.href = '/login/?next=' + window.location.pathname;
-                    }
-                    btn.disabled = false;
-                    btn.innerHTML = originalHTML;
-                    return null;
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (!data) return;
+            if (data.success) {
+                console.log('✅ Buy Now successful');
                 
-                if (data.success) {
-                    console.log('✅ Buy Now successful:', data);
-                    
-                    if (data.show_address_modal) {
-                        // Show address modal
-                        const addressModal = new bootstrap.Modal(document.getElementById('addressModal'));
-                        addressModal.show();
-                    } else if (data.redirect_url) {
-                        window.location.href = data.redirect_url;
-                    }
-                } else {
-                    alert('❌ Error: ' + (data.message || 'An error occurred'));
-                    console.error('Buy Now failed:', data);
+                if (data.show_address_modal) {
+                    // Show address modal
+                    const addressModal = new bootstrap.Modal(document.getElementById('addressModal'));
+                    addressModal.show();
+                } else if (data.redirect_url) {
+                    window.location.href = data.redirect_url;
                 }
                 
                 btn.disabled = false;
                 btn.innerHTML = originalHTML;
-            })
-            .catch(error => {
-                console.error('❌ Error:', error);
-                alert('An error occurred. Please try again.');
+            } else {
+                console.error('❌ Error:', data.message);
+                alert('❌ ' + (data.message || 'An error occurred'));
                 btn.disabled = false;
                 btn.innerHTML = originalHTML;
-            });
+            }
+        })
+        .catch(error => {
+            console.error('❌ Fetch Error:', error);
+            alert('Network error. Please check your connection and try again.');
+            btn.disabled = false;
+            btn.innerHTML = originalHTML;
         });
     });
+});
+
 
     // ========== PINCODE CHECKER ==========
     const checkPincodeBtn = document.getElementById('checkPincodeBtn');
