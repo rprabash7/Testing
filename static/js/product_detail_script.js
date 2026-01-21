@@ -14,6 +14,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const selectedColorName = document.getElementById('selectedColorName');
     const colorSwatches = document.querySelectorAll('.color-swatch');
 
+    // ✅ ADD: Store selected color ID globally
+    let selectedColorId = null;
+
     // ========== 1. COLOR SWITCHING ==========
     colorSwatches.forEach(function(swatch) {
         swatch.addEventListener('click', function(e) {
@@ -21,6 +24,9 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const colorId = this.getAttribute('data-color-id');
             const colorName = this.getAttribute('data-color-name');
+            
+            // ✅ STORE COLOR ID
+            selectedColorId = colorId;
             
             console.log('🎨 Color clicked:', colorName, '| ID:', colorId);
 
@@ -68,6 +74,13 @@ document.addEventListener('DOMContentLoaded', function() {
             attachThumbnailClickEvents();
         });
     });
+
+    // ✅ SET DEFAULT COLOR ID ON PAGE LOAD
+    const activeColorSwatch = document.querySelector('.color-swatch.active');
+    if (activeColorSwatch) {
+        selectedColorId = activeColorSwatch.getAttribute('data-color-id');
+        console.log('✅ Default color ID set:', selectedColorId);
+    }
 
     // ========== 2. THUMBNAIL CLICKING ==========
     function attachThumbnailClickEvents() {
@@ -166,205 +179,182 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // ========== 6. BUY NOW ==========
-    const buyNowBtns = document.querySelectorAll('.btn-buy-now, .btn-buy-now-mobile');
+    // ========== 6. BUY NOW - FIXED VERSION ==========
+    const buyNowBtns = document.querySelectorAll('.btn-buy-now, .btn-buy-now-mobile, #buyNowBtn');
     
     buyNowBtns.forEach(function(btn) {
-        btn.addEventListener('click', function() {
-            const qty = qtyInput ? qtyInput.value : 1;
-            const color = selectedColorName ? selectedColorName.textContent : 'Default';
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
             
-            console.log('⚡ Buy Now - Qty:', qty, '| Color:', color);
-            alert('Proceeding to checkout...');
+            const qty = qtyInput ? parseInt(qtyInput.value) : 1;
+            const colorName = selectedColorName ? selectedColorName.textContent : 'Default';
+            
+            // ✅ VALIDATE COLOR SELECTED
+            if (!selectedColorId) {
+                alert('❌ Please select a color first!');
+                return;
+            }
+            
+            console.log('⚡ Buy Now clicked');
+            console.log('  - Color ID:', selectedColorId);
+            console.log('  - Color Name:', colorName);
+            console.log('  - Quantity:', qty);
+            
+            // Disable button
+            btn.disabled = true;
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Processing...';
+            
+            // Get product slug from URL
+            const productSlug = window.location.pathname.split('/')[2];
+            
+            // ✅ SEND COLOR_ID IN REQUEST
+            fetch('/product/' + productSlug + '/buy-now/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    color_id: selectedColorId,  // ✅ SEND COLOR ID
+                    quantity: qty
+                })
+            })
+            .then(response => {
+                // Check if redirected to login
+                if (response.redirected && response.url.includes('/login/')) {
+                    if (confirm('⚠️ Please login to continue!\n\nClick OK to go to Login page')) {
+                        window.location.href = '/login/?next=' + window.location.pathname;
+                    }
+                    btn.disabled = false;
+                    btn.innerHTML = originalHTML;
+                    return null;
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (!data) return;
+                
+                if (data.success) {
+                    console.log('✅ Buy Now successful:', data);
+                    
+                    if (data.show_address_modal) {
+                        // Show address modal
+                        const addressModal = new bootstrap.Modal(document.getElementById('addressModal'));
+                        addressModal.show();
+                    } else if (data.redirect_url) {
+                        window.location.href = data.redirect_url;
+                    }
+                } else {
+                    alert('❌ Error: ' + (data.message || 'An error occurred'));
+                    console.error('Buy Now failed:', data);
+                }
+                
+                btn.disabled = false;
+                btn.innerHTML = originalHTML;
+            })
+            .catch(error => {
+                console.error('❌ Error:', error);
+                alert('An error occurred. Please try again.');
+                btn.disabled = false;
+                btn.innerHTML = originalHTML;
+            });
         });
     });
+
+    // ========== PINCODE CHECKER ==========
+    const checkPincodeBtn = document.getElementById('checkPincodeBtn');
+    const pincodeInput = document.getElementById('pincodeInput');
+    const pincodeResult = document.getElementById('pincodeResult');
+
+    if (checkPincodeBtn && pincodeInput) {
+        checkPincodeBtn.addEventListener('click', function() {
+            const pincode = pincodeInput.value.trim();
+            
+            if (!pincode || pincode.length !== 6) {
+                showPincodeError('Please enter a valid 6-digit pincode');
+                return;
+            }
+            
+            checkPincodeBtn.disabled = true;
+            checkPincodeBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Checking...';
+            
+            fetch('/check-pincode/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: 'pincode=' + pincode
+            })
+            .then(response => response.json())
+            .then(data => {
+                checkPincodeBtn.disabled = false;
+                checkPincodeBtn.innerHTML = 'Check';
+                
+                if (data.success && data.serviceable) {
+                    showPincodeSuccess(data);
+                } else {
+                    showPincodeError(data.message || 'Pincode not serviceable');
+                }
+            })
+            .catch(error => {
+                checkPincodeBtn.disabled = false;
+                checkPincodeBtn.innerHTML = 'Check';
+                showPincodeError('Error checking pincode. Please try again.');
+                console.error('Error:', error);
+            });
+        });
+    }
+
+    function showPincodeSuccess(data) {
+        pincodeResult.style.display = 'block';
+        pincodeResult.className = 'pincode-result success';
+        pincodeResult.innerHTML = `
+            <div class="pincode-success">
+                <i class="bi bi-check-circle-fill"></i>
+                <strong>Delivery available to ${data.city}, ${data.state}</strong>
+            </div>
+            <div class="delivery-info-list mt-3">
+                <div class="delivery-info-item">
+                    <i class="bi bi-box-seam"></i>
+                    <div>
+                        <strong>Standard Delivery</strong>
+                        <p>Delivery by ${data.standard_delivery.date} | Free</p>
+                    </div>
+                </div>
+                <div class="delivery-info-item">
+                    <i class="bi bi-lightning-charge"></i>
+                    <div>
+                        <strong>Express Delivery</strong>
+                        <p>Delivery by ${data.express_delivery.date} | ₹${data.express_delivery.charge}</p>
+                    </div>
+                </div>
+                ${data.cod_available ? `
+                <div class="delivery-info-item">
+                    <i class="bi bi-cash-coin"></i>
+                    <div>
+                        <strong>Cash on Delivery Available</strong>
+                        <p>Pay when you receive the product</p>
+                    </div>
+                </div>
+                ` : ''}
+            </div>
+        `;
+    }
+
+    function showPincodeError(message) {
+        pincodeResult.style.display = 'block';
+        pincodeResult.className = 'pincode-result error';
+        pincodeResult.innerHTML = `
+            <div class="pincode-error">
+                <i class="bi bi-x-circle-fill"></i>
+                <strong>${message}</strong>
+            </div>
+        `;
+    }
 
     console.log('✅✅✅ ALL FUNCTIONALITY LOADED SUCCESSFULLY ✅✅✅');
-});
-
-
-// ... Keep all existing code ...
-
-// Add this at the end:
-
-// ========== BUY NOW - UPDATE FORM DATA ==========
-const buyNowForm = document.getElementById('buyNowForm');
-if (buyNowForm) {
-    buyNowForm.addEventListener('submit', function(e) {
-        const qtyInput = document.querySelector('.qty-input');
-        const selectedColorName = document.getElementById('selectedColorName');
-        
-        if (qtyInput) {
-            document.getElementById('buyNowQuantity').value = qtyInput.value;
-        }
-        if (selectedColorName) {
-            document.getElementById('buyNowColor').value = selectedColorName.textContent;
-        }
-        
-        console.log('🛒 Buy Now submitted - Qty:', qtyInput.value, '| Color:', selectedColorName.textContent);
-    });
-}
-
-// ========== PINCODE CHECKER ==========
-const checkPincodeBtn = document.getElementById('checkPincodeBtn');
-const pincodeInput = document.getElementById('pincodeInput');
-const pincodeResult = document.getElementById('pincodeResult');
-
-if (checkPincodeBtn && pincodeInput) {
-    checkPincodeBtn.addEventListener('click', function() {
-        const pincode = pincodeInput.value.trim();
-        
-        if (!pincode || pincode.length !== 6) {
-            showPincodeError('Please enter a valid 6-digit pincode');
-            return;
-        }
-        
-        checkPincodeBtn.disabled = true;
-        checkPincodeBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Checking...';
-        
-        fetch('/check-pincode/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'X-CSRFToken': getCookie('csrftoken')
-            },
-            body: 'pincode=' + pincode
-        })
-        .then(response => response.json())
-        .then(data => {
-            checkPincodeBtn.disabled = false;
-            checkPincodeBtn.innerHTML = 'Check';
-            
-            if (data.success && data.serviceable) {
-                showPincodeSuccess(data);
-            } else {
-                showPincodeError(data.message || 'Pincode not serviceable');
-            }
-        })
-        .catch(error => {
-            checkPincodeBtn.disabled = false;
-            checkPincodeBtn.innerHTML = 'Check';
-            showPincodeError('Error checking pincode. Please try again.');
-            console.error('Error:', error);
-        });
-    });
-}
-
-function showPincodeSuccess(data) {
-    pincodeResult.style.display = 'block';
-    pincodeResult.className = 'pincode-result success';
-    pincodeResult.innerHTML = `
-        <div class="pincode-success">
-            <i class="bi bi-check-circle-fill"></i>
-            <strong>Delivery available to ${data.city}, ${data.state}</strong>
-        </div>
-        <div class="delivery-info-list mt-3">
-            <div class="delivery-info-item">
-                <i class="bi bi-box-seam"></i>
-                <div>
-                    <strong>Standard Delivery</strong>
-                    <p>Delivery by ${data.standard_delivery.date} | Free</p>
-                </div>
-            </div>
-            <div class="delivery-info-item">
-                <i class="bi bi-lightning-charge"></i>
-                <div>
-                    <strong>Express Delivery</strong>
-                    <p>Delivery by ${data.express_delivery.date} | ₹${data.express_delivery.charge}</p>
-                </div>
-            </div>
-            ${data.cod_available ? `
-            <div class="delivery-info-item">
-                <i class="bi bi-cash-coin"></i>
-                <div>
-                    <strong>Cash on Delivery Available</strong>
-                    <p>Pay when you receive the product</p>
-                </div>
-            </div>
-            ` : ''}
-        </div>
-    `;
-}
-
-function showPincodeError(message) {
-    pincodeResult.style.display = 'block';
-    pincodeResult.className = 'pincode-result error';
-    pincodeResult.innerHTML = `
-        <div class="pincode-error">
-            <i class="bi bi-x-circle-fill"></i>
-            <strong>${message}</strong>
-        </div>
-    `;
-}
-
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-
-
-// Buy Now Button Click Handler
-document.getElementById('buyNowBtn').addEventListener('click', function() {
-    const selectedColor = document.querySelector('input[name="color"]:checked');
-    const selectedSize = document.querySelector('.size-option.active');
-    const quantity = document.getElementById('quantityInput').value;
-    
-    // Validation
-    if (!selectedColor) {
-        alert('Please select a color');
-        return;
-    }
-    
-    if (!selectedSize) {
-        alert('Please select a size');
-        return;
-    }
-    
-    // Send buy now request
-    fetch(`/product/{{ product.slug }}/buy-now/`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
-        },
-        body: JSON.stringify({
-            color: selectedColor.value,
-            size: selectedSize.dataset.size,
-            quantity: quantity
-        })
-    })
-    .then(response => {
-        // Check if redirected to login (user not logged in)
-        if (response.redirected && response.url.includes('/login/')) {
-            // Show login required message
-            if (confirm('⚠️ Please login to continue shopping!\n\nClick OK to go to Login page')) {
-                window.location.href = `/login/?next=/product/{{ product.slug }}/`;
-            }
-            return null;
-        }
-        return response.json();
-    })
-    .then(data => {
-        if (data && data.success) {
-            window.location.href = data.redirect_url;
-        } else if (data && !data.success) {
-            alert(data.error || 'An error occurred. Please try again.');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred. Please try again.');
-    });
 });
 
 // Get CSRF token function
