@@ -17,13 +17,16 @@ import hashlib
 
 
 
+
 # Initialize Razorpay client
 razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
 
 
 
 
+
 # ==================== HOME & NAVIGATION ====================
+
 
 
 
@@ -49,6 +52,7 @@ def home(request):
         'categories': categories,
     }
     return render(request, 'products/home.html', context)
+
 
 
 
@@ -107,6 +111,7 @@ def category_collection(request, slug):
 
 
 
+
 def product_detail(request, slug):
     product = get_object_or_404(Product, slug=slug, is_active=True)
     colors = product.colors.all()
@@ -132,6 +137,7 @@ def product_detail(request, slug):
         'images_by_color_json': images_json,
     }
     return render(request, 'products/product_detail.html', context)
+
 
 
 
@@ -165,6 +171,7 @@ def search_products(request):
 
 
 
+
 def new_arrivals(request):
     from django.utils import timezone
     
@@ -189,6 +196,7 @@ def new_arrivals(request):
 
 
 
+
 def offers(request):
     products = Product.objects.filter(
         discount_percent__gte=30,
@@ -206,6 +214,7 @@ def offers(request):
     }
     
     return render(request, 'products/category_products.html', context)
+
 
 
 
@@ -241,7 +250,9 @@ def all_products(request):
 
 
 
+
 # ==================== AUTHENTICATION ====================
+
 
 
 
@@ -253,10 +264,12 @@ def login_page(request):
 
 
 
+
 def register_page(request):
     if request.session.get('is_logged_in'):
         return redirect('home')
     return render(request, 'products/register.html')
+
 
 
 
@@ -288,6 +301,7 @@ def send_login_otp(request):
             'success': False,
             'message': 'Failed to send OTP. Please try again.'
         })
+
 
 
 
@@ -334,6 +348,7 @@ def verify_login_otp(request):
 
 
 
+
 @require_POST
 def register_user(request):
     name = request.POST.get('name', '').strip()
@@ -365,6 +380,7 @@ def register_user(request):
             'success': False,
             'message': 'Failed to send OTP. Please try again.'
         })
+
 
 
 
@@ -414,10 +430,12 @@ def verify_registration_otp(request):
 
 
 
+
 def logout_user(request):
     request.session.flush()
     messages.success(request, 'Logged out successfully!')
     return redirect('home')
+
 
 
 
@@ -434,7 +452,9 @@ def check_login_status(request):
 
 
 
+
 # ==================== WISHLIST (Login Required) ====================
+
 
 
 
@@ -449,6 +469,7 @@ def wishlist(request):
     }
     
     return render(request, 'products/wishlist.html', context)
+
 
 
 
@@ -482,6 +503,7 @@ def add_to_wishlist(request):
 
 
 
+
 @login_required_custom
 @require_POST
 def remove_from_wishlist(request):
@@ -506,6 +528,7 @@ def remove_from_wishlist(request):
 
 
 
+
 def get_wishlist_items(request):
     wishlist = request.session.get('wishlist', [])
     return JsonResponse({
@@ -516,7 +539,9 @@ def get_wishlist_items(request):
 
 
 
+
 # ==================== CART (Login Required) ====================
+
 
 
 
@@ -558,6 +583,7 @@ def cart(request):
 
 
 
+
 @login_required_custom
 @require_POST
 def add_to_cart(request):
@@ -592,6 +618,7 @@ def add_to_cart(request):
 
 
 
+
 @login_required_custom
 @require_POST
 def remove_from_cart(request):
@@ -618,6 +645,7 @@ def remove_from_cart(request):
 
 
 
+
 def get_cart_count(request):
     cart = request.session.get('cart', {})
     total_items = sum(item['quantity'] for item in cart.values())
@@ -626,7 +654,9 @@ def get_cart_count(request):
 
 
 
+
 # ==================== ORDERS (Login Required) ====================
+
 
 
 @login_required_custom
@@ -684,7 +714,10 @@ def buy_now(request, slug):
         return JsonResponse({
             'success': False,
             'message': 'Please try again'
-        }, status=200)  # ✅ Changed to 200 instead of 500
+        }, status=200)
+
+
+
 
 
 @login_required_custom
@@ -797,10 +830,11 @@ def create_buy_now_order(request):
 
 
 
+
 @csrf_exempt
 @require_POST
 def verify_payment_direct(request):
-    """Verify payment and create order"""
+    """Verify payment and create order - ✅ FIXED FOR DELETED PRODUCTS"""
     try:
         payment_id = request.POST.get('razorpay_payment_id')
         order_id = request.POST.get('razorpay_order_id')
@@ -822,8 +856,11 @@ def verify_payment_direct(request):
         if not pending_order:
             return JsonResponse({'success': False, 'message': 'Session expired'})
         
-        # Get product
-        product = Product.objects.get(id=pending_order['product_id'])
+        # Get product (might be None if deleted)
+        try:
+            product = Product.objects.get(id=pending_order['product_id'])
+        except Product.DoesNotExist:
+            product = None
         
         # Create Order
         order = Order.objects.create(
@@ -844,10 +881,11 @@ def verify_payment_direct(request):
             delivery_type=pending_order['delivery_type'],
         )
         
-        # Create Order Item
+        # ✅ Create Order Item with product_name backup
         OrderItem.objects.create(
             order=order,
-            product=product,
+            product=product,  # Can be None if deleted
+            product_name=pending_order['product_name'],  # ✅ BACKUP NAME
             color=pending_order['color'],
             quantity=pending_order['quantity'],
             price=pending_order['price']
@@ -880,6 +918,7 @@ def verify_payment_direct(request):
 
 
 
+
 @login_required_custom
 def my_orders(request):
     user_email = request.session.get('user_email')
@@ -894,7 +933,9 @@ def my_orders(request):
 
 
 
+
 # ==================== UTILITY ====================
+
 
 
 
@@ -942,6 +983,7 @@ def check_pincode(request):
 
 
 
+
 @require_POST
 def update_cart_quantity(request):
     """Update cart item quantity"""
@@ -963,7 +1005,9 @@ def update_cart_quantity(request):
 
 
 
+
 # ==================== CHECKOUT ====================
+
 
 
 
@@ -1010,6 +1054,7 @@ def checkout(request):
 
 
 
+
 @login_required_custom
 @require_POST
 def create_order_from_cart(request):
@@ -1052,7 +1097,7 @@ def create_order_from_cart(request):
             
             cart_products.append({
                 'product_id': int(product.id),
-                'product_name': str(product.name),
+                'product_name': str(product.name),  # ✅ Store name
                 'color': str(item_data.get('color', 'Default')),
                 'quantity': int(item_data['quantity']),
                 'price': float(product.current_price),
@@ -1124,10 +1169,11 @@ def create_order_from_cart(request):
 
 
 
+
 @csrf_exempt
 @require_POST
 def verify_payment_cart(request):
-    """Verify payment and create order from cart"""
+    """Verify payment and create order from cart - ✅ FIXED FOR DELETED PRODUCTS"""
     try:
         payment_id = request.POST.get('razorpay_payment_id')
         order_id = request.POST.get('razorpay_order_id')
@@ -1168,12 +1214,17 @@ def verify_payment_cart(request):
             delivery_type=pending_order['delivery_type'],
         )
         
-        # Create Order Items
+        # ✅ Create Order Items with product_name backup
         for item in pending_order['cart_products']:
-            product = Product.objects.get(id=item['product_id'])
+            try:
+                product = Product.objects.get(id=item['product_id'])
+            except Product.DoesNotExist:
+                product = None  # Product was deleted
+            
             OrderItem.objects.create(
                 order=order,
-                product=product,
+                product=product,  # Can be None if deleted
+                product_name=item['product_name'],  # ✅ BACKUP NAME
                 color=item['color'],
                 quantity=item['quantity'],
                 price=item['price']
@@ -1207,7 +1258,9 @@ def verify_payment_cart(request):
 
 
 
+
 # ==================== MANAGER DASHBOARD (NEW) ====================
+
 
 
 
@@ -1217,13 +1270,16 @@ def manager_login(request):
         username = request.POST.get('username', '').strip()
         password = request.POST.get('password', '').strip()
 
+
         if username == settings.MANAGER_USERNAME and password == settings.MANAGER_PASSWORD:
             request.session['is_manager_logged_in'] = True
             return redirect('manager_orders')
         else:
             messages.error(request, 'Invalid credentials')
 
+
     return render(request, 'manager/manager_login.html')
+
 
 
 
@@ -1231,6 +1287,7 @@ def manager_logout(request):
     """Manager logout"""
     request.session.pop('is_manager_logged_in', None)
     return redirect('manager_login')
+
 
 
 
@@ -1244,19 +1301,24 @@ def manager_login_required(view_func):
 
 
 
+
 @manager_login_required
 def manager_orders(request):
     """Manager dashboard - All orders"""
     status_filter = request.GET.get('status', '')
     search = request.GET.get('q', '')
 
+
     orders = Order.objects.all().order_by('-created_at')
+
 
     if status_filter:
         orders = orders.filter(status=status_filter.lower())
 
+
     if search:
         orders = orders.filter(customer_phone__icontains=search)
+
 
     context = {
         'orders': orders,
@@ -1264,6 +1326,7 @@ def manager_orders(request):
         'search': search,
     }
     return render(request, 'manager/manager_orders.html', context)
+
 
 
 

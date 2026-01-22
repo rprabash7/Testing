@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.text import slugify
 
 
+
 class Category(models.Model):
     CATEGORY_IMAGES = {
         'Silk Sarees': 'linear-gradient(135deg, #C41E3A 0%, #8B0000 100%)',
@@ -31,6 +32,7 @@ class Category(models.Model):
     
     def get_product_count(self):
         return self.products.filter(is_active=True).count()
+
 
 
 class Product(models.Model):
@@ -150,6 +152,7 @@ class Product(models.Model):
         return self.name
 
 
+
 class ProductColor(models.Model):
     COLOR_CHOICES = [
         ('Royal Red', 'Royal Red'),
@@ -189,6 +192,7 @@ class ProductColor(models.Model):
         return f'{self.product.name} - {self.name}'
 
 
+
 class ColorImage(models.Model):
     color = models.ForeignKey(ProductColor, on_delete=models.CASCADE, related_name='images')
     image = models.ImageField(upload_to='products/')
@@ -199,6 +203,7 @@ class ColorImage(models.Model):
     
     def __str__(self):
         return f'{self.color.name} - Image {self.order}'
+
 
 
 class Pincode(models.Model):
@@ -216,6 +221,7 @@ class Pincode(models.Model):
     
     class Meta:
         ordering = ['pincode']
+
 
 
 class Order(models.Model):
@@ -275,18 +281,27 @@ class Order(models.Model):
         ordering = ['-created_at']
 
 
+
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    color = models.CharField(max_length=50)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True)  # ✅ FIXED
+    product_name = models.CharField(max_length=255, default='Product')  # ✅ NEW - Backup name
+    color = models.CharField(max_length=50, default='Default')
     quantity = models.IntegerField(default=1)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     
     def __str__(self):
-        return f"{self.product.name} x {self.quantity}"
+        if self.product:
+            return f"{self.product.name} x {self.quantity}"
+        return f"{self.product_name} (Deleted) x {self.quantity}"  # ✅ FIXED - Fallback
     
-    def get_total(self):
+    @property
+    def subtotal(self):  # ✅ Changed from get_total() to subtotal property
         return self.price * self.quantity
+    
+    def get_total(self):  # ✅ Keep for backward compatibility
+        return self.subtotal
+
 
 
 class Payment(models.Model):
@@ -313,6 +328,7 @@ class Payment(models.Model):
         ordering = ['-created_at']
 
 
+
 class UserOTP(models.Model):
     email = models.EmailField()
     otp = models.CharField(max_length=6)
@@ -332,6 +348,7 @@ class UserOTP(models.Model):
         ordering = ['-created_at']
 
 
+
 class UserProfile(models.Model):
     email = models.EmailField(unique=True)
     name = models.CharField(max_length=200)
@@ -344,6 +361,7 @@ class UserProfile(models.Model):
     
     class Meta:
         ordering = ['-created_at']
+
 
 
 class SiteSetting(models.Model):
@@ -393,6 +411,7 @@ class SiteSetting(models.Model):
         return self.site_name
 
 
+
 class HeroBanner(models.Model):
     title = models.CharField(max_length=200, help_text="Main title")
     subtitle = models.CharField(max_length=200, help_text="Top subtitle text")
@@ -413,6 +432,7 @@ class HeroBanner(models.Model):
         ordering = ['order', '-created_at']
         verbose_name = 'Hero Banner'
         verbose_name_plural = 'Hero Banners'
+
 
 
 class FestivalBanner(models.Model):
