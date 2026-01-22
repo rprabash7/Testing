@@ -11,20 +11,17 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/order_style.css' %}">
-    
-    
 </head>
 <body>
 
-    <style>
-    .logo img{
-        margin-right: 10px;
-        margin-left: 550px;
-        max-height: 160px;
+<style>
+.logo img{
+    margin-right: 10px;
+    margin-left: 550px;
+    max-height: 160px;
     max-width: 480px;
     object-fit: contain;
-    }
-
+}
 </style>
 
 <!-- Header -->
@@ -93,18 +90,27 @@
                 <div class="order-items mb-3">
                     {% for item in order.items.all %}
                     <div class="order-item-card">
-                        {% if item.product.colors.first.images.first %}
+                        {# ✅ Check if product exists before accessing images #}
+                        {% if item.product and item.product.colors.first.images.first %}
                         <img src="{{ item.product.colors.first.images.first.image.url }}" 
                              alt="{{ item.product.name }}" 
                              class="order-item-image">
                         {% else %}
                         <div class="order-item-image bg-light d-flex align-items-center justify-content-center">
-                            <i class="bi bi-image text-muted"></i>
+                            <i class="bi bi-image text-muted" style="font-size: 24px;"></i>
                         </div>
                         {% endif %}
                         
                         <div class="flex-grow-1">
-                            <h6 class="mb-1">{{ item.product.name }}</h6>
+                            {# ✅ Use product_name backup if product is deleted #}
+                            <h6 class="mb-1">
+                                {% if item.product %}
+                                    {{ item.product.name }}
+                                {% else %}
+                                    {{ item.product_name }}
+                                    <small class="text-muted">(Product no longer available)</small>
+                                {% endif %}
+                            </h6>
                             <p class="mb-1 text-muted">
                                 <small>Color: {{ item.color }} | Qty: {{ item.quantity }}</small>
                             </p>
@@ -162,10 +168,13 @@
 
                 <!-- Order Actions -->
                 <div class="mt-3 pt-3 border-top text-center">
+                    {# ✅ Only show Buy Again if product still exists #}
+                    {% if order.items.first.product %}
                     <a href="{% url 'product_detail' order.items.first.product.slug %}" 
                        class="btn btn-outline-primary btn-sm me-2">
                         <i class="bi bi-arrow-repeat"></i> Buy Again
                     </a>
+                    {% endif %}
                     <a href="{% url 'home' %}" class="btn btn-primary btn-sm">
                         <i class="bi bi-shop"></i> Continue Shopping
                     </a>
