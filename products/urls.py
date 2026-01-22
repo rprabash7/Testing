@@ -54,4 +54,9 @@ urlpatterns = [
     path('manager/logout/', views.manager_logout, name='manager_logout'),
     path('manager/orders/', views.manager_orders, name='manager_orders'),
     path('manager/orders/<int:order_id>/', views.manager_order_detail, name='manager_order_detail'),
+
+
+    path('manager/order/<int:order_id>/mark-refund/', views.manager_mark_refund, name='manager_mark_refund'),
+path('manager/order/<int:order_id>/mark-refunded/', views.manager_mark_refunded, name='manager_mark_refunded'),
+
 ]

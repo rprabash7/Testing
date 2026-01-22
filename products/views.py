@@ -1335,3 +1335,29 @@ def manager_order_detail(request, order_id):
     """Manager view single order detail"""
     order = get_object_or_404(Order, id=order_id)
     return render(request, 'manager/manager_order_detail.html', {'order': order})
+
+
+
+
+
+
+@manager_login_required
+@require_POST
+def manager_mark_refund(request, order_id):
+    """Manager marks order for refund"""
+    order = get_object_or_404(Order, id=order_id)
+    order.status = 'refund_pending'
+    order.save()
+    messages.success(request, f'Order #{order.order_id} marked as Refund Pending')
+    return redirect('manager_order_detail', order_id=order_id)
+
+
+@manager_login_required
+@require_POST
+def manager_mark_refunded(request, order_id):
+    """Manager confirms refund completed"""
+    order = get_object_or_404(Order, id=order_id)
+    order.status = 'refunded'
+    order.save()
+    messages.success(request, f'Order #{order.order_id} marked as Refunded')
+    return redirect('manager_order_detail', order_id=order_id)

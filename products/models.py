@@ -231,6 +231,8 @@ class Order(models.Model):
         ('shipped', 'Shipped'),
         ('delivered', 'Delivered'),
         ('cancelled', 'Cancelled'),
+        ('refund_pending', 'Refund Pending'),  # ✅ ADD THIS LINE
+        ('refunded', 'Refunded'),
     ]
     
     PAYMENT_CHOICES = [
