@@ -161,7 +161,7 @@
     </div>
 </nav>
 
-    <!-- Product Detail Section -->
+<!-- Product Detail Section -->
 <section class="product-detail-section py-5">
     <div class="container">
         <div class="row g-4">
@@ -201,7 +201,7 @@
                             <button class="btn btn-add-cart-mobile flex-grow-1" data-product-id="{{ product.id }}">
                                 <i class="bi bi-bag-plus"></i> Add to Cart
                             </button>
-                            <button class="btn btn-buy-now-mobile flex-grow-1" data-bs-toggle="modal" data-bs-target="#addressModal">
+                            <button class="btn btn-buy-now-mobile flex-grow-1" id="buyNowBtnMobile">
                                 <i class="bi bi-lightning-fill"></i> Buy Now
                             </button>
                             <button class="btn btn-wishlist-mobile" data-product-id="{{ product.id }}">
@@ -353,7 +353,7 @@
                             <button type="button" class="btn btn-add-cart" data-product-id="{{ product.id }}">
                                 <i class="bi bi-bag-plus"></i> Add to Cart
                             </button>
-                            <button type="button" class="btn btn-buy-now" data-bs-toggle="modal" data-bs-target="#addressModal">
+                            <button type="button" class="btn btn-buy-now" id="buyNowBtnDesktop">
                                 <i class="bi bi-lightning-fill"></i> Buy Now
                             </button>
                         </div>
@@ -403,14 +403,14 @@
                             <i class="bi bi-box-seam"></i>
                             <div>
                                 <strong>Standard Delivery</strong>
-                                <p>Delivery by 23 Jan, Thursday | Free</p>
+                                <p>Delivery by 27 Jan, Monday | Free</p>
                             </div>
                         </div>
                         <div class="delivery-info-item">
                             <i class="bi bi-lightning-charge"></i>
                             <div>
                                 <strong>Express Delivery</strong>
-                                <p>Delivery by 19 Jan, Monday | ₹99</p>
+                                <p>Delivery by 24 Jan, Friday | ₹99</p>
                             </div>
                         </div>
                         <div class="delivery-info-item">
@@ -463,77 +463,6 @@
         </div>
     </div>
 </section>
-
-<!-- ⭐ ADD THIS COMPLETE SCRIPT HERE ⭐ -->
-<script>
-// Buy Now Login Check
-document.addEventListener('DOMContentLoaded', function() {
-    
-    // Desktop Buy Now Button
-    const buyNowBtn = document.querySelector('.btn-buy-now');
-    if (buyNowBtn) {
-        buyNowBtn.addEventListener('click', function(e) {
-            const isLoggedIn = {{ request.session.is_logged_in|yesno:"true,false" }};
-            
-            if (!isLoggedIn) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                Swal.fire({
-                    icon: 'warning',
-                    title: '🔐 Login Required',
-                    html: '<p style="font-size: 16px; margin: 20px 0;">Please login to continue shopping</p>',
-                    showCancelButton: true,
-                    confirmButtonText: '<i class="bi bi-box-arrow-in-right"></i> Login',
-                    cancelButtonText: '<i class="bi bi-person-plus"></i> Create Account',
-                    confirmButtonColor: '#8B4513',
-                    cancelButtonColor: '#6c757d',
-                    reverseButtons: true
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = '/login/?next={{ request.path }}';
-                    } else if (result.dismiss === Swal.DismissReason.cancel) {
-                        window.location.href = '/register/?next={{ request.path }}';
-                    }
-                });
-            }
-            // If logged in, modal opens automatically
-        });
-    }
-    
-    // Mobile Buy Now Button
-    const buyNowBtnMobile = document.querySelector('.btn-buy-now-mobile');
-    if (buyNowBtnMobile) {
-        buyNowBtnMobile.addEventListener('click', function(e) {
-            const isLoggedIn = {{ request.session.is_logged_in|yesno:"true,false" }};
-            
-            if (!isLoggedIn) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                Swal.fire({
-                    icon: 'warning',
-                    title: '🔐 Login Required',
-                    html: '<p style="font-size: 16px; margin: 20px 0;">Please login to continue shopping</p>',
-                    showCancelButton: true,
-                    confirmButtonText: '<i class="bi bi-box-arrow-in-right"></i> Login',
-                    cancelButtonText: '<i class="bi bi-person-plus"></i> Create Account',
-                    confirmButtonColor: '#8B4513',
-                    cancelButtonColor: '#6c757d',
-                    reverseButtons: true
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = '/login/?next={{ request.path }}';
-                    } else if (result.dismiss === Swal.DismissReason.cancel) {
-                        window.location.href = '/register/?next={{ request.path }}';
-                    }
-                });
-            }
-        });
-    }
-});
-</script>
-
 
 <!-- Product Description Section -->
 <section class="product-description-section py-5">
@@ -675,7 +604,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 </section>
 
-<!-- ADDRESS MODAL - Add before closing </body> tag -->
+<!-- ADDRESS MODAL -->
 <div class="modal fade" id="addressModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
@@ -696,7 +625,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="col-md-6">
                                 <label class="form-label">Full Name <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" name="customer_name" 
-                                       value="{{ user_name }}" required>
+                                       value="{{ request.session.user_name }}" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Phone Number <span class="text-danger">*</span></label>
@@ -745,33 +674,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     <!-- Delivery Options -->
                     <div class="mb-3">
                         <h6 class="mb-3">Delivery Options</h6>
-                        <div class="delivery-options-modal">
-                            <div class="delivery-option-modal">
-                                <input type="radio" name="delivery_type" id="modalStandard" value="standard" checked>
-                                <label for="modalStandard">
-                                    <div>
-                                        <strong>Standard Delivery</strong>
-                                        <small class="d-block text-muted">5-7 business days • FREE</small>
-                                    </div>
-                                    <span class="badge bg-success">₹0</span>
-                                </label>
-                            </div>
-                            <div class="delivery-option-modal">
-                                <input type="radio" name="delivery_type" id="modalExpress" value="express">
-                                <label for="modalExpress">
-                                    <div>
-                                        <strong>Express Delivery</strong>
-                                        <small class="d-block text-muted">2-3 business days</small>
-                                    </div>
-                                    <span class="badge bg-warning" id="modalExpressCharge">₹99</span>
-                                </label>
-                            </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="delivery_type" id="modalStandard" value="standard" checked>
+                            <label class="form-check-label" for="modalStandard">
+                                <strong>Standard Delivery</strong> <small class="text-muted">(5-7 business days)</small> - <span class="text-success">FREE</span>
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="delivery_type" id="modalExpress" value="express">
+                            <label class="form-check-label" for="modalExpress">
+                                <strong>Express Delivery</strong> <small class="text-muted">(2-3 business days)</small> - <span id="modalExpressCharge">₹99</span>
+                            </label>
                         </div>
                     </div>
-                    
-                    <!-- Hidden fields -->
-                    <input type="hidden" name="quantity" id="modalQuantity" value="1">
-                    <input type="hidden" name="color" id="modalColor" value="{{ selected_color.name }}">
                 </form>
             </div>
             <div class="modal-footer">
@@ -783,189 +698,6 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>
 </div>
-
-<!-- Razorpay Script -->
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-
-<!-- Product Detail + Payment JavaScript -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const modalPincode = document.getElementById('modalPincode');
-    const modalCity = document.getElementById('modalCity');
-    const modalState = document.getElementById('modalState');
-    const modalPincodeStatus = document.getElementById('modalPincodeStatus');
-    const proceedBtn = document.getElementById('proceedToPaymentBtn');
-    
-    let pincodeServiceable = false;
-    let expressCharge = 99;
-    
-    // Check Pincode in Modal
-    if (modalPincode) {
-        modalPincode.addEventListener('blur', function() {
-            const pincode = this.value.trim();
-            
-            if (pincode.length !== 6) return;
-            
-            modalPincodeStatus.innerHTML = '<small class="text-info"><i class="bi bi-arrow-repeat"></i> Checking...</small>';
-            
-            const formData = new FormData();
-            formData.append('pincode', pincode);
-            
-            fetch('/check-pincode/', {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': getCookie('csrftoken')
-                },
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success && data.serviceable) {
-                    pincodeServiceable = true;
-                    modalCity.value = data.city;
-                    modalState.value = data.state;
-                    expressCharge = parseFloat(data.express_delivery.charge);
-                    
-                    document.getElementById('modalExpressCharge').textContent = '₹' + expressCharge;
-                    modalPincodeStatus.innerHTML = '<small class="text-success"><i class="bi bi-check-circle"></i> Delivery available</small>';
-                } else {
-                    pincodeServiceable = false;
-                    modalPincodeStatus.innerHTML = '<small class="text-danger"><i class="bi bi-x-circle"></i> Delivery not available</small>';
-                }
-            })
-            .catch(err => {
-                console.error('Error:', err);
-                modalPincodeStatus.innerHTML = '<small class="text-danger">Error checking pincode</small>';
-            });
-        });
-    }
-    
-    // Update modal hidden fields when opening
-    document.querySelectorAll('[data-bs-target="#addressModal"]').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const quantity = document.querySelector('.qty-input').value;
-            const color = document.getElementById('selectedColorName').textContent.trim();
-            
-            document.getElementById('modalQuantity').value = quantity;
-            document.getElementById('modalColor').value = color;
-        });
-    });
-    
-    // Proceed to Payment
-    if (proceedBtn) {
-        proceedBtn.addEventListener('click', function() {
-            const form = document.getElementById('deliveryAddressForm');
-            
-            if (!form.checkValidity()) {
-                form.reportValidity();
-                return;
-            }
-            
-            if (!pincodeServiceable) {
-                alert('Please enter a valid serviceable pincode');
-                return;
-            }
-            
-            proceedBtn.disabled = true;
-            proceedBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Processing...';
-            
-            const formData = new FormData(form);
-            
-            fetch('{% url "buy_now" product.slug %}', {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': getCookie('csrftoken')
-                },
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Initialize Razorpay
-                    const options = {
-                        key: data.key_id,
-                        amount: data.amount,
-                        currency: 'INR',
-                        name: 'Manovastra',
-                        description: 'Order Payment',
-                        order_id: data.razorpay_order_id,
-                        prefill: {
-                            name: data.customer_name,
-                            email: data.customer_email,
-                            contact: data.customer_phone
-                        },
-                        theme: {
-                            color: '#8B4513'
-                        },
-                        handler: function(response) {
-                            // Verify payment
-                            const verifyData = new FormData();
-                            verifyData.append('razorpay_payment_id', response.razorpay_payment_id);
-                            verifyData.append('razorpay_order_id', response.razorpay_order_id);
-                            verifyData.append('razorpay_signature', response.razorpay_signature);
-                            
-                            fetch('/verify-payment-direct/', {
-                                method: 'POST',
-                                body: verifyData
-                            })
-                            .then(res => res.json())
-                            .then(result => {
-                                if (result.success) {
-                                    window.location.href = '/my-orders/?success=true';
-                                } else {
-                                    alert('Payment verification failed');
-                                    proceedBtn.disabled = false;
-                                    proceedBtn.innerHTML = '<i class="bi bi-credit-card"></i> Proceed to Payment';
-                                }
-                            });
-                        },
-                        modal: {
-                            ondismiss: function() {
-                                proceedBtn.disabled = false;
-                                proceedBtn.innerHTML = '<i class="bi bi-credit-card"></i> Proceed to Payment';
-                            }
-                        }
-                    };
-                    
-                    const rzp = new Razorpay(options);
-                    rzp.open();
-                    
-                    // Close address modal
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('addressModal'));
-                    if (modal) modal.hide();
-                    
-                } else {
-                    alert(data.message || 'Failed to process order');
-                    proceedBtn.disabled = false;
-                    proceedBtn.innerHTML = '<i class="bi bi-credit-card"></i> Proceed to Payment';
-                }
-            })
-            .catch(err => {
-                console.error('Error:', err);
-                alert('An error occurred. Please try again.');
-                proceedBtn.disabled = false;
-                proceedBtn.innerHTML = '<i class="bi bi-credit-card"></i> Proceed to Payment';
-            });
-        });
-    }
-    
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-});
-</script>
-
 
       <!-- Footer Section -->
 <footer class="footer-main">
@@ -1112,7 +844,8 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 </footer>
 
-    <!-- Pass data to JavaScript -->
+
+<!-- Pass data to JavaScript -->
 <script>
     const IMAGES_BY_COLOR = {{ images_by_color_json|safe }};
     console.log('📦 Images data loaded:', IMAGES_BY_COLOR);
@@ -1120,6 +853,355 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{% static 'js/product_detail_script.js' %}"></script>
+
+<!-- Razorpay Script - MUST BE BEFORE OTHER SCRIPTS -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<!-- ✅ COMPLETE WORKING PAYMENT FLOW -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('✅ Payment system initialized');
+    
+    // Global variables
+    let selectedColorId = null;
+    let pincodeServiceable = false;
+    let expressCharge = 99;
+    
+    // Get initial selected color
+    const activeColor = document.querySelector('.color-swatch.active');
+    if (activeColor) {
+        selectedColorId = activeColor.getAttribute('data-color-id');
+        console.log('🎨 Initial color ID:', selectedColorId);
+    }
+    
+    // Color selection handler
+    document.querySelectorAll('.color-swatch').forEach(swatch => {
+        swatch.addEventListener('click', function() {
+            selectedColorId = this.getAttribute('data-color-id');
+            const colorName = this.getAttribute('data-color-name');
+            document.getElementById('selectedColorName').textContent = colorName;
+            
+            document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+            this.classList.add('active');
+            
+            console.log('🎨 Color changed to:', colorName, '- ID:', selectedColorId);
+        });
+    });
+    
+    // Quantity controls
+    const qtyInput = document.querySelector('.qty-input');
+    const qtyIncrease = document.querySelector('.qty-increase');
+    const qtyDecrease = document.querySelector('.qty-decrease');
+    
+    if (qtyIncrease) {
+        qtyIncrease.addEventListener('click', () => {
+            let val = parseInt(qtyInput.value) || 1;
+            if (val < 10) qtyInput.value = val + 1;
+        });
+    }
+    
+    if (qtyDecrease) {
+        qtyDecrease.addEventListener('click', () => {
+            let val = parseInt(qtyInput.value) || 1;
+            if (val > 1) qtyInput.value = val - 1;
+        });
+    }
+    
+    // Buy Now button handlers
+    function handleBuyNow(e) {
+        e.preventDefault();
+        
+        const isLoggedIn = {{ request.session.is_logged_in|yesno:"true,false" }};
+        console.log('🔐 Login status:', isLoggedIn);
+        
+        if (!isLoggedIn) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: '🔐 Login Required',
+                    html: '<p style="font-size: 16px; margin: 20px 0;">Please login to continue shopping</p>',
+                    showCancelButton: true,
+                    confirmButtonText: '<i class="bi bi-box-arrow-in-right"></i> Login',
+                    cancelButtonText: '<i class="bi bi-person-plus"></i> Create Account',
+                    confirmButtonColor: '#8B4513',
+                    cancelButtonColor: '#6c757d',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '/login/?next={{ request.path }}';
+                    } else if (result.dismiss === Swal.DismissReason.cancel) {
+                        window.location.href = '/register/?next={{ request.path }}';
+                    }
+                });
+            } else {
+                alert('⚠️ Please login to continue shopping');
+                window.location.href = '/login/?next={{ request.path }}';
+            }
+            return;
+        }
+        
+        // User is logged in - open address modal
+        console.log('✅ User logged in, opening modal');
+        const modal = new bootstrap.Modal(document.getElementById('addressModal'));
+        modal.show();
+    }
+    
+    const buyNowBtnDesktop = document.getElementById('buyNowBtnDesktop');
+    const buyNowBtnMobile = document.getElementById('buyNowBtnMobile');
+    
+    if (buyNowBtnDesktop) {
+        buyNowBtnDesktop.addEventListener('click', handleBuyNow);
+        console.log('✅ Desktop Buy Now button attached');
+    }
+    
+    if (buyNowBtnMobile) {
+        buyNowBtnMobile.addEventListener('click', handleBuyNow);
+        console.log('✅ Mobile Buy Now button attached');
+    }
+    
+    // Pincode check in modal
+    const modalPincode = document.getElementById('modalPincode');
+    const modalCity = document.getElementById('modalCity');
+    const modalState = document.getElementById('modalState');
+    const modalPincodeStatus = document.getElementById('modalPincodeStatus');
+    
+    if (modalPincode) {
+        modalPincode.addEventListener('blur', function() {
+            const pincode = this.value.trim();
+            
+            if (pincode.length !== 6) return;
+            
+            console.log('📍 Checking pincode:', pincode);
+            modalPincodeStatus.innerHTML = '<small class="text-info"><i class="bi bi-arrow-repeat"></i> Checking...</small>';
+            
+            const formData = new FormData();
+            formData.append('pincode', pincode);
+            
+            fetch('/check-pincode/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('📍 Pincode response:', data);
+                
+                if (data.success && data.serviceable) {
+                    pincodeServiceable = true;
+                    modalCity.value = data.city;
+                    modalState.value = data.state;
+                    expressCharge = parseFloat(data.express_delivery.charge);
+                    
+                    document.getElementById('modalExpressCharge').textContent = '₹' + expressCharge;
+                    modalPincodeStatus.innerHTML = '<small class="text-success"><i class="bi bi-check-circle"></i> Delivery available</small>';
+                } else {
+                    pincodeServiceable = false;
+                    modalPincodeStatus.innerHTML = '<small class="text-danger"><i class="bi bi-x-circle"></i> Delivery not available</small>';
+                }
+            })
+            .catch(err => {
+                console.error('❌ Pincode check error:', err);
+                modalPincodeStatus.innerHTML = '<small class="text-danger">Error checking pincode</small>';
+            });
+        });
+    }
+    
+    // Proceed to Payment button
+    const proceedBtn = document.getElementById('proceedToPaymentBtn');
+    
+    if (proceedBtn) {
+        proceedBtn.addEventListener('click', function() {
+            console.log('🚀 Proceed to Payment clicked');
+            
+            const form = document.getElementById('deliveryAddressForm');
+            
+            // Validate form
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
+            if (!pincodeServiceable) {
+                alert('❌ Please enter a valid serviceable pincode');
+                return;
+            }
+            
+            // Disable button
+            proceedBtn.disabled = true;
+            const originalText = proceedBtn.innerHTML;
+            proceedBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Processing...';
+            
+            // Get quantity
+            const quantity = parseInt(qtyInput.value) || 1;
+            
+            console.log('📤 Step 1: Sending buy_now request');
+            console.log('  - Color ID:', selectedColorId);
+            console.log('  - Quantity:', quantity);
+            
+            // Step 1: Call buy_now endpoint
+            fetch('/product/{{ product.slug }}/buy-now/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    color_id: selectedColorId,
+                    quantity: quantity
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('📥 Buy now response:', data);
+                
+                if (!data.success) {
+                    alert('❌ ' + (data.message || 'Failed to process order'));
+                    proceedBtn.disabled = false;
+                    proceedBtn.innerHTML = originalText;
+                    return;
+                }
+                
+                // Step 2: Create order with address
+                console.log('📤 Step 2: Creating order with address');
+                
+                const formData = new FormData(form);
+                
+                fetch('/create-buy-now-order/', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(orderData => {
+                    console.log('📥 Order creation response:', orderData);
+                    
+                    if (!orderData.success) {
+                        alert('❌ ' + (orderData.message || 'Failed to create order'));
+                        proceedBtn.disabled = false;
+                        proceedBtn.innerHTML = originalText;
+                        return;
+                    }
+                    
+                    // Step 3: Open Razorpay
+                    console.log('💳 Step 3: Opening Razorpay payment gateway');
+                    
+                    if (typeof Razorpay === 'undefined') {
+                        alert('❌ Payment gateway not loaded. Please refresh the page.');
+                        proceedBtn.disabled = false;
+                        proceedBtn.innerHTML = originalText;
+                        return;
+                    }
+                    
+                    const options = {
+                        key: orderData.key_id,
+                        amount: orderData.amount,
+                        currency: 'INR',
+                        name: 'Manovastra',
+                        description: 'Order Payment',
+                        order_id: orderData.razorpay_order_id,
+                        prefill: {
+                            name: orderData.customer_name,
+                            email: orderData.customer_email,
+                            contact: orderData.customer_phone
+                        },
+                        theme: {
+                            color: '#8B4513'
+                        },
+                        handler: function(response) {
+                            console.log('✅ Payment successful, verifying...');
+                            verifyPayment(response);
+                        },
+                        modal: {
+                            ondismiss: function() {
+                                console.log('⚠️ Payment cancelled by user');
+                                proceedBtn.disabled = false;
+                                proceedBtn.innerHTML = originalText;
+                            }
+                        }
+                    };
+                    
+                    const rzp = new Razorpay(options);
+                    rzp.on('payment.failed', function(response) {
+                        console.error('❌ Payment failed:', response.error);
+                        alert('Payment failed: ' + response.error.description);
+                        proceedBtn.disabled = false;
+                        proceedBtn.innerHTML = originalText;
+                    });
+                    
+                    rzp.open();
+                    
+                    // Close address modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('addressModal'));
+                    if (modal) modal.hide();
+                });
+            })
+            .catch(err => {
+                console.error('❌ Error:', err);
+                alert('An error occurred. Please try again.');
+                proceedBtn.disabled = false;
+                proceedBtn.innerHTML = originalText;
+            });
+        });
+        
+        console.log('✅ Proceed to Payment button attached');
+    }
+    
+    // Verify Payment function
+    function verifyPayment(response) {
+        console.log('🔍 Verifying payment...');
+        
+        const verifyData = new FormData();
+        verifyData.append('razorpay_payment_id', response.razorpay_payment_id);
+        verifyData.append('razorpay_order_id', response.razorpay_order_id);
+        verifyData.append('razorpay_signature', response.razorpay_signature);
+        
+        fetch('/verify-payment-direct/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: verifyData
+        })
+        .then(res => res.json())
+        .then(result => {
+            console.log('📥 Verification result:', result);
+            
+            if (result.success) {
+                alert('✅ Order placed successfully!\n\nOrder ID: ' + result.order_id);
+                window.location.href = '/my-orders/';
+            } else {
+                alert('❌ Payment verification failed: ' + result.message);
+            }
+        })
+        .catch(err => {
+            console.error('❌ Verification error:', err);
+            alert('Payment verification failed. Please contact support with your payment details.');
+        });
+    }
+    
+    // Get CSRF Token helper
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    
+    console.log('✅ All event listeners attached successfully');
+});
+</script>
 
 </body>
 </html>

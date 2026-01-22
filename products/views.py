@@ -690,58 +690,55 @@ def buy_now(request, slug):
 @login_required_custom
 @require_POST
 def create_buy_now_order(request):
-    """Create Razorpay order - SIMPLIFIED"""
+    """Create Razorpay order for Buy Now with address - FIXED"""
     
+    # Get buy now item from session
+    buy_now_item = request.session.get('buy_now_item')
+    
+    if not buy_now_item:
+        return JsonResponse({
+            'success': False,
+            'message': 'Session expired. Please try again.'
+        })
+    
+    # ✅ Get address details from POST (not body)
+    customer_name = request.POST.get('customer_name', '').strip()
+    customer_phone = request.POST.get('customer_phone', '').strip()
+    address_line1 = request.POST.get('address_line1', '').strip()
+    address_line2 = request.POST.get('address_line2', '').strip()
+    landmark = request.POST.get('landmark', '').strip()
+    pincode = request.POST.get('pincode', '').strip()
+    city = request.POST.get('city', '').strip()
+    state = request.POST.get('state', '').strip()
+    delivery_type = request.POST.get('delivery_type', 'standard')
+    
+    # Validate required fields
+    if not all([customer_name, customer_phone, address_line1, address_line2, pincode, city, state]):
+        return JsonResponse({
+            'success': False,
+            'message': 'Please fill all required fields'
+        })
+    
+    # Calculate pricing
+    subtotal = float(buy_now_item['price']) * int(buy_now_item['quantity'])
+    
+    # Check delivery charge based on pincode
     try:
-        # Get buy now item from session
-        buy_now_item = request.session.get('buy_now_item')
-        
-        if not buy_now_item:
-            return JsonResponse({
-                'success': False,
-                'message': 'Session expired. Please try again.'
-            })
-        
-        # Get address details
-        customer_name = request.POST.get('customer_name', '').strip()
-        customer_phone = request.POST.get('customer_phone', '').strip()
-        address_line1 = request.POST.get('address_line1', '').strip()
-        address_line2 = request.POST.get('address_line2', '').strip()
-        landmark = request.POST.get('landmark', '').strip()
-        pincode = request.POST.get('pincode', '').strip()
-        city = request.POST.get('city', '').strip()
-        state = request.POST.get('state', '').strip()
-        delivery_type = request.POST.get('delivery_type', 'standard')
-        
-        print(f"📋 Address Details Received:")
-        print(f"  Name: {customer_name}")
-        print(f"  Phone: {customer_phone}")
-        print(f"  Pincode: {pincode}")
-        print(f"  City: {city}")
-        
-        # Validate required fields
-        if not all([customer_name, customer_phone, address_line1, address_line2, pincode, city, state]):
-            return JsonResponse({
-                'success': False,
-                'message': 'Please fill all required fields'
-            })
-        
-        # Calculate pricing
-        subtotal = float(buy_now_item['price']) * int(buy_now_item['quantity'])
-        delivery_charge = 0.0
-        
-        # Simple delivery charge logic
+        pincode_obj = Pincode.objects.get(pincode=pincode, is_serviceable=True)
         if delivery_type == 'express':
-            delivery_charge = 99.0
-        
-        total_amount = subtotal + delivery_charge
-        
-        print(f"💰 Pricing:")
-        print(f"  Subtotal: ₹{subtotal}")
-        print(f"  Delivery: ₹{delivery_charge}")
-        print(f"  Total: ₹{total_amount}")
-        
-        # Create Razorpay order
+            delivery_charge = float(pincode_obj.express_delivery_charge)
+        else:
+            delivery_charge = 0.0
+    except Pincode.DoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'message': 'Delivery not available for this pincode'
+        })
+    
+    total_amount = subtotal + delivery_charge
+    
+    # Create Razorpay order
+    try:
         amount_in_paise = int(total_amount * 100)
         
         razorpay_order = razorpay_client.order.create({
@@ -753,8 +750,6 @@ def create_buy_now_order(request):
                 'customer_email': request.session.get('user_email'),
             }
         })
-        
-        print(f"✅ Razorpay Order Created: {razorpay_order['id']}")
         
         # Store complete order details in session
         request.session['pending_order'] = {
@@ -778,9 +773,8 @@ def create_buy_now_order(request):
             'subtotal': float(subtotal),
             'total_amount': float(total_amount),
         }
-        request.session.modified = True
         
-        # Clear buy_now_item
+        # Clear buy_now_item from session
         if 'buy_now_item' in request.session:
             del request.session['buy_now_item']
         
@@ -795,14 +789,12 @@ def create_buy_now_order(request):
         })
         
     except Exception as e:
-        print(f"❌ CREATE ORDER ERROR: {str(e)}")
-        import traceback
-        traceback.print_exc()
-        
         return JsonResponse({
             'success': False,
-            'message': f'Error: {str(e)}'
+            'message': f'Payment initialization failed: {str(e)}'
         })
+
+
 
 
 @csrf_exempt
