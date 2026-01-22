@@ -1,13 +1,14 @@
 from django.urls import path
 from . import views
 
+
 urlpatterns = [
     # Home & Navigation
     path('', views.home, name='home'),
     path('category/<slug:slug>/', views.category_collection, name='category_collection'),
     path('product/<slug:slug>/', views.product_detail, name='product_detail'),
     path('search/', views.search_products, name='search_products'),
-    path('search/', views.search_products, name='search'),  # Add alias for search
+    path('search/', views.search_products, name='search'),  # alias
     path('new-arrivals/', views.new_arrivals, name='new_arrivals'),
     path('offers/', views.offers, name='offers'),
     path('all-products/', views.all_products, name='all_products'),
@@ -34,19 +35,21 @@ urlpatterns = [
     path('remove-from-cart/', views.remove_from_cart, name='remove_from_cart'),
     path('get-cart-count/', views.get_cart_count, name='get_cart_count'),
     
-    # Orders & Payment
+    # Orders & Payment (DIRECT BUY NOW)
     path('product/<slug:slug>/buy-now/', views.buy_now, name='buy_now'),
+    path('create-buy-now-order/', views.create_buy_now_order, name='create_buy_now_order'),   # ✅ NEW URL
     path('verify-payment-direct/', views.verify_payment_direct, name='verify_payment_direct'),
     path('my-orders/', views.my_orders, name='my_orders'),
     
     # Utility
     path('check-pincode/', views.check_pincode, name='check_pincode'),
 
-    # Checkout URLs
+    # Checkout from cart
     path('checkout/', views.checkout, name='checkout'),
     path('create-order-from-cart/', views.create_order_from_cart, name='create_order_from_cart'),
     path('verify-payment-cart/', views.verify_payment_cart, name='verify_payment_cart'),
 
+    # Manager
     path('manager/login/', views.manager_login, name='manager_login'),
     path('manager/logout/', views.manager_logout, name='manager_logout'),
     path('manager/orders/', views.manager_orders, name='manager_orders'),
