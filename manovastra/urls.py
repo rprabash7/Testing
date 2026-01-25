@@ -19,11 +19,15 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('products.urls')),
 
+urlpatterns = [
+    # ✅ SECURE: Changed admin URL to custom random string
+    path('secure-manovastra-admin-2026/', admin.site.urls),  # ← NEW SECURE URL
+    
+    # Products app URLs
+    path('', include('products.urls')),
 ]
+
 
 # Serve media files in development
 if settings.DEBUG:

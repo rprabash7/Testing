@@ -47,6 +47,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'products.middleware.AdminIPWhitelistMiddleware',  # ✅ ADD THIS
 ]
 
 ROOT_URLCONF = 'manovastra.urls'
@@ -73,8 +74,6 @@ WSGI_APPLICATION = 'manovastra.wsgi.application'
 # ===================== DATABASE CONFIGURATION =====================
 # Dual Database Setup: PostgreSQL (Production) + SQLite3 (Development)
 
-# Get database mode from environment variable (default: 'sqlite')
-# ===================== DATABASE CONFIGURATION =====================
 DATABASE_MODE = config('DATABASE_MODE', default='sqlite')
 
 if DATABASE_MODE == 'postgres':
@@ -97,7 +96,6 @@ else:
         }
     }
     print("✅ Using SQLite3 Database (Development Mode)")
-
 
 # ==================================================================
 
@@ -164,7 +162,6 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='usir ohcs fkhi mijt
 DEFAULT_FROM_EMAIL = f'Manovastra <{EMAIL_HOST_USER}>'
 
 
-
 # OTP Settings
 OTP_EXPIRY_TIME = 5  # minutes
 
@@ -172,3 +169,39 @@ OTP_EXPIRY_TIME = 5  # minutes
 # Manager Login Credentials
 MANAGER_USERNAME = "manager"
 MANAGER_PASSWORD = "manager123"
+
+
+# ===================== ADMIN PANEL SECURITY =====================
+
+# ✅ Custom Admin URL
+ADMIN_URL = 'secure-manovastra-admin-2026/'
+
+# ✅ Session Security
+SESSION_COOKIE_SECURE = True  # Only HTTPS
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Strict'
+SESSION_COOKIE_AGE = 3600  # 1 hour timeout
+
+# ✅ CSRF Security
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SAMESITE = 'Strict'
+
+# ✅ Security Headers
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
+
+# ✅ Admin Site Customization
+ADMIN_SITE_HEADER = "Manovastra Secure Admin"
+ADMIN_SITE_TITLE = "Manovastra Admin Portal"
+ADMIN_INDEX_TITLE = "Welcome to Manovastra Admin"
+
+# ✅ SSL/HTTPS Settings (for production)
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+
+# ==================================================================

@@ -1,6 +1,13 @@
 from django.contrib import admin
+from django.conf import settings
 from django.utils.html import format_html
 from .models import *
+
+
+# ✅ Customize Admin Site (SECURE)
+admin.site.site_header = getattr(settings, 'ADMIN_SITE_HEADER', "Manovastra Secure Admin")
+admin.site.site_title = getattr(settings, 'ADMIN_SITE_TITLE', "Manovastra Admin Portal")
+admin.site.index_title = getattr(settings, 'ADMIN_INDEX_TITLE', "Welcome to Manovastra Admin")
 
 
 @admin.register(Category)
@@ -212,7 +219,6 @@ class ProductAdmin(admin.ModelAdmin):
                 '</div>',
                 int(amount)
             )
-        # FIX: Added empty string as argument
         return format_html('<span style="color: #9ca3af; font-style: italic;">{}</span>', 'No discount')
     discount_amount_display.short_description = '💸 You Save'
     
@@ -316,7 +322,7 @@ class PincodeAdmin(admin.ModelAdmin):
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
     extra = 0
-    readonly_fields = ('product', 'color', 'quantity', 'price', 'get_total')
+    readonly_fields = ('product', 'product_name', 'color', 'quantity', 'price', 'get_total')
     can_delete = False
 
 
@@ -458,9 +464,3 @@ class FestivalBannerAdmin(admin.ModelAdmin):
             'fields': ('is_active', 'start_date', 'end_date')
         }),
     )
-
-
-# Customize Admin Site Header
-admin.site.site_header = "Manovastra Admin Panel"
-admin.site.site_title = "Manovastra Admin"
-admin.site.index_title = "Welcome to Manovastra Management"
