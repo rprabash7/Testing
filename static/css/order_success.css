@@ -1,0 +1,925 @@
+/* ===================================
+   MANOVASTRA - REPUBLIC DAY 2026 THEME
+   Order Success Confirmation Page Styling
+   ==================================== */
+
+/* ===================================
+   KEYFRAME ANIMATIONS
+   ==================================== */
+
+/* Card Entrance Animation */
+@keyframes cardEntrance {
+    0% {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Enhanced Scale In Success Icon */
+@keyframes scaleInSuccess {
+    0% {
+        transform: scale(0) rotate(-180deg);
+        box-shadow: none;
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.2) rotate(0deg);
+        box-shadow: 
+            0 0 30px rgba(255, 153, 51, 0.5),
+            0 0 40px rgba(19, 136, 7, 0.4);
+    }
+    70% {
+        transform: scale(0.95);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+        box-shadow: 
+            0 10px 30px rgba(255, 153, 51, 0.3),
+            0 10px 30px rgba(19, 136, 7, 0.2);
+    }
+}
+
+/* Patriotic Pulse */
+@keyframes patrioticPulse {
+    0%, 100% {
+        box-shadow: 
+            0 0 20px rgba(255, 153, 51, 0.3),
+            0 0 20px rgba(19, 136, 7, 0.2);
+    }
+    50% {
+        box-shadow: 
+            0 0 40px rgba(255, 153, 51, 0.5),
+            0 0 40px rgba(19, 136, 7, 0.4),
+            0 0 60px rgba(255, 215, 0, 0.3);
+    }
+}
+
+/* Fade In Up for Text Elements */
+@keyframes fadeInUp {
+    0% {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Ashoka Chakra Rotation */
+@keyframes rotateChakra {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Confetti Fall (Optional Decorative) */
+@keyframes confettiFall {
+    0% {
+        transform: translateY(-100vh) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+/* Tricolor Flow */
+@keyframes tricolorFlow {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Sparkle Effect */
+@keyframes sparkle {
+    0%, 100% {
+        opacity: 0;
+        transform: scale(0);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Button Glow */
+@keyframes buttonGlow {
+    0%, 100% {
+        box-shadow: 
+            0 10px 25px rgba(255, 153, 51, 0.3),
+            0 10px 25px rgba(19, 136, 7, 0.2);
+    }
+    50% {
+        box-shadow: 
+            0 15px 35px rgba(255, 153, 51, 0.5),
+            0 15px 35px rgba(19, 136, 7, 0.4);
+    }
+}
+
+/* Icon Bounce */
+@keyframes iconBounce {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+/* ===================================
+   1. BODY - FULL PAGE BACKGROUND
+   ==================================== */
+
+body {
+    font-family: 'Poppins', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    margin: 0;
+    overflow-x: hidden;
+    position: relative;
+    
+    /* Tricolor Gradient Inspired Background */
+    background: linear-gradient(
+        135deg,
+        rgba(255, 153, 51, 0.8) 0%,
+        rgba(255, 255, 255, 0.9) 30%,
+        rgba(255, 255, 255, 0.95) 70%,
+        rgba(19, 136, 7, 0.8) 100%
+    );
+    background-size: 400% 400%;
+    animation: tricolorFlow 15s ease infinite;
+}
+
+/* Ashoka Chakra Watermark on Body */
+body::before {
+    content: '☸';
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 800px;
+    color: rgba(255, 153, 51, 0.03);
+    animation: rotateChakra 120s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ===================================
+   2. SUCCESS CARD
+   ==================================== */
+
+.success-card {
+    background: #FFFFFF;
+    border-radius: 20px;
+    padding: 60px 40px;
+    text-align: center;
+    max-width: 600px;
+    width: 100%;
+    position: relative;
+    z-index: 10;
+    overflow: hidden;
+    
+    /* Enhanced Box Shadow with Tricolor Tint */
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.3),
+        0 20px 60px rgba(255, 153, 51, 0.2),
+        0 20px 60px rgba(19, 136, 7, 0.1);
+    
+    /* Card Entrance Animation */
+    animation: cardEntrance 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Tricolor Top Border Stripe */
+.success-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(
+        90deg,
+        #FF9933 0%,
+        #FF9933 33%,
+        #FFFFFF 33%,
+        #FFFFFF 66%,
+        #138807 66%,
+        #138807 100%
+    );
+    background-size: 300% 100%;
+    animation: tricolorFlow 8s ease infinite;
+    z-index: 2;
+}
+
+/* ===================================
+   14. TRICOLOR DECORATIVE CORNERS
+   ==================================== */
+
+/* Top-Left Saffron Decoration */
+.success-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(
+        135deg,
+        rgba(255, 153, 51, 0.15),
+        transparent
+    );
+    border-radius: 0 0 100% 0;
+    z-index: 1;
+}
+
+/* Bottom-Right Green Decoration */
+.success-card > div:last-child::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(
+        135deg,
+        transparent,
+        rgba(19, 136, 7, 0.15)
+    );
+    border-radius: 100% 0 0 0;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.success-card > * {
+    position: relative;
+    z-index: 2;
+}
+
+/* ===================================
+   3. SUCCESS ICON
+   ==================================== */
+
+.success-icon {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(
+        135deg,
+        #138807 0%,
+        #48bb78 50%,
+        #FF9933 100%
+    );
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 30px;
+    position: relative;
+    
+    /* Enhanced Animation */
+    animation: scaleInSuccess 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation-fill-mode: both;
+    
+    /* Continuous Pulse */
+    box-shadow: 
+        0 10px 30px rgba(255, 153, 51, 0.3),
+        0 10px 30px rgba(19, 136, 7, 0.2);
+}
+
+/* Continuous Patriotic Pulse */
+.success-icon {
+    animation: 
+        scaleInSuccess 0.8s cubic-bezier(0.34, 1.56, 0.64, 1),
+        patrioticPulse 3s ease-in-out 0.8s infinite;
+}
+
+/* Rotating Ashoka Chakra Border (Optional) */
+.success-icon::before {
+    content: '☸';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 120px;
+    color: rgba(255, 215, 0, 0.2);
+    animation: rotateChakra 30s linear infinite;
+    z-index: 0;
+}
+
+/* ===================================
+   4. SUCCESS ICON INNER
+   ==================================== */
+
+.success-icon i {
+    font-size: 50px;
+    color: #FFFFFF;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    z-index: 1;
+    position: relative;
+    animation: iconBounce 2s ease-in-out 1s infinite;
+}
+
+/* ===================================
+   6. SUCCESS TITLE
+   ==================================== */
+
+.success-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    
+    /* Tricolor Gradient Text Effect */
+    background: linear-gradient(
+        135deg,
+        #FF9933 0%,
+        #000080 50%,
+        #138807 100%
+    );
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    
+    /* Patriotic Text Shadow (for fallback) */
+    position: relative;
+    
+    /* Fade-in Animation with Delay */
+    animation: fadeInUp 0.6s ease 0.3s backwards;
+}
+
+/* Add celebration emoji */
+.success-title::after {
+    content: ' 🎉';
+    -webkit-text-fill-color: initial;
+    margin-left: 10px;
+}
+
+/* Flag emoji before title */
+.success-title::before {
+    content: '🇮🇳 ';
+    -webkit-text-fill-color: initial;
+    margin-right: 10px;
+}
+
+/* ===================================
+   7. SUBTITLE TEXT
+   ==================================== */
+
+.success-card > p:first-of-type {
+    color: #718096;
+    font-size: 18px;
+    margin-bottom: 20px;
+    animation: fadeInUp 0.6s ease 0.5s backwards;
+}
+
+/* ===================================
+   8. ORDER ID SECTION
+   ==================================== */
+
+.order-id {
+    background: linear-gradient(
+        to right,
+        rgba(255, 153, 51, 0.05) 0%,
+        rgba(255, 255, 255, 1) 50%,
+        rgba(19, 136, 7, 0.05) 100%
+    );
+    padding: 15px 25px;
+    border-radius: 10px;
+    margin: 30px 0;
+    border-left: 4px solid #FF9933;
+    box-shadow: 
+        0 4px 10px rgba(0, 0, 0, 0.05),
+        0 0 20px rgba(255, 153, 51, 0.1);
+    animation: fadeInUp 0.6s ease 0.7s backwards;
+    position: relative;
+}
+
+/* Indian Flag Icon before Order ID */
+.order-id::before {
+    content: '🇮🇳';
+    margin-right: 8px;
+    font-size: 18px;
+}
+
+.order-id strong {
+    color: #000080;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+/* ===================================
+   9. CONFIRMATION MESSAGE
+   ==================================== */
+
+.success-card > p:nth-of-type(2) {
+    color: #4a5568;
+    font-size: 15px;
+    margin: 20px 0;
+    padding: 10px 15px;
+    background: rgba(255, 153, 51, 0.05);
+    border-radius: 8px;
+    animation: fadeInUp 0.6s ease 0.9s backwards;
+}
+
+.success-card > p:nth-of-type(2) i {
+    color: #FF9933;
+    margin-right: 8px;
+}
+
+/* ===================================
+   10. PAYMENT STATUS BOX
+   ==================================== */
+
+.success-card > div:last-of-type {
+    margin-top: 30px;
+    padding: 20px;
+    border-radius: 10px;
+    animation: fadeInUp 0.6s ease 1.1s backwards;
+    position: relative;
+}
+
+.success-card > div:last-of-type p {
+    margin: 0;
+    font-weight: 600;
+}
+
+.success-card > div:last-of-type i {
+    margin-right: 8px;
+}
+
+/* Payment Status Variations */
+
+/* Pending Status */
+.success-card > div[style*="#fff5e6"] {
+    background: #fff5e6;
+    border-left: 4px solid #ffc107;
+}
+
+.success-card > div[style*="#fff5e6"] p {
+    color: #856404;
+}
+
+.success-card > div[style*="#fff5e6"] i {
+    color: #ffc107;
+}
+
+/* Success/Paid Status */
+.success-card > div[style*="#f0fdf4"] {
+    background: #f0fdf4;
+    border-left: 4px solid #48bb78;
+}
+
+.success-card > div[style*="#f0fdf4"] p {
+    color: #22543d;
+}
+
+.success-card > div[style*="#f0fdf4"] i {
+    color: #48bb78;
+}
+
+/* Failed Status */
+.success-card > div[style*="#fff5f5"] {
+    background: #fff5f5;
+    border-left: 4px solid #fc8181;
+}
+
+.success-card > div[style*="#fff5f5"] p {
+    color: #c53030;
+}
+
+.success-card > div[style*="#fff5f5"] i {
+    color: #fc8181;
+}
+
+/* ===================================
+   11. CONTINUE SHOPPING BUTTON
+   ==================================== */
+
+.btn-continue {
+    background: linear-gradient(
+        135deg,
+        #138807 0%,
+        #FF9933 100%
+    );
+    background-size: 200% 200%;
+    color: #FFFFFF;
+    border: none;
+    padding: 15px 40px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 16px;
+    margin-top: 30px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 
+        0 6px 20px rgba(255, 153, 51, 0.3),
+        0 6px 20px rgba(19, 136, 7, 0.2);
+    position: relative;
+    overflow: hidden;
+    animation: fadeInUp 0.6s ease 1.3s backwards;
+}
+
+.btn-continue i {
+    color: #FFD700;
+    font-size: 18px;
+    transition: all 0.3s ease;
+}
+
+/* Shimmer Effect on Button */
+.btn-continue::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn-continue:hover::before {
+    width: 500px;
+    height: 500px;
+}
+
+/* Hover Effects */
+.btn-continue:hover {
+    background: linear-gradient(
+        135deg,
+        #FF9933 0%,
+        #FFD700 100%
+    );
+    transform: translateY(-3px) scale(1.05);
+    color: #FFFFFF;
+    animation: buttonGlow 2s ease-in-out infinite;
+}
+
+.btn-continue:hover i {
+    color: #FFFFFF;
+    transform: scale(1.2);
+}
+
+.btn-continue:active {
+    transform: translateY(-1px) scale(1.02);
+}
+
+/* ===================================
+   12. DECORATIVE CONFETTI (OPTIONAL)
+   ==================================== */
+
+/* Create confetti particles using ::before on body */
+body::after {
+    content: '';
+    position: fixed;
+    top: -100px;
+    left: 10%;
+    width: 10px;
+    height: 10px;
+    background: #FF9933;
+    border-radius: 50%;
+    animation: confettiFall 5s linear infinite;
+    animation-delay: 0.5s;
+    opacity: 0.7;
+    z-index: 5;
+}
+
+/* Additional confetti particles can be added via JavaScript or multiple pseudo-elements */
+
+/* ===================================
+   15. RESPONSIVE DESIGN
+   ==================================== */
+
+/* Desktop (min-width: 768px) - Default styles above */
+
+/* Tablet (768px - 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .success-card {
+        padding: 50px 35px;
+    }
+    
+    .success-title {
+        font-size: 32px;
+    }
+}
+
+/* Mobile (max-width: 767px) */
+@media (max-width: 767px) {
+    body {
+        padding: 15px;
+    }
+    
+    .success-card {
+        padding: 40px 25px;
+        border-radius: 16px;
+    }
+    
+    .success-icon {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .success-icon::before {
+        font-size: 100px;
+    }
+    
+    .success-icon i {
+        font-size: 40px;
+    }
+    
+    .success-title {
+        font-size: 28px;
+        margin-bottom: 12px;
+    }
+    
+    .success-title::before,
+    .success-title::after {
+        font-size: 24px;
+    }
+    
+    .success-card > p:first-of-type {
+        font-size: 16px;
+    }
+    
+    .order-id {
+        padding: 12px 20px;
+    }
+    
+    .order-id strong {
+        font-size: 16px;
+    }
+    
+    .success-card > p:nth-of-type(2) {
+        font-size: 14px;
+    }
+    
+    .success-card > div:last-of-type {
+        padding: 15px;
+    }
+    
+    .btn-continue {
+        width: 100%;
+        justify-content: center;
+        padding: 14px 30px;
+        font-size: 15px;
+    }
+    
+    body::before {
+        font-size: 400px;
+    }
+    
+    .success-card::after {
+        width: 60px;
+        height: 60px;
+    }
+}
+
+/* Small Mobile (max-width: 575px) */
+@media (max-width: 575px) {
+    .success-card {
+        padding: 35px 20px;
+    }
+    
+    .success-icon {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .success-icon i {
+        font-size: 35px;
+    }
+    
+    .success-title {
+        font-size: 24px;
+    }
+    
+    .order-id {
+        padding: 10px 15px;
+    }
+    
+    .order-id strong {
+        font-size: 14px;
+        display: block;
+        margin-top: 5px;
+    }
+    
+    .btn-continue {
+        padding: 12px 25px;
+        font-size: 14px;
+    }
+}
+
+/* ===================================
+   19. ACCESSIBILITY & FOCUS STATES
+   ==================================== */
+
+.btn-continue:focus {
+    outline: 3px solid #FF9933;
+    outline-offset: 3px;
+}
+
+.btn-continue:focus-visible {
+    outline: 3px solid #FF9933;
+    outline-offset: 3px;
+}
+
+/* Touch-Friendly Button on Mobile */
+@media (max-width: 767px) {
+    .btn-continue {
+        min-height: 44px;
+    }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+    .success-card {
+        border: 2px solid #000000;
+    }
+    
+    .success-title {
+        -webkit-text-fill-color: #000080;
+    }
+    
+    .btn-continue {
+        border: 2px solid #FFFFFF;
+    }
+}
+
+/* ===================================
+   REDUCED MOTION SUPPORT
+   ==================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ===================================
+   GPU ACCELERATION
+   ==================================== */
+
+.success-card,
+.success-icon,
+.btn-continue,
+body::before,
+body::after {
+    will-change: transform;
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+/* ===================================
+   PRINT STYLES
+   ==================================== */
+
+@media print {
+    body {
+        background: #FFFFFF;
+        padding: 0;
+    }
+    
+    body::before,
+    body::after,
+    .success-card::before,
+    .success-card::after {
+        display: none !important;
+    }
+    
+    .success-card {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+        page-break-inside: avoid;
+    }
+    
+    .btn-continue {
+        display: none !important;
+    }
+    
+    * {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+/* ===================================
+   SPARKLE DECORATIVE EFFECTS (OPTIONAL)
+   ==================================== */
+
+/* Add sparkles around success icon */
+.success-icon::after {
+    content: '✨';
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    font-size: 24px;
+    animation: sparkle 2s ease-in-out infinite;
+}
+
+/* Additional sparkle */
+.success-card > div:first-child::before {
+    content: '✨';
+    position: absolute;
+    top: 20px;
+    left: -20px;
+    font-size: 20px;
+    animation: sparkle 2s ease-in-out 0.5s infinite;
+}
+
+/* ===================================
+   LOADING STATE (OPTIONAL)
+   ==================================== */
+
+.success-card.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.success-card.loading::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(255, 153, 51, 0.3);
+    border-top-color: #FF9933;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    z-index: 100;
+}
+
+@keyframes spin {
+    0% {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+    100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+/* ===================================
+   ALTERNATIVE COLOR SCHEMES
+   ==================================== */
+
+/* Dark Mode Support (Optional) */
+@media (prefers-color-scheme: dark) {
+    .success-card {
+        background: #2d3748;
+        color: #e5e7eb;
+    }
+    
+    .success-title {
+        background: linear-gradient(
+            135deg,
+            #FFB366 0%,
+            #FFFFFF 50%,
+            #48bb78 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .order-id {
+        background: rgba(255, 153, 51, 0.1);
+    }
+    
+    .order-id strong {
+        color: #FFB366;
+    }
+}
+
+/* ===================================
+   END OF ORDER SUCCESS PAGE STYLING
+   Happy 77th Republic Day 2026! 🇮🇳
+   Jai Hind! 🎉
+   ==================================== */
