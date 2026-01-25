@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.conf import settings
 from django.utils.html import format_html
 from .models import *
-
+    
 
 # ✅ Customize Admin Site (SECURE)
 admin.site.site_header = getattr(settings, 'ADMIN_SITE_HEADER', "Manovastra Secure Admin")
