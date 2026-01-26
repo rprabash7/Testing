@@ -33,7 +33,6 @@
                 </div>
             </div>
 
-
             <!-- Search Bar -->
             <div class="col-lg-6 col-md-5 d-none d-md-block">
                 <form class="search-bar" method="GET" action="{% url 'search' %}">
@@ -44,64 +43,59 @@
                 </form>
             </div>
 
-
             <!-- Header Icons -->
-<div class="col-lg-4 col-md-4 col-6">
-    <div class="header-icons">
-        {% if is_logged_in %}
-            <div class="dropdown">
-                <a href="#" class="icon-link dropdown-toggle" data-bs-toggle="dropdown">
-                    <i class="bi bi-person-circle"></i>
-                    <span class="d-none d-lg-inline">{{ user_name|truncatechars:15 }}</span>
-                </a>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="{% url 'my_orders' %}"><i class="bi bi-box"></i> My Orders</a></li>
-                    <li><a class="dropdown-item" href="{% url 'wishlist' %}"><i class="bi bi-heart"></i> Wishlist</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
-                </ul>
+            <div class="col-lg-4 col-md-4 col-6">
+                <div class="header-icons">
+                    {% if is_logged_in %}
+                        <div class="dropdown">
+                            <a href="#" class="icon-link dropdown-toggle" data-bs-toggle="dropdown">
+                                <i class="bi bi-person-circle"></i>
+                                <span class="d-none d-lg-inline">{{ user_name|truncatechars:15 }}</span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'my_orders' %}"><i class="bi bi-box"></i> My Orders</a></li>
+                                <li><a class="dropdown-item" href="{% url 'wishlist' %}"><i class="bi bi-heart"></i> Wishlist</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="icon-link">
+                            <i class="bi bi-person"></i>
+                            <span class="d-none d-lg-inline">Account</span>
+                        </a>
+                    {% endif %}
+
+                    <a href="{% url 'wishlist' %}" class="icon-link position-relative">
+                        <i class="bi bi-heart"></i>
+                        <span class="wishlist-badge" id="wishlistCount" style="display: none;">0</span>
+                        <span class="d-none d-lg-inline">Wishlist</span>
+                    </a>
+
+                    <a href="{% url 'cart' %}" class="icon-link cart-link position-relative">
+                        <i class="bi bi-bag"></i>
+                        <span class="cart-badge" id="cartCount" style="display: none;">0</span>
+                        <span class="d-none d-lg-inline">Cart</span>
+                    </a>
+                </div>
             </div>
-        {% else %}
-            <a href="{% url 'login' %}" class="icon-link">
-                <i class="bi bi-person"></i>
-                <span class="d-none d-lg-inline">Account</span>
-            </a>
-        {% endif %}
 
-
-        <a href="{% url 'wishlist' %}" class="icon-link position-relative">
-            <i class="bi bi-heart"></i>
-            <span class="wishlist-badge" id="wishlistCount" style="display: none;">0</span>
-            <span class="d-none d-lg-inline">Wishlist</span>
-        </a>
-
-
-        <a href="{% url 'cart' %}" class="icon-link cart-link position-relative">
-            <i class="bi bi-bag"></i>
-            <span class="cart-badge" id="cartCount" style="display: none;">0</span>
-            <span class="d-none d-lg-inline">Cart</span>
-        </a>
-    </div>
-</div>
-
-
-        <!-- Mobile Search Bar -->
-        <div class="row d-md-none mb-3">
-            <div class="col-12">
-                <form class="search-bar" method="GET" action="{% url 'search' %}">
-                    <input type="text" name="q" class="form-control search-input" placeholder="Search for Sarees, Kurtis..." value="{{ request.GET.q }}">
-                    <button type="submit" class="btn-search">
-                        <i class="bi bi-search"></i>
-                    </button>
-                </form>
+            <!-- Mobile Search Bar -->
+            <div class="row d-md-none mb-3">
+                <div class="col-12">
+                    <form class="search-bar" method="GET" action="{% url 'search' %}">
+                        <input type="text" name="q" class="form-control search-input" placeholder="Search for Sarees, Kurtis..." value="{{ request.GET.q }}">
+                        <button type="submit" class="btn-search">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 </header>
 
-
-
-    <!-- Navigation Bar -->
+<!-- Navigation Bar -->
 <nav class="navbar-main">
     <div class="container">
         <ul class="nav-menu">
@@ -112,7 +106,6 @@
                 </a>
             </li>
 
-
             <!-- Dynamic Categories from Database -->
             {% for category in categories %}
             <li class="nav-item">
@@ -122,7 +115,6 @@
             </li>
             {% endfor %}
 
-
             <!-- New Arrivals -->
             <li class="nav-item">
                 <a href="{% url 'new_arrivals' %}" class="nav-link">
@@ -130,14 +122,12 @@
                 </a>
             </li>
 
-
             <!-- Offers -->
             <li class="nav-item">
                 <a href="{% url 'offers' %}" class="nav-link special">
                     <i class="bi bi-tag-fill"></i> Offers
                 </a>
             </li>
-
 
             <!-- All Products -->
             <li class="nav-item">
@@ -181,42 +171,46 @@
         <div class="row g-4">
             {% for product in products %}
             <div class="col-lg-3 col-md-4 col-sm-6">
-                <div class="product-card">
-                    <div class="product-image-wrapper">
+                <div class="product-card" style="border: 1px solid #ddd; border-radius: 8px; overflow: hidden; position: relative;">
+                    
+                    {# ✅ SIMPLE IMAGE DISPLAY #}
+                    <a href="{% url 'product_detail' product.slug %}">
                         {% if product.colors.first.images.first %}
-                            <img src="{{ product.colors.first.images.first.image.url }}" alt="{{ product.name }}" class="product-image">
+                            <img src="{{ product.colors.first.images.first.image.url }}" 
+                                 alt="{{ product.name }}"
+                                 style="width: 100%; height: 300px; object-fit: cover; display: block; background: #f5f5f5;">
+                        {% else %}
+                            <div style="width: 100%; height: 300px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white;">
+                                <i class="bi bi-image" style="font-size: 48px;"></i>
+                            </div>
                         {% endif %}
-                        
-                        <span class="product-badge">{{ product.get_badge_text }}</span>
-                        
-                        <div class="product-overlay">
-                            <a href="{% url 'product_detail' product.slug %}" class="btn-quick-view">
-                                <i class="bi bi-eye"></i> View Details
-                            </a>
+                    </a>
+                    
+                    <div style="padding: 15px;">
+                        <div style="position: absolute; top: 10px; left: 10px; background: #4169E1; color: white; padding: 5px 10px; border-radius: 4px; font-size: 12px;">
+                            {{ product.get_badge_text }}
                         </div>
-
-                        <button class="btn-wishlist" data-product-id="{{ product.id }}">
+                        
+                        <button class="btn-wishlist" data-product-id="{{ product.id }}" style="position: absolute; top: 10px; right: 10px; background: white; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer;">
                             <i class="bi bi-heart"></i>
                         </button>
-                    </div>
-                    
-                    <div class="product-info">
-                        <h3 class="product-name">
-                            <a href="{% url 'product_detail' product.slug %}">{{ product.name }}</a>
+                        
+                        <h3 style="font-size: 16px; margin: 10px 0;">
+                            <a href="{% url 'product_detail' product.slug %}" style="text-decoration: none; color: #333;">{{ product.name }}</a>
                         </h3>
                         
-                        <div class="product-rating">
+                        <div style="display: flex; align-items: center; margin: 8px 0; color: #FFA500;">
                             <i class="bi bi-star-fill"></i>
-                            <span>{{ product.rating }}</span>
-                            <span class="rating-count">({{ product.rating_count }})</span>
+                            <span style="margin-left: 5px;">{{ product.rating }}</span>
+                            <span style="margin-left: 5px; color: #999;">({{ product.rating_count }})</span>
                         </div>
                         
-                        <div class="product-price-section">
-                            <span class="product-price">₹{{ product.current_price|floatformat:0 }}</span>
-                            <span class="product-original-price">₹{{ product.original_price|floatformat:0 }}</span>
+                        <div style="margin: 10px 0;">
+                            <span style="font-size: 20px; font-weight: bold; color: #333;">₹{{ product.current_price|floatformat:0 }}</span>
+                            <span style="font-size: 14px; text-decoration: line-through; color: #999; margin-left: 8px;">₹{{ product.original_price|floatformat:0 }}</span>
                         </div>
-
-                        <button class="btn-add-to-cart" data-product-id="{{ product.id }}">
+                        
+                        <button class="btn-add-to-cart" data-product-id="{{ product.id }}" style="width: 100%; padding: 10px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;">
                             <i class="bi bi-bag-plus"></i> Add to Cart
                         </button>
                     </div>
@@ -265,8 +259,7 @@
     </div>
 </section>
 
-
-    <!-- Footer Section -->
+<!-- Footer Section -->
 <footer class="footer-main">
     <div class="container">
         <!-- Footer Top -->
@@ -298,7 +291,6 @@
                 </div>
             </div>
 
-
             <!-- Quick Links Column -->
             <div class="col-lg-2 col-md-6 mb-4">
                 <div class="footer-widget">
@@ -312,7 +304,6 @@
                     </ul>
                 </div>
             </div>
-
 
             <!-- Categories Column -->
             <div class="col-lg-2 col-md-6 mb-4">
@@ -328,7 +319,6 @@
                 </div>
             </div>
 
-
             <!-- Customer Service Column -->
             <div class="col-lg-2 col-md-6 mb-4">
                 <div class="footer-widget">
@@ -342,7 +332,6 @@
                     </ul>
                 </div>
             </div>
-
 
             <!-- Contact Column -->
             <div class="col-lg-3 col-md-6 mb-4">
@@ -376,7 +365,6 @@
             </div>
         </div>
 
-
         <!-- Payment & Trust Badges -->
         <div class="row py-4 border-top border-bottom footer-badges">
             <div class="col-12">
@@ -395,7 +383,6 @@
             </div>
         </div>
 
-
         <!-- Footer Bottom -->
         <div class="row py-4">
             <div class="col-lg-6 text-center text-lg-start mb-3 mb-lg-0">
@@ -411,7 +398,6 @@
         </div>
     </div>
 </footer>
-
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{% static 'js/collection_script.js' %}"></script>
