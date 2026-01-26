@@ -173,7 +173,7 @@
             <div class="col-lg-3 col-md-4 col-sm-6">
                 <div class="product-card" style="border: 1px solid #ddd; border-radius: 8px; overflow: hidden; position: relative;">
                     
-                    {# ✅ SIMPLE IMAGE DISPLAY #}
+                    <!-- Product Image with Inline Styles -->
                     <a href="{% url 'product_detail' product.slug %}">
                         {% if product.colors.first.images.first %}
                             <img src="{{ product.colors.first.images.first.image.url }}" 
@@ -186,31 +186,37 @@
                         {% endif %}
                     </a>
                     
-                    <div style="padding: 15px;">
-                        <div style="position: absolute; top: 10px; left: 10px; background: #4169E1; color: white; padding: 5px 10px; border-radius: 4px; font-size: 12px;">
+                    <div style="padding: 15px; position: relative;">
+                        <!-- Badge -->
+                        <div style="position: absolute; top: 10px; left: 10px; background: #4169E1; color: white; padding: 5px 10px; border-radius: 4px; font-size: 12px; z-index: 10;">
                             {{ product.get_badge_text }}
                         </div>
                         
-                        <button class="btn-wishlist" data-product-id="{{ product.id }}" style="position: absolute; top: 10px; right: 10px; background: white; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer;">
+                        <!-- Wishlist Button -->
+                        <button class="btn-wishlist" data-product-id="{{ product.id }}" style="position: absolute; top: 10px; right: 10px; background: white; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); z-index: 10;">
                             <i class="bi bi-heart"></i>
                         </button>
                         
-                        <h3 style="font-size: 16px; margin: 10px 0;">
+                        <!-- Product Name -->
+                        <h3 style="font-size: 16px; margin: 10px 0; margin-top: 15px;">
                             <a href="{% url 'product_detail' product.slug %}" style="text-decoration: none; color: #333;">{{ product.name }}</a>
                         </h3>
                         
+                        <!-- Rating -->
                         <div style="display: flex; align-items: center; margin: 8px 0; color: #FFA500;">
                             <i class="bi bi-star-fill"></i>
-                            <span style="margin-left: 5px;">{{ product.rating }}</span>
+                            <span style="margin-left: 5px; color: #333;">{{ product.rating }}</span>
                             <span style="margin-left: 5px; color: #999;">({{ product.rating_count }})</span>
                         </div>
                         
+                        <!-- Price -->
                         <div style="margin: 10px 0;">
                             <span style="font-size: 20px; font-weight: bold; color: #333;">₹{{ product.current_price|floatformat:0 }}</span>
                             <span style="font-size: 14px; text-decoration: line-through; color: #999; margin-left: 8px;">₹{{ product.original_price|floatformat:0 }}</span>
                         </div>
                         
-                        <button class="btn-add-to-cart" data-product-id="{{ product.id }}" style="width: 100%; padding: 10px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;">
+                        <!-- Add to Cart Button -->
+                        <button class="btn-add-to-cart" data-product-id="{{ product.id }}" style="width: 100%; padding: 10px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px; font-weight: 500; transition: background 0.3s;">
                             <i class="bi bi-bag-plus"></i> Add to Cart
                         </button>
                     </div>
